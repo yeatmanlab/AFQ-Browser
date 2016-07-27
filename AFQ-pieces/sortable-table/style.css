@@ -1,0 +1,110 @@
+* {
+    box-sizing: border-box;
+    font-family: "Helvetica Neue";
+    margin: 0;
+    padding: 0;
+    /*border: 0;*/
+}
+
+#body {
+  font-family: "Arial", "Helvetica", sans-serif;
+  color:#666;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none;   /* Chrome/Safari/Opera */
+    -khtml-user-select: none;    /* Konqueror */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* Internet Explorer/Edge */
+}
+
+#header {
+  /*overflow:hidden;*/
+  height: 60px;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #404040;
+}
+
+h1 {
+  text-align: center;
+}
+
+
+#title{
+  float:left;
+  height:40px;
+  display:flex;
+  justify-content: left;
+  align-items: center;
+}
+#statcontent{
+  float:left;
+  position:fixed;
+}
+#statcontent.sticky {
+   position: fixed;
+   top: 15;
+}
+
+#table{
+  align: center;
+}
+.focus text{
+  font-size:11px;
+}
+
+.col-8 {width: 66.66%;}
+.col-12 {width: 100%;}
+
+[class*="col-"] {
+    float: left;
+    padding: 15px;
+
+}
+
+
+
+
+.moveGUI {
+  padding: 0px;
+}
+
+.row::after {
+    content: "";
+    clear: both;
+    display: block;
+}
+
+
+.row
+{
+    float: left;
+    clear: none;
+    display: table;
+    width: 100%; /*Optional*/
+    table-layout: fixed; /*Optional*/
+    border-spacing: 10px; /*Optional*/
+}
+
+/*Added for table*/
+.t_header rect{
+fill: #ffffff;
+}
+
+.t_header text{
+    font: 13px;
+    font-weight: bold;
+    text-anchor: middle;
+
+}
+
+.cell rect{
+ fill: #dddddd;
+}
+
+.cell text{
+  font: 13px ;
+  text-anchor: middle;
+
+}
+

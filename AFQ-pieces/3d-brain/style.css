@@ -1,0 +1,205 @@
+* {
+    box-sizing: border-box;
+    font-family: "Helvetica Neue";
+    margin: 0;
+    padding: 0;
+    /*border: 0;*/
+}
+
+#body {
+  font-family: "Arial", "Helvetica", sans-serif;
+  color:#666;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none;   /* Chrome/Safari/Opera */
+    -khtml-user-select: none;    /* Konqueror */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* Internet Explorer/Edge */
+}
+
+#header {
+  /*overflow:hidden;*/
+  height: 60px;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #404040;
+}
+
+h1 {
+  text-align: center;
+}
+
+h2 {
+  text-align: center;
+}
+
+#title{
+  float:left;
+  height:40px;
+  display:flex;
+  justify-content: left;
+  align-items: center;
+}
+#statcontent{
+  float:left;
+  position:fixed;
+}
+#statcontent.sticky {
+   position: fixed;
+   top: 15;
+}
+#tracklist{
+  text-align: left;
+}
+#threeDbrain{
+}
+#trackdetails{
+  overflow:auto;
+  float:right;
+  align-items: center;
+}
+
+#table{
+  align: center;
+}
+.focus text{
+  font-size:11px;
+}
+
+.col-1 {width: 8.33%;}
+.col-2 {width: 16.66%;}
+.col-3 {width: 25%;}
+.col-4 {width: 33.33%;}
+.col-5 {width: 41.66%;}
+.col-6 {width: 50%;}
+.col-7 {width: 58.33%;}
+.col-8 {width: 66.66%;}
+.col-9 {width: 75%;}
+.col-10 {width: 83.33%;}
+.col-11 {width: 91.66%;}
+.col-12 {width: 100%;}
+
+[class*="col-"] {
+    float: left;
+    padding: 15px;
+
+}
+
+
+#selectAllBox {
+  font-weight: bold;
+  cursor:pointer;
+}
+
+/*change label hover effect for checkbox*/
+input[type=checkbox] {
+    display:none;
+}
+input[type=checkbox]+label{
+  line-height: 30px;
+  cursor:pointer;
+}
+input[type=checkbox]:hover {
+    -webkit-box-shadow: inset 0 0 2px 2px rgba(82,168,236,.6);
+}
+
+label, input[type=checkbox] {
+    -moz-transition: all .2s ease-in;
+    -o-transition: all .2s ease-in;
+    -webkit-transition: all .2s ease-in;
+    transition: all .2s ease-in;
+}
+
+label:hover, label:active, input:hover+label, input:active+label {
+    background:#ffffcc;
+}
+
+
+.moveGUI {
+  padding: 0px;
+}
+
+.row::after {
+    content: "";
+    clear: both;
+    display: block;
+}
+
+.line {
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap:round;
+}
+
+.tracks {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+.plot
+{
+  fill:#eeeeee;
+  border-spacing: 10px;
+}
+.plot_text{
+
+}
+
+.row
+{
+    float: left;
+    clear: none;
+    display: table;
+    width: 100%; /*Optional*/
+    table-layout: fixed; /*Optional*/
+    border-spacing: 10px; /*Optional*/
+}
+
+/*Added for table*/
+.t_header rect{
+fill: #ffffff;
+}
+
+.t_header text{
+    font: 13px;
+    font-weight: bold;
+    text-anchor: middle;
+
+}
+
+.cell rect{
+ fill: #dddddd;
+}
+
+.cell text{
+  font: 13px ;
+  text-anchor: middle;
+
+}
+
+/* Graph axes */
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #AFBABF;
+    shape-rendering: crispEdges;
+}
+.axis text {
+    font-size: 14px;
+
+
+}
+
+.x.axis path {
+    display: none;
+}
+.y.axis path{
+    display: none;
+}
+
+.menuchoice {
+    font-family: SourceSansPro-Bold;
+    font-size: 10pt;
+    margin-bottom:0px;
+    fill: #231F20;
+}
