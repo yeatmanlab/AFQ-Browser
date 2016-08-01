@@ -1,0 +1,65 @@
+﻿<html lang="en">
+<head>
+
+    <!-- Basic Page Needs
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta charset="utf-8">
+    <title>Visualizing the human brain</title>
+
+    <!-- FONT
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+    <!-- CSS
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body id="body">
+
+    <div id="header">
+        <h1 style="color:white;">VISUALIZING THE HUMAN BRAIN</h1>
+    </div>
+    <div class="titlebar">
+        <div id="title" class="col-2"><h2>FIBER BUNDLES</h2></div>
+        <div id="title" class="col-5"><h2></h2></div>
+        <div id="title" class="col-5"><h2>FIBER BUNDLE DETAILS</h2></div>
+    </div>
+    <div class="col-7">
+        <div class="col-4" id="tracklist">
+            <div id="selectAllBox"> <input type="checkbox" id="selectAllTracks"><br> <label for="selectAllTracks">All Tracks</label></div>
+        </div>
+        <div class="col-8">
+            <div class="col-12" id="threejsbrain"></div>
+            <div class="moveGUI"></div>
+        </div>
+
+        <div id="table" class="col-12"><h2>SUBJECT METADATA</h2><br></div>
+    </div>
+    <div class="col-5" id="trackdetails"></div>
+
+
+    </div>
+
+    <!-- JS Libraries -->
+    <script src="//d3js.org/queue.v1.min.js"></script>
+    <script src="js/stats.min.js"></script>
+    <script src="js/three.min.js"></script>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="js/jquery-2.2.3.js"></script>
+    <script src="js/dat.gui.min.js"></script>
+
+    <!--custom JS code -->
+
+    <script src="js/Projector.js"></script>
+    <script src="js/threex.domevent.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    <script src="js/OBJLoader.js"></script>
+    
+    <script src="js/3d-brain.js"></script>
+    <script src="js/tract-details.js"></script>
+    <script src="js/sortable-table.js"></script>
+
+</body>
+</html>
