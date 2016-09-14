@@ -44,10 +44,11 @@ h2 {
 #statcontent{
   float:left;
   position:fixed;
+  top: 15;
 }
 #statcontent.sticky {
-   position: fixed;
-   top: 15;
+  position: fixed;
+  top: 15;
 }
 #tracklist{
   text-align: left;
@@ -191,4 +192,10 @@ fill: #ffffff;
 }
 .y.axis path{
     display: none;
+}
+
+.brush .extent {
+  stroke: #f09f8c;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
 }

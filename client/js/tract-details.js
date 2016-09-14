@@ -13,6 +13,7 @@ var highlightColors = [0x2991DB, 0xD7E4F4, 0xFF9A42, 0xFFD6AD, 0x37C837, 0xBCEAB
 var m = {top: 20, right: 10, bottom: 10, left: 20},
 w = 400 - m.left - m.right,
 h = 350 - m.top - m.bottom;
+var axisOffset = {bottom: 40};
 
 // init variable to hold data later
 var trackdata = d3.map();
@@ -67,7 +68,7 @@ var x = d3.scale.linear()
     .range([m.left+20, w+m.left+20]);
 
 var y = d3.scale.linear()
-    .range([h-40, 0]);
+    .range([h - axisOffset.bottom, 0]);
 
 var line = d3.svg.line()
     .interpolate("basis")
@@ -75,10 +76,12 @@ var line = d3.svg.line()
       return x(d.variable);})
     .y(function(d) { return y(d.value);})
 
+var bundleBrush = {};
 
 queue()
     .defer(d3.csv, "data/data.csv")
     .await(ready);
+
 function ready(error, data) {
   if (error) throw error;
 
@@ -97,6 +100,7 @@ function ready(error, data) {
 // set x and y domains for the track plots
  y.domain([0,1])
  x.domain(d3.extent(data, function(d) { return d.var; }));
+
 //create axes
 var yAxis = d3.svg.axis()
        	.scale(y)
@@ -110,15 +114,19 @@ var xAxis = d3.svg.axis()
         .tickPadding(8)
         .ticks(5);
 
+var brush = d3.svg.brush()
+	.x(x)
+	.on("brush", brushed);
+
 //initialize panels for each track - and attach track data with them
-var  trpanels  = d3.select("#trackdetails").selectAll("svg").data(trackdata);
+var trpanels = d3.select("#trackdetails").selectAll("svg").data(trackdata);
         trpanels.enter().append("svg")
             .attr("id",function(d) {return "track"+ (+d.name-1); })
             .attr("width", w + m.left + m.right +40)
-            .attr("height", h + m.top + m.bottom+40)
+            .attr("height", h + m.top + m.bottom + axisOffset.bottom)
             .attr("display", "none")
-           .append("g")
-             .attr("transform", "translate(" + m.left + "," + m.top + ")")
+            .append("g")
+            .attr("transform", "translate(" + m.left + "," + m.top + ")")
    	//y-axis
             .append("g")
             .attr("class", "y axis")
@@ -127,10 +135,30 @@ var  trpanels  = d3.select("#trackdetails").selectAll("svg").data(trackdata);
         //x-axis
             .append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate(-40," + (h - 40) + ")")
+            .attr("transform", "translate(-40," + (h - axisOffset.bottom) + ")")
             .call(xAxis);
 
-       trpanels.append("rect")
+
+		// Populate budleBrush
+		d3.select("#trackdetails").selectAll("svg")[0]
+			.forEach(function(d) {
+				bundleBrush[d.id] = {
+					brushOn: false,
+					brushExtent: [0, 100]
+				}
+			});
+
+		// brush
+		var brushg = d3.select("#trackdetails").selectAll("svg")
+			.append("g")
+			.attr("class", "brush")
+			.call(brush);
+
+		brushg.selectAll("rect")
+			.attr("y", m.top)
+			.attr("height", h - axisOffset.bottom);
+	
+        trpanels.append("rect")
                .attr("class", "plot")
        	       .attr("width",  w + m.left + m.right +20 )
                .attr("height", h + m.top + m.bottom + 15 )
@@ -140,7 +168,7 @@ var  trpanels  = d3.select("#trackdetails").selectAll("svg").data(trackdata);
          			.style("fill", "none")
          			.style("stroke-width", 2);
 
-     // 	trpanels.append("text")
+      // 	trpanels.append("text")
       //   	.attr("transform", "rotate(-90)")
       //   	.attr("x", -h/2)
       //   	.attr("y",0)
@@ -151,7 +179,7 @@ var  trpanels  = d3.select("#trackdetails").selectAll("svg").data(trackdata);
 
 	trpanels.append("text")
         	.attr("x", 350)
-        	.attr("y", h +25)
+        	.attr("y", h + 25)
             .attr("class", "plot_text")
         	.style("text-anchor", "end")
         	.style("stroke", "#888888;" )
@@ -183,7 +211,6 @@ var  trpanels  = d3.select("#trackdetails").selectAll("svg").data(trackdata);
             .attr("class", "line")
             //.attr("id", function(d,i){return(i);})
             .attr("d",  function(d ) { return  line(d); });
-
 
   function mouseover() {
       if (isDown) {
@@ -238,6 +265,11 @@ var  trpanels  = d3.select("#trackdetails").selectAll("svg").data(trackdata);
               .style("opacity",0.5);}
   }
 
+  function brushed() {
+	  bundleBrush[this.parentElement.id].brushOn = !brush.empty();
+	  bundleBrush[this.parentElement.id].brushExtent = brush.extent();
+  }
+
 }
 
 function showHideTrackDetails(state, name)
@@ -255,11 +287,10 @@ function showHideTrackDetails(state, name)
 
 }
 
+// var $window = $(window),
+//    $stickyEl = $('#statcontent'),
+//    elTop = $stickyEl.offset().top;
 
-var $window = $(window),
-   $stickyEl = $('#statcontent'),
-   elTop = $stickyEl.offset().top;
-
-$window.scroll(function() {
-    $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop);
-});
+// $window.scroll(function() {
+//     $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop);
+// });

@@ -176,10 +176,10 @@ function table_mouseDown() {
     }
 }
 
-var $window = $(window),
-   $stickyEl = $('#statcontent'),
-   elTop = $stickyEl.offset().top;
+// var $window = $(window),
+//    $stickyEl = $('#statcontent'),
+//    elTop = $stickyEl.offset().top;
 
-$window.scroll(function() {
-    $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop);
-});
+// $window.scroll(function() {
+//     $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop);
+// });

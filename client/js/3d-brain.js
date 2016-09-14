@@ -168,6 +168,8 @@ function init() {
 				bundleLine.idx = bundleIdx;
 				++bundleIdx;
 
+				console.log(bundleLine);
+
                 groups.add(bundleLine);
             }
         }
@@ -190,17 +192,17 @@ function init() {
                 domEvents.addEventListener(child, 'mousedown', function(event) {
         					mouseMove = false;
         				});
-        				domEvents.addEventListener(child, 'mouseup', function(event) {
-        					if(!mouseMove) {
-        						var myBundle = d3.selectAll("input.tracks")[0][child.idx];
-        						myBundle.checked = !myBundle.checked;
-        						showHideTrackDetails(myBundle.checked, myBundle.name)
-        						highlightBundle(myBundle.checked, myBundle.name)
-        						return renderer.render(scene, camera);
-        					} else {
-        						mouseMove = false;
-        					}
-                });
+				domEvents.addEventListener(child, 'mouseup', function(event) {
+							if(!mouseMove) {
+								var myBundle = d3.selectAll("input.tracks")[0][child.idx];
+								myBundle.checked = !myBundle.checked;
+								showHideTrackDetails(myBundle.checked, myBundle.name)
+								highlightBundle(myBundle.checked, myBundle.name)
+								return renderer.render(scene, camera);
+							} else {
+								mouseMove = false;
+							}
+						});
                 domEvents.addEventListener(child, 'mouseout', function(event) {
         					var myBundle = d3.selectAll("input.tracks")[0][child.idx];
         					showHideTrackDetails(myBundle.checked, myBundle.name)
@@ -286,10 +288,10 @@ function mouseoverBundle(name) {
 	}
 }
 
-var $window = $(window),
-   $stickyEl = $('#statcontent'),
-   elTop = $stickyEl.offset().top;
+// var $window = $(window),
+//    $stickyEl = $('#statcontent'),
+//    elTop = $stickyEl.offset().top;
 
-$window.scroll(function() {
-    $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop);
-});
+// $window.scroll(function() {
+//     $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop);
+// });
