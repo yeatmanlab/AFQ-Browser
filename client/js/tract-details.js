@@ -98,8 +98,8 @@ function ready(error, data) {
   });
 
 // set x and y domains for the track plots
- y.domain([0,1])
- x.domain(d3.extent(data, function(d) { return d.var; }));
+ y.domain([0,1]);
+ x.domain(d3.extent(data, function(d) { return d.var; })).nice();
 
 //create axes
 var yAxis = d3.svg.axis()
@@ -257,6 +257,7 @@ var trpanels = d3.select("#trackdetails").selectAll("svg").data(trackdata);
               .style("stroke-width", "5px");
       }
   }
+
   function mouseout() {
       if($(this).css("stroke-width") == "2.5px"){				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
           d3.selectAll('#' + this.id)
@@ -267,7 +268,11 @@ var trpanels = d3.select("#trackdetails").selectAll("svg").data(trackdata);
 
   function brushed() {
 	  bundleBrush[this.parentElement.id].brushOn = !brush.empty();
-	  bundleBrush[this.parentElement.id].brushExtent = brush.extent();
+	  if (brush.empty()) {
+		  bundleBrush[this.parentElement.id].brushExtent = [0, 100];
+	  } else {
+		  bundleBrush[this.parentElement.id].brushExtent = brush.extent();
+	  }
   }
 
 }
