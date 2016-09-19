@@ -8,7 +8,7 @@ var tracks=["Left Thalamic Radiation","Right Thalamic Radiation","Left Corticosp
 var colors = [0x1F77B4, 0xAEC7E8, 0xFF7F0E, 0xFFBB78, 0x2CA02C, 0x98DF8A, 0xD62728, 0xFF9896, 0x9467BD, 0xC5B0D5, 0x8C564B, 0xC49C94, 0xE377C2, 0xF7B6D2, 0x7F7F7F, 0xC7C7C7, 0xBCBD22, 0xDBDB8D, 0x17BECF, 0x9EDAE5];
 var d3colors = ["#1F77B4", "#AEC7E8", "#FF7F0E", "#FFBB78", "#2CA02C", "#98DF8A", "#D62728", "#FF9896", "#9467BD", "#C5B0D5", "#8C564B", "#C49C94", "#E377C2", "#F7B6D2", "#7F7F7F", "#C7C7C7", "#BCBD22", "#DBDB8D", "#17BECF", "#9EDAE5"];
 // highlightColors[i] = (colors[i] + 10 lightness) converted to RGB hex
-var highlightColors = [0x2991DB, 0xD7E4F4, 0xFF9A42, 0xFFD6AD, 0x37C837, 0xBCEAB3, 0xDF5353, 0xFFC8C7, 0xAC8ACC, 0xDDD0E6, 0xA96C60, 0xD5B9B3, 0xECA2D6, 0xFCE3EE, 0x090909, 0xE0E0E0, 0xDCDC38, 0xE8E8B5, 0x30D6E8, 0xC7EAF0];
+var highlightColors = [0x2991DB, 0xD7E4F4, 0xFF9A42, 0xFFD6AD, 0x37C837, 0xBCEAB3, 0xDF5353, 0xFFC8C7, 0xAC8ACC, 0xDDD0E6, 0xA96C60, 0xD5B9B3, 0xECA2D6, 0xFCE3EE, 0x909090, 0xE0E0E0, 0xDCDC38, 0xE8E8B5, 0x30D6E8, 0xC7EAF0];
 
 var m = {top: 20, right: 10, bottom: 10, left: 20},
 w = 400 - m.left - m.right,
@@ -27,14 +27,33 @@ var sizeX = 600, sizeY = 500;
 var brain;
 var lh, rh;
 
-var groups = new THREE.Object3D();
-var line_material = new THREE.LineBasicMaterial({
-	opacity: 0.5,
-	linewidth: 1.25
+var colorGroups = new THREE.Object3D();
+var greyGroups = new THREE.Object3D();
+
+// Set initial opacitites here
+var initBrainOpacity = 0.05;
+var initFiberOpacity = 0.3;
+var initColorOpacity = 0.75;
+var initHighlightOpacity = 0.75;
+
+// Set initial line widths here
+var initFiberLineWidth = 1.0;
+var initColorLineWidth = 2.0;
+var initHighlightLineWidth = 2.5;
+
+var greyLineMaterial = new THREE.LineBasicMaterial({
+	opacity: initFiberOpacity,
+	linewidth: initFiberLineWidth,
+	transparent: true
 });
 
-line_material.color.setHex( 0x969696 );
+greyLineMaterial.color.setHex( 0x969696 );
 
+var colorLineMaterial = new THREE.LineBasicMaterial({
+	opacity: 0.0,
+	linewidth: 0.000001,
+    transparent: true
+});
 
 init();
 animate();
@@ -66,9 +85,6 @@ function init() {
         // HEIGHT = window.innerHeight;
 
     Width = container.clientWidth;
-
-    var brainOpacity = 0.05;
-    var lineInitialOpacity = 0.3;
 
     // camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 1, 2000);
     camera = new THREE.PerspectiveCamera( 45, Width / sizeY, 1, 2000 );
@@ -113,7 +129,7 @@ function init() {
 
         object.traverse(function (child) {
             if (child instanceof THREE.Mesh) {
-                child.material.opacity = brainOpacity;
+                child.material.opacity = initBrainOpacity;
                 child.material.depthWrite = false;
                 child.material.transparent = true;
             }
@@ -124,17 +140,30 @@ function init() {
         scene.add(object);
     });
 
-	var guiConfigObj = {"Brain Opacity" : 0.1};
+	var guiConfigObj = {
+		"Brain Opacity" : initBrainOpacity,
+		"Fiber Opacity" : initFiberOpacity
+	};
+
 	var gui = new DAT.GUI({ autoPlace: false });
 	// gui.domElement.id = 'gui';
 	var guiContainer = $('.moveGUI').append($(gui.domElement));
-	var opacity = gui.add(guiConfigObj, "Brain Opacity", 0, 1);
+	var brainOpacity = gui.add(guiConfigObj, "Brain Opacity", 0, 1);
+	var fiberOpacity = gui.add(guiConfigObj, "Fiber Opacity", 0, 1);
 	gui.close();
 
-	opacity.onChange( function(value) {
+	brainOpacity.onChange( function(value) {
 		brain.traverse(function (child) {
 			if (child instanceof THREE.Mesh) {
 				child.material.opacity = value;
+			}
+		})
+	});
+
+	fiberOpacity.onChange( function(value) {
+        greyGroups.traverse(function (child) {
+			if (child instanceof THREE.LineSegments) {
+                child.material.opacity = value;
 			}
 		})
 	});
@@ -220,32 +249,41 @@ function init() {
 				bundleGeometry.addAttribute('position',
 						new THREE.BufferAttribute(positions, 3));
 
-				var bundleLine = new THREE.LineSegments(bundleGeometry,
-						line_material);
+				var greyBundleLine = new THREE.LineSegments(
+						new THREE.Geometry().fromBufferGeometry(bundleGeometry),
+						greyLineMaterial);
+
+				var colorBundleLine = new THREE.LineSegments(bundleGeometry,
+						colorLineMaterial);
 
 				// Set scale to match the brain surface,
 				// (determined by trial and error)
-				bundleLine.scale.set(0.05,0.05,0.05);
+				greyBundleLine.scale.set(0.05,0.05,0.05);
+				colorBundleLine.scale.set(0.05,0.05,0.05);
 
 				// Record some useful info for later
-				bundleLine.name = tracks[ bundleIdx ];
-				bundleLine.nFibers = nFibers;
-				bundleLine.idx = bundleIdx;
+				greyBundleLine.name = tracks[ bundleIdx ];
+				greyBundleLine.nFibers = nFibers;
+				greyBundleLine.idx = bundleIdx;
+                greyBundleLine.position.set(0, 0.8, -0.5);
+
+				colorBundleLine.name = tracks[ bundleIdx ];
+				colorBundleLine.nFibers = nFibers;
+				colorBundleLine.idx = bundleIdx;
+                colorBundleLine.position.set(0, 0.8, -0.5);
+
 				++bundleIdx;
 
 				// Add to the group of bundle lines.
-                groups.add(bundleLine);
+				greyGroups.add(greyBundleLine);
+                colorGroups.add(colorBundleLine);
             }
         }
 
 		// Set material properties for each fiber bundle
 		// And add event listeners for mouseover, etc.
-        groups.traverse(function (child) {
+        colorGroups.traverse(function (child) {
 			if (child instanceof THREE.LineSegments) {
-                child.material.opacity = lineInitialOpacity;
-                child.material.transparent = true;
-                child.position.set(0, 0.8, -0.5);
-
                 domEvents.addEventListener(child, 'mouseover', function(event) {
         					if(!mouseDown) {
 								mouseoverBundle(child.idx);
@@ -279,7 +317,8 @@ function init() {
         });
 
 		// Finally add fiber bundle group to the scene.
-  		scene.add(groups);
+  		scene.add(colorGroups);
+		scene.add(greyGroups);
     });
 
 	if (showStats ) {
@@ -311,7 +350,7 @@ function animate() {
 
 	// For each fiber bundle update the length of fiber to be plotted
 	// based on the d3 brushes in the FA plots
-	for (var i = 0; i < groups.children.length; i++) {
+	for (var i = 0; i < colorGroups.children.length; i++) {
 		var track = 'track' + i;
 		var lo = Math.floor(bundleBrush[track].brushExtent[0]);
 		var hi = Math.ceil(bundleBrush[track].brushExtent[1]) - 1;
@@ -322,11 +361,11 @@ function animate() {
 		// TODO: Positions come in pairs, with all vertices except the first
 		// and last being repeated. Take this into account to make loIdx and
 		// count correct (not just good enough).
-		var loIdx = lo * groups.children[i].nFibers * 2;
-		var count = (hi - lo) * groups.children[i].nFibers * 2;
+		var loIdx = lo * colorGroups.children[i].nFibers * 2;
+		var count = (hi - lo) * colorGroups.children[i].nFibers * 2;
 
 		// Set the drawing range based on the brush extent.
-		groups.children[i].geometry.setDrawRange(loIdx, count);
+		colorGroups.children[i].geometry.setDrawRange(loIdx, count);
 	}
 }
 
@@ -338,22 +377,22 @@ function lightUpdate() {
 function highlightBundle(state, name) {
 
 	// Temporary line material for highlighted bundles
-	var tem_line_material = new THREE.LineBasicMaterial({
-		opacity: 0.5,
-		linewidth: 2.5,
-        transparent: true
+	var tmpLineMaterial = new THREE.LineBasicMaterial({
+		opacity: initColorOpacity,
+		linewidth: initColorLineWidth,
+		transparent: true
 	});
 
-	bundle = groups.children[name];
+	bundle = colorGroups.children[name];
 
 	if (bundle !== undefined) {
 		if (state === true) {
-			tem_line_material.color.setHex( colors[name] );
-			bundle.material = tem_line_material;
+			tmpLineMaterial.color.setHex( colors[name] );
+			bundle.material = tmpLineMaterial;
 			return renderer.render(scene, camera);
 
 		} else {
-			bundle.material = line_material;
+			bundle.material = colorLineMaterial;
 			return renderer.render(scene, camera);
 		}
 	}
@@ -363,20 +402,20 @@ function highlightBundle(state, name) {
 function mouseoverBundle(name) {
 
 	// Temporary line material for moused-over bundles
-	var tem_line_material = new THREE.LineBasicMaterial({
-		opacity: 0.75,
-		linewidth: 2,
+	var tmpLineMaterial = new THREE.LineBasicMaterial({
+		opacity: initHighlightOpacity,
+		linewidth: initHighlightLineWidth,
 		transparent: true
 	});
 
-	bundle = groups.children[name];
+	bundle = colorGroups.children[name];
 
 	if (bundle !== undefined) {
-		tem_line_material.color.setHex( highlightColors[name] );
+		tmpLineMaterial.color.setHex( highlightColors[name] );
 		if (bundleBrush['track' + name].brushOn) {
-			tem_line_material.color.setHex( 0x000000 );
+			tmpLineMaterial.color.setHex( 0x000000 );
 		}
-		bundle.material = tem_line_material;
+		bundle.material = tmpLineMaterial;
 		return renderer.render(scene, camera);
 	}
 }
