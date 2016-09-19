@@ -44,15 +44,17 @@ var initHighlightLineWidth = 2.5;
 var greyLineMaterial = new THREE.LineBasicMaterial({
 	opacity: initFiberOpacity,
 	linewidth: initFiberLineWidth,
-	transparent: true
+	transparent: true,
+	depthWrite: true
 });
 
 greyLineMaterial.color.setHex( 0x969696 );
 
 var colorLineMaterial = new THREE.LineBasicMaterial({
 	opacity: 0.0,
-	linewidth: 0.000001,
-    transparent: true
+	linewidth: 0.000000000001,
+    transparent: true,
+	depthWrite: false
 });
 
 init();
@@ -137,6 +139,7 @@ function init() {
 
 		object.rotation.x = Math.PI / 2;
 		object.scale.set(1.75, 1.75, 1.75);
+		object.renderOrder = 3;
         scene.add(object);
     });
 
@@ -164,6 +167,9 @@ function init() {
         greyGroups.traverse(function (child) {
 			if (child instanceof THREE.LineSegments) {
                 child.material.opacity = value;
+				if (value === 0) {
+					child.material.depthWrite = false;
+				}
 			}
 		})
 	});
@@ -316,6 +322,9 @@ function init() {
             }
         });
 
+		greyGroups.renderOrder = 1;
+		colorGroups.renderOrder = 2;
+
 		// Finally add fiber bundle group to the scene.
   		scene.add(colorGroups);
 		scene.add(greyGroups);
@@ -380,7 +389,8 @@ function highlightBundle(state, name) {
 	var tmpLineMaterial = new THREE.LineBasicMaterial({
 		opacity: initColorOpacity,
 		linewidth: initColorLineWidth,
-		transparent: true
+		transparent: true,
+		depthWrite: true
 	});
 
 	bundle = colorGroups.children[name];
