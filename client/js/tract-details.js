@@ -17,6 +17,7 @@ var axisOffset = {bottom: 40};
 
 // init variable to hold data later
 var trackdata = d3.map();
+var brushing = false;
 
 //insert trackname checkboxes in the tracklist panel
 var svg = d3.select('#tracklist').selectAll(".input").data(tracks).enter().append('div');
@@ -116,7 +117,9 @@ var xAxis = d3.svg.axis()
 
 var brush = d3.svg.brush()
 	.x(x)
-	.on("brush", brushed);
+	.on("brush", brushed)
+	.on("brushstart", brushStart)
+	.on("brushend", brushEnd);
 
 //initialize panels for each track - and attach track data with them
 var trpanels = d3.select("#trackdetails").selectAll("svg").data(trackdata);
@@ -213,57 +216,66 @@ var trpanels = d3.select("#trackdetails").selectAll("svg").data(trackdata);
             .attr("d",  function(d ) { return  line(d); });
 
   function mouseover() {
-      if (isDown) {
-          if ($(this).css("opacity") == 0.5) {				  //uses the opacity of the row for selection and deselection
-
-              d3.selectAll('#' + this.id)
-                  .transition()
-                  .duration(50)
-                  .style("opacity", 1)
-                  .style("stroke-width", "5px");
-          } else {
-
-              d3.selectAll('#' + this.id)
-                  .transition()
-                  .duration(50)
-                  .style("opacity", 0.5)
-                  .style("stroke-width", "2.5px");
-          }
-      }
-      else {
-          if ($(this).css("stroke-width") == "2.5px") {			//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
-              d3.selectAll('#' + this.id)
-                  .transition()
-                  .duration(50)
-                  .style("opacity", 1);
-          }
-      }
+	  if (!brushing) {
+		  if (isDown) {
+			  if ($(this).css("opacity") == 0.5) {
+				  // uses the opacity of the row for selection and deselection
+				  d3.selectAll('#' + this.id)
+					  .transition()
+					  .duration(50)
+					  .style("opacity", 1)
+					  .style("stroke-width", "5px");
+			  } else {
+				  d3.selectAll('#' + this.id)
+					  .transition()
+					  .duration(50)
+					  .style("opacity", 0.5)
+					  .style("stroke-width", "2.5px");
+			  }
+		  } else {
+			  if ($(this).css("stroke-width") == "2.5px") {
+				  // uses the stroke-width of the line clicked on to determine
+				  // whether to turn the line on or off
+				  d3.selectAll('#' + this.id)
+					  .transition()
+					  .duration(50)
+					  .style("opacity", 1);
+			  }
+		  }
+	  }
   }
 
-  function onclick()
-  {
-      if ($(this).css("stroke-width") == "5px") {				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
-
-          d3.selectAll( '#' + this.id)
-              .transition()
-              .duration(50)
-              .style("opacity", 0.5)
-              .style("stroke-width", "2.5px");
-      } else {
-          d3.selectAll( '#' + this.id )
-              .transition()
-              .duration(50)
-              .style("opacity", 1)
-              .style("stroke-width", "5px");
-      }
+  function onclick() {
+	  if (!brushing) {
+		  if ($(this).css("stroke-width") == "5px") {
+			  // uses the stroke-width of the line clicked on to determine whether
+			  // to turn the line on or off
+			  d3.selectAll( '#' + this.id)
+				  .transition()
+				  .duration(50)
+				  .style("opacity", 0.5)
+				  .style("stroke-width", "2.5px");
+		  } else {
+			  d3.selectAll( '#' + this.id )
+				  .transition()
+				  .duration(50)
+				  .style("opacity", 1)
+				  .style("stroke-width", "5px");
+		  }
+	  }
   }
 
   function mouseout() {
-      if($(this).css("stroke-width") == "2.5px"){				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
-          d3.selectAll('#' + this.id)
-              .transition()
-              .duration(50)
-              .style("opacity",0.5);}
+	  if (!brushing) {
+		  if($(this).css("stroke-width") == "2.5px"){
+			  // uses the stroke-width of the line clicked on to determine whether
+			  // to turn the line on or off
+			  d3.selectAll('#' + this.id)
+				  .transition()
+				  .duration(50)
+				  .style("opacity",0.5);
+		  }
+	  }
   }
 
   function brushed() {
@@ -275,6 +287,13 @@ var trpanels = d3.select("#trackdetails").selectAll("svg").data(trackdata);
 	  }
   }
 
+  function brushStart() {
+	  brushing = true;
+  }
+
+  function brushEnd() {
+	  brushing = false;
+  }
 }
 
 function showHideTrackDetails(state, name)
