@@ -41,6 +41,20 @@ var initFiberLineWidth = 1.0;
 var initColorLineWidth = 2.0;
 var initHighlightLineWidth = 2.5;
 
+// var mouseoverHighlight = true
+
+var guiConfigObj = function () {
+	this.brainOpacity = initBrainOpacity;
+	this.fiberOpacity = initFiberOpacity;
+	this.highlight = true;
+};
+
+var gui = new dat.GUI({ autoplace: false, width: 350 });
+var controlBox = new guiConfigObj();
+
+// gui.domElement.id = 'gui';
+var guiContainer = $('.moveGUI').append($(gui.domElement));
+
 var greyLineMaterial = new THREE.LineBasicMaterial({
 	opacity: initFiberOpacity,
 	linewidth: initFiberLineWidth,
@@ -73,8 +87,13 @@ document.body.onmouseup = function() {
 // TODO: Read this from an input file so that the user can change fidelity
 var faPlotLength = 100;
 
-var showStats = false;
+var showStats = true;
 var stats;
+
+if (showStats) {
+	stats = new Stats();
+	container.appendChild( stats.dom );
+}
 
 function init() {
 
@@ -143,19 +162,10 @@ function init() {
         scene.add(object);
     });
 
-	var guiConfigObj = {
-		"Brain Opacity" : initBrainOpacity,
-		"Fiber Opacity" : initFiberOpacity
-	};
+	var brainOpacityController = gui.add(controlBox, 'brainOpacity')
+		.min(0).max(1).step(0.05).name('Brain Opacity');
 
-	var gui = new DAT.GUI({ autoPlace: false });
-	// gui.domElement.id = 'gui';
-	var guiContainer = $('.moveGUI').append($(gui.domElement));
-	var brainOpacity = gui.add(guiConfigObj, "Brain Opacity", 0, 1);
-	var fiberOpacity = gui.add(guiConfigObj, "Fiber Opacity", 0, 1);
-	gui.close();
-
-	brainOpacity.onChange( function(value) {
+	brainOpacityController.onChange( function(value) {
 		brain.traverse(function (child) {
 			if (child instanceof THREE.Mesh) {
 				child.material.opacity = value;
@@ -163,16 +173,30 @@ function init() {
 		})
 	});
 
-	fiberOpacity.onChange( function(value) {
+	var fiberOpacityController = gui.add(controlBox, 'fiberOpacity')
+		.min(0).max(1).step(0.05).name('Fiber Opacity');
+
+	fiberOpacityController.onChange( function(value) {
         greyGroups.traverse(function (child) {
 			if (child instanceof THREE.LineSegments) {
                 child.material.opacity = value;
 				if (value === 0) {
 					child.material.depthWrite = false;
+				} else {
+					child.material.depthWrite = true;
 				}
 			}
 		})
 	});
+
+	var highlightController = gui.add(controlBox, 'highlight')
+		.name('Mouseover Highlight');
+	
+	highlightController.onChange( function(value) {
+		console.log(value);
+	});
+
+	//gui.close();
 
     // contain all bundles in this Group object
     // each bundle is represented by an Object3D
@@ -330,11 +354,6 @@ function init() {
 		scene.add(greyGroups);
     });
 
-	if (showStats ) {
-		stats = new Stats();
-		container.appendChild( stats.dom );
-	}
-
     window.addEventListener('resize', onWindowResize, false);
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.addEventListener('change', lightUpdate);
@@ -354,7 +373,7 @@ function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
     controls.update();
-	if (showStats )
+	if (showStats)
 		stats.update();
 
 	// For each fiber bundle update the length of fiber to be plotted
@@ -410,23 +429,24 @@ function highlightBundle(state, name) {
 
 // Highlight specified bundle based on mouseover
 function mouseoverBundle(name) {
+	if (controlBox.highlight) {
+		// Temporary line material for moused-over bundles
+		var tmpLineMaterial = new THREE.LineBasicMaterial({
+			opacity: initHighlightOpacity,
+			linewidth: initHighlightLineWidth,
+			transparent: true
+		});
 
-	// Temporary line material for moused-over bundles
-	var tmpLineMaterial = new THREE.LineBasicMaterial({
-		opacity: initHighlightOpacity,
-		linewidth: initHighlightLineWidth,
-		transparent: true
-	});
+		bundle = colorGroups.children[name];
 
-	bundle = colorGroups.children[name];
-
-	if (bundle !== undefined) {
-		tmpLineMaterial.color.setHex( highlightColors[name] );
-		if (bundleBrush['track' + name].brushOn) {
-			tmpLineMaterial.color.setHex( 0x000000 );
+		if (bundle !== undefined) {
+			tmpLineMaterial.color.setHex( highlightColors[name] );
+			if (bundleBrush['track' + name].brushOn) {
+				tmpLineMaterial.color.setHex( 0x000000 );
+			}
+			bundle.material = tmpLineMaterial;
+			return renderer.render(scene, camera);
 		}
-		bundle.material = tmpLineMaterial;
-		return renderer.render(scene, camera);
 	}
 }
 
