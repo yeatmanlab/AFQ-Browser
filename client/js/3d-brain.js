@@ -87,7 +87,7 @@ document.body.onmouseup = function() {
 // TODO: Read this from an input file so that the user can change fidelity
 var faPlotLength = 100;
 
-var showStats = true;
+var showStats = false;
 var stats;
 
 if (showStats) {
