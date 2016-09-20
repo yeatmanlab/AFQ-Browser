@@ -32,7 +32,7 @@ var greyGroups = new THREE.Object3D();
 
 // Set initial opacitites here
 var initBrainOpacity = 0.05;
-var initFiberOpacity = 0.3;
+var initFiberOpacity = 0.05;
 var initColorOpacity = 0.75;
 var initHighlightOpacity = 0.75;
 
@@ -163,7 +163,7 @@ function init() {
     });
 
 	var brainOpacityController = gui.add(controlBox, 'brainOpacity')
-		.min(0).max(1).step(0.05).name('Brain Opacity');
+		.min(0).max(1).name('Brain Opacity');
 
 	brainOpacityController.onChange( function(value) {
 		brain.traverse(function (child) {
@@ -174,7 +174,7 @@ function init() {
 	});
 
 	var fiberOpacityController = gui.add(controlBox, 'fiberOpacity')
-		.min(0).max(1).step(0.05).name('Fiber Opacity');
+		.min(0).max(1).name('Fiber Opacity');
 
 	fiberOpacityController.onChange( function(value) {
         greyGroups.traverse(function (child) {
