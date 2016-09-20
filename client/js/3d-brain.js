@@ -196,7 +196,7 @@ function init() {
 		console.log(value);
 	});
 
-	//gui.close();
+	gui.close();
 
     // contain all bundles in this Group object
     // each bundle is represented by an Object3D
