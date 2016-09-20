@@ -7,8 +7,9 @@ var port = 8080;
 app.use(express.static(__dirname + '/client'));
 
 // viewed at http://localhost:<port>
+console.log('View page on http://localhost:' + port);
+
 app.get('/', function(req, res) {
-	console.log('Listening on port ' + port + '...');
     res.sendFile(path.join(__dirname, 'client', index.html));
 });
 
