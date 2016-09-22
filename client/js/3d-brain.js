@@ -87,7 +87,7 @@ document.body.onmouseup = function() {
 // TODO: Read this from an input file so that the user can change fidelity
 var faPlotLength = 100;
 
-var showStats = false;
+var showStats = true;
 var stats;
 
 if (showStats) {
@@ -201,6 +201,8 @@ function init() {
     // contain all bundles in this Group object
     // each bundle is represented by an Object3D
     // load fiber bundle using jQuery
+	var greyGeometry = new THREE.Geometry();
+
 	var bundleIdx = 0;
     $.getJSON("data/data_partial.json", function(json) {
         for (var key in json) {
@@ -279,33 +281,25 @@ function init() {
 				bundleGeometry.addAttribute('position',
 						new THREE.BufferAttribute(positions, 3));
 
-				var greyBundleLine = new THREE.LineSegments(
-						new THREE.Geometry().fromBufferGeometry(bundleGeometry),
-						greyLineMaterial);
+				greyGeometry.merge(
+						new THREE.Geometry()
+						.fromBufferGeometry(bundleGeometry));
 
 				var colorBundleLine = new THREE.LineSegments(bundleGeometry,
 						colorLineMaterial);
 
 				// Set scale to match the brain surface,
 				// (determined by trial and error)
-				greyBundleLine.scale.set(0.05,0.05,0.05);
 				colorBundleLine.scale.set(0.05,0.05,0.05);
+                colorBundleLine.position.set(0, 0.8, -0.5);
 
 				// Record some useful info for later
-				greyBundleLine.name = tracks[ bundleIdx ];
-				greyBundleLine.nFibers = nFibers;
-				greyBundleLine.idx = bundleIdx;
-                greyBundleLine.position.set(0, 0.8, -0.5);
-
 				colorBundleLine.name = tracks[ bundleIdx ];
 				colorBundleLine.nFibers = nFibers;
 				colorBundleLine.idx = bundleIdx;
-                colorBundleLine.position.set(0, 0.8, -0.5);
 
 				++bundleIdx;
 
-				// Add to the group of bundle lines.
-				greyGroups.add(greyBundleLine);
                 colorGroups.add(colorBundleLine);
             }
         }
@@ -345,6 +339,13 @@ function init() {
                 });
             }
         });
+
+		var greyBundleLine = new THREE.LineSegments(
+				greyGeometry, greyLineMaterial);
+		greyBundleLine.scale.set(0.05,0.05,0.05);
+        greyBundleLine.position.set(0, 0.8, -0.5);
+
+		greyGroups.add(greyBundleLine);
 
 		greyGroups.renderOrder = 1;
 		colorGroups.renderOrder = 2;
