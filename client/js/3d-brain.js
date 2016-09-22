@@ -50,7 +50,12 @@ var guiConfigObj = function () {
 	this.highlight = true;
 };
 
-var gui = new dat.GUI({ autoplace: false, width: 350 });
+var gui = new dat.GUI({
+	autoplace: false,
+	width: 350,
+	scrollable: false
+});
+
 var controlBox = new guiConfigObj();
 
 // gui.domElement.id = 'gui';
