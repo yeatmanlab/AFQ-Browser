@@ -31,7 +31,7 @@ var colorGroups = new THREE.Object3D();
 var greyGroups = new THREE.Object3D();
 
 // Set initial opacitites here
-var initBrainOpacity = 0.05;
+var initBrainOpacity = 0.1;
 var initFiberOpacity = 0.05;
 var initColorOpacity = 0.75;
 var initHighlightOpacity = 0.75;
@@ -44,7 +44,8 @@ var initHighlightLineWidth = 2.5;
 // var mouseoverHighlight = true
 
 var guiConfigObj = function () {
-	this.brainOpacity = initBrainOpacity;
+	this.lhOpacity = initBrainOpacity;
+	this.rhOpacity = initBrainOpacity;
 	this.fiberOpacity = initFiberOpacity;
 	this.highlight = true;
 };
@@ -151,22 +152,35 @@ function init() {
         object.traverse(function (child) {
             if (child instanceof THREE.Mesh) {
                 child.material.opacity = initBrainOpacity;
-                child.material.depthWrite = false;
+                child.material.depthWrite = true;
                 child.material.transparent = true;
+
+				child.rotation.x = Math.PI / 2;
+				child.scale.set(1.75, 1.75, 1.75);
+				child.renderOrder = 3;
             }
         });
-
-		object.rotation.x = Math.PI / 2;
-		object.scale.set(1.75, 1.75, 1.75);
-		object.renderOrder = 3;
+		lh.translateX(-0.05);
+		rh.translateX( 0.05);
         scene.add(object);
     });
 
-	var brainOpacityController = gui.add(controlBox, 'brainOpacity')
-		.min(0).max(1).name('Brain Opacity');
+	var lhOpacityController = gui.add(controlBox, 'lhOpacity')
+		.min(0).max(1).name('Left Hemi Opacity');
 
-	brainOpacityController.onChange( function(value) {
-		brain.traverse(function (child) {
+	lhOpacityController.onChange( function(value) {
+		lh.traverse(function (child) {
+			if (child instanceof THREE.Mesh) {
+				child.material.opacity = value;
+			}
+		})
+	});
+
+	var rhOpacityController = gui.add(controlBox, 'rhOpacity')
+		.min(0).max(1).name('Right Hemi Opacity');
+
+	rhOpacityController.onChange( function(value) {
+		rh.traverse(function (child) {
 			if (child instanceof THREE.Mesh) {
 				child.material.opacity = value;
 			}
