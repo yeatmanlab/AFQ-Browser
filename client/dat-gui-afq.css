@@ -6,3 +6,12 @@
   font: 13px;
   font-family: "Arial", "Helvetica", sans-serif;
 } 
+
+.dg.main.a ul {
+  height: auto;
+}
+
+.dg.main.taller-than-window {
+  overflow: visible;
+}
+
