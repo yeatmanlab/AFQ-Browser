@@ -31,7 +31,7 @@ var colorGroups = new THREE.Object3D();
 var greyGroups = new THREE.Object3D();
 
 // Set initial opacitites here
-var initBrainOpacity = 0.05;
+var initBrainOpacity = 0.1;
 var initFiberOpacity = 0.05;
 var initColorOpacity = 0.75;
 var initHighlightOpacity = 0.75;
@@ -44,12 +44,18 @@ var initHighlightLineWidth = 2.5;
 // var mouseoverHighlight = true
 
 var guiConfigObj = function () {
-	this.brainOpacity = initBrainOpacity;
+	this.lhOpacity = initBrainOpacity;
+	this.rhOpacity = initBrainOpacity;
 	this.fiberOpacity = initFiberOpacity;
 	this.highlight = true;
 };
 
-var gui = new dat.GUI({ autoplace: false, width: 350 });
+var gui = new dat.GUI({
+	autoplace: false,
+	width: 350,
+	scrollable: false
+});
+
 var controlBox = new guiConfigObj();
 
 // gui.domElement.id = 'gui';
@@ -151,22 +157,35 @@ function init() {
         object.traverse(function (child) {
             if (child instanceof THREE.Mesh) {
                 child.material.opacity = initBrainOpacity;
-                child.material.depthWrite = false;
+                child.material.depthWrite = true;
                 child.material.transparent = true;
+
+				child.rotation.x = Math.PI / 2;
+				child.scale.set(1.75, 1.75, 1.75);
+				child.renderOrder = 3;
             }
         });
-
-		object.rotation.x = Math.PI / 2;
-		object.scale.set(1.75, 1.75, 1.75);
-		object.renderOrder = 3;
+		lh.translateX(-0.05);
+		rh.translateX( 0.05);
         scene.add(object);
     });
 
-	var brainOpacityController = gui.add(controlBox, 'brainOpacity')
-		.min(0).max(1).name('Brain Opacity');
+	var lhOpacityController = gui.add(controlBox, 'lhOpacity')
+		.min(0).max(1).name('Left Hemi Opacity');
 
-	brainOpacityController.onChange( function(value) {
-		brain.traverse(function (child) {
+	lhOpacityController.onChange( function(value) {
+		lh.traverse(function (child) {
+			if (child instanceof THREE.Mesh) {
+				child.material.opacity = value;
+			}
+		})
+	});
+
+	var rhOpacityController = gui.add(controlBox, 'rhOpacity')
+		.min(0).max(1).name('Right Hemi Opacity');
+
+	rhOpacityController.onChange( function(value) {
+		rh.traverse(function (child) {
 			if (child instanceof THREE.Mesh) {
 				child.material.opacity = value;
 			}
@@ -201,6 +220,8 @@ function init() {
     // contain all bundles in this Group object
     // each bundle is represented by an Object3D
     // load fiber bundle using jQuery
+	var greyGeometry = new THREE.Geometry();
+
 	var bundleIdx = 0;
     $.getJSON("data/data_partial.json", function(json) {
         for (var key in json) {
@@ -279,33 +300,25 @@ function init() {
 				bundleGeometry.addAttribute('position',
 						new THREE.BufferAttribute(positions, 3));
 
-				var greyBundleLine = new THREE.LineSegments(
-						new THREE.Geometry().fromBufferGeometry(bundleGeometry),
-						greyLineMaterial);
+				greyGeometry.merge(
+						new THREE.Geometry()
+						.fromBufferGeometry(bundleGeometry));
 
 				var colorBundleLine = new THREE.LineSegments(bundleGeometry,
 						colorLineMaterial);
 
 				// Set scale to match the brain surface,
 				// (determined by trial and error)
-				greyBundleLine.scale.set(0.05,0.05,0.05);
 				colorBundleLine.scale.set(0.05,0.05,0.05);
+                colorBundleLine.position.set(0, 0.8, -0.5);
 
 				// Record some useful info for later
-				greyBundleLine.name = tracks[ bundleIdx ];
-				greyBundleLine.nFibers = nFibers;
-				greyBundleLine.idx = bundleIdx;
-                greyBundleLine.position.set(0, 0.8, -0.5);
-
 				colorBundleLine.name = tracks[ bundleIdx ];
 				colorBundleLine.nFibers = nFibers;
 				colorBundleLine.idx = bundleIdx;
-                colorBundleLine.position.set(0, 0.8, -0.5);
 
 				++bundleIdx;
 
-				// Add to the group of bundle lines.
-				greyGroups.add(greyBundleLine);
                 colorGroups.add(colorBundleLine);
             }
         }
@@ -345,6 +358,13 @@ function init() {
                 });
             }
         });
+
+		var greyBundleLine = new THREE.LineSegments(
+				greyGeometry, greyLineMaterial);
+		greyBundleLine.scale.set(0.05,0.05,0.05);
+        greyBundleLine.position.set(0, 0.8, -0.5);
+
+		greyGroups.add(greyBundleLine);
 
 		greyGroups.renderOrder = 1;
 		colorGroups.renderOrder = 2;

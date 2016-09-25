@@ -1,3 +1,4 @@
-3D Brain
+Graphical User Interface for AFQ
 
-to be made into node module
+AFQ-Browser will run in any standard web browser and is designed
+to visualize AFQ results. See: http://viz.afq-browser.org/ for a working example
