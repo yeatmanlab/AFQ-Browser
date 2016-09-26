@@ -131,20 +131,20 @@ function sort(a,b){
 }
 
 function row_select() {                           //onclick function to toggle on and off rows
-    if($(this).css("opacity") == 0.5){				  //uses the opacity of the row for selection and deselection
+    if($(this).css("opacity") == 0.2){				  //uses the opacity of the row for selection and deselection
 
         d3.selectAll('#' + this.id)
             .transition()
             .duration(50)
             .style("opacity", 1)
-            .style("stroke-width", "5px");
+            .style("stroke-width", "2px");
     } else {
 
         d3.selectAll('#' + this.id)
             .transition()
             .duration(50)
-            .style("opacity", 0.5)
-            .style("stroke-width", "2.5px");}
+            .style("opacity", 0.2)
+            .style("stroke-width", "1px");}
 }
 
 var isDown = false;   // Tracks status of mouse button
@@ -159,20 +159,20 @@ $(document).mousedown(function() {
 
 function table_mouseDown() {
     if(isDown) {
-        if($(this).css("opacity") == 0.5){				  //uses the opacity of the row for selection and deselection
+        if($(this).css("opacity") == 0.2){				  //uses the opacity of the row for selection and deselection
 
             d3.selectAll('#' + this.id)
                 .transition()
                 .duration(50)
                 .style("opacity", 1)
-                .style("stroke-width", "5px");
+                .style("stroke-width", "2px");
         } else {
 
             d3.selectAll('#' + this.id)
                 .transition()
                 .duration(50)
-                .style("opacity", 0.5)
-                .style("stroke-width", "2.5px");}
+                .style("opacity", 0.2)
+                .style("stroke-width", "1px");}
     }
 }
 
