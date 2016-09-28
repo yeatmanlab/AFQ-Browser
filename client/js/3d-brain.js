@@ -31,8 +31,9 @@ var colorGroups = new THREE.Object3D();
 var greyGroups = new THREE.Object3D();
 
 // Set initial opacitites here
-var initBrainOpacity = 0.1;
-var initFiberOpacity = 0.05;
+var initLHOpacity = 0.0;
+var initRHOpacity = 0.3;
+var initFiberOpacity = 0.1;
 var initColorOpacity = 0.75;
 var initHighlightOpacity = 0.75;
 
@@ -44,8 +45,8 @@ var initHighlightLineWidth = 2.5;
 // var mouseoverHighlight = true
 
 var guiConfigObj = function () {
-	this.lhOpacity = initBrainOpacity;
-	this.rhOpacity = initBrainOpacity;
+	this.lhOpacity = initLHOpacity;
+	this.rhOpacity = initRHOpacity;
 	this.fiberOpacity = initFiberOpacity;
 	this.highlight = true;
 };
@@ -115,7 +116,8 @@ function init() {
 
     // camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 1, 2000);
     camera = new THREE.PerspectiveCamera( 45, Width / sizeY, 1, 2000 );
-    camera.position.y = -15;
+    camera.position.x = -20;
+	camera.position.z = 0.1;
 	camera.up.set(0, 0, 1);
 
     // scene
@@ -156,7 +158,6 @@ function init() {
 
         object.traverse(function (child) {
             if (child instanceof THREE.Mesh) {
-                child.material.opacity = initBrainOpacity;
                 child.material.depthWrite = true;
                 child.material.transparent = true;
 
@@ -166,7 +167,9 @@ function init() {
             }
         });
 		lh.translateX(-0.05);
+        lh.material.opacity = initLHOpacity;
 		rh.translateX( 0.05);
+        rh.material.opacity = initRHOpacity;
         scene.add(object);
     });
 
