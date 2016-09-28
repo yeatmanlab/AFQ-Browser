@@ -91,129 +91,130 @@ var line = d3.svg.line()
 var bundleBrush = {};
 
 queue()
-    .defer(d3.csv, "data/data.csv")
+    .defer(d3.csv, "data/nodes.csv")
     .await(ready);
 
 function ready(error, data) {
-  if (error) throw error;
+    if (error) throw error;
 
-  tractdata = d3.nest()
-   .key(function (d) { return d.tract; })
-   .key(function (d) { return d.subject; })
-   .entries(data);
-
-  var tract_mean = d3.nest()
-    .key(function (d) { return d.tract; })
-    .key(function (d) { return d.pos; })
-    .rollup(function (v) { return d3.mean(v, function (d) { return +d.FA; }); })
-    .entries(data);
+    tractdata = d3.nest()
+     .key(function (d) { return d.tract; })
+     .key(function (d) { return d.subject; })
+     .entries(data);
 
 
-  for (i = 0; i < tract_mean.length; i++) {
-      tractdata[i].values.push(tract_mean[i]);
-  }
-// set x and y domains for the track plots
- y.domain([0,1]);
- x.domain(d3.extent(data, function(d) { return d.pos; })).nice();
+    var tract_mean = d3.nest()
+      .key(function (d) { return d.tract; })
+      .key(function (d) { return d.pos; })
+      .rollup(function (v) { return d3.mean(v, function (d) { return +d.FA; }); })
+      .entries(data);
 
-//create axes
-var yAxis = d3.svg.axis()
-       	.scale(y)
-        .orient("left")
-	.tickSize(0-w-5)
-	.ticks(5);
 
-var xAxis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom")
-        .tickPadding(8)
+    for (i = 0; i < tract_mean.length; i++) {
+        tractdata[i].values.push(tract_mean[i]);
+    }
+    // set x and y domains for the track plots
+    y.domain([0, 1]);
+    x.domain(d3.extent(data, function (d) { return d.pos; })).nice();
+
+    //create axes
+    var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+        .tickSize(0 - w - 5)
         .ticks(5);
 
-var brush = d3.svg.brush()
-	.x(x)
-	.on("brush", brushed)
-	.on("brushstart", brushStart)
-	.on("brushend", brushEnd);
+    var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom")
+            .tickPadding(8)
+            .ticks(5);
 
-//initialize panels for each track - and attach track data with them
-var trpanels = d3.select("#trackdetails").selectAll("svg").data(tractdata);
-        trpanels.enter().append("svg")
-            .attr("id",function(d) {return "track"+ (+d.key-1); })
-            .attr("width", w + m.left + m.right +40)
-            .attr("height", h + m.top + m.bottom + axisOffset.bottom)
-            .attr("display", "none")
-            .append("g")
-            .attr("transform", "translate(" + m.left + "," + m.top + ")")
-   	//y-axis
-            .append("g")
-            .attr("class", "y axis")
-            .attr("transform", "translate(" + m.left + ",0)")
-            .call(yAxis)
-        //x-axis
-            .append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(-40," + (h - axisOffset.bottom) + ")")
-            .call(xAxis);
+    var brush = d3.svg.brush()
+        .x(x)
+        .on("brush", brushed)
+        .on("brushstart", brushStart)
+        .on("brushend", brushEnd);
+
+    //initialize panels for each track - and attach track data with them
+    var trpanels = d3.select("#trackdetails").selectAll("svg").data(tractdata);
+    trpanels.enter().append("svg")
+        .attr("id", function (d) { return "track" + (+d.key - 1); })
+        .attr("width", w + m.left + m.right + 40)
+        .attr("height", h + m.top + m.bottom + axisOffset.bottom)
+        .attr("display", "none")
+        .append("g")
+        .attr("transform", "translate(" + m.left + "," + m.top + ")")
+//y-axis
+        .append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(" + m.left + ",0)")
+        .call(yAxis)
+    //x-axis
+        .append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(-40," + (h - axisOffset.bottom) + ")")
+        .call(xAxis);
 
 
-		// Populate budleBrush
-		d3.select("#trackdetails").selectAll("svg")[0]
-			.forEach(function(d) {
-				bundleBrush[d.id] = {
-					brushOn: false,
-					brushExtent: [0, 100]
-				}
-			});
+    // Populate budleBrush
+    d3.select("#trackdetails").selectAll("svg")[0]
+        .forEach(function (d) {
+            bundleBrush[d.id] = {
+                brushOn: false,
+                brushExtent: [0, 100]
+            }
+        });
 
-		// brush
-		var brushg = d3.select("#trackdetails").selectAll("svg")
-			.append("g")
-			.attr("class", "brush")
-			.call(brush);
+    // brush
+    var brushg = d3.select("#trackdetails").selectAll("svg")
+        .append("g")
+        .attr("class", "brush")
+        .call(brush);
 
-		brushg.selectAll("rect")
-			.attr("y", m.top)
-			.attr("height", h - axisOffset.bottom);
-	
-        trpanels.append("rect")
-               .attr("class", "plot")
-       	       .attr("width",  w + m.left + m.right +20 )
-               .attr("height", h + m.top + m.bottom + 15 )
-         			 .attr("x", 0)
-         			 .attr("y", 0)
-         			.style("stroke", function(d){return d3colors[d.key-1];})
-         			.style("fill", "none")
-         			.style("stroke-width", 2);
+    brushg.selectAll("rect")
+        .attr("y", m.top)
+        .attr("height", h - axisOffset.bottom);
 
-      // 	trpanels.append("text")
-      //   	.attr("transform", "rotate(-90)")
-      //   	.attr("x", -h/2)
-      //   	.attr("y",0)
-      //   	.style("stroke", "#AFBABF")
-      //   	.attr("dy", "1em")
-      //   	.style("text-anchor", "middle")
-      //   	.text("Fractional Anisotropy");
+    trpanels.append("rect")
+           .attr("class", "plot")
+           .attr("width", w + m.left + m.right + 20)
+           .attr("height", h + m.top + m.bottom + 15)
+                 .attr("x", 0)
+                 .attr("y", 0)
+                .style("stroke", function (d) { return d3colors[d.key - 1]; })
+                .style("fill", "none")
+                .style("stroke-width", 2);
 
-	trpanels.append("text")
+    // 	trpanels.append("text")
+    //   	.attr("transform", "rotate(-90)")
+    //   	.attr("x", -h/2)
+    //   	.attr("y",0)
+    //   	.style("stroke", "#AFBABF")
+    //   	.attr("dy", "1em")
+    //   	.style("text-anchor", "middle")
+    //   	.text("Fractional Anisotropy");
+
+    trpanels.append("text")
         	.attr("x", 350)
         	.attr("y", h + 25)
             .attr("class", "plot_text")
         	.style("text-anchor", "end")
-        	.style("stroke", "#888888;" )
+        	.style("stroke", "#888888;")
         	.text("% Distance Along Fiber Bundle");
 
-       trpanels.append("text")
-             .attr("x", w + 40)
-             .attr("y", h - 280)
-             .attr("class", "plot_text")
-             .style("text-anchor", "end")
-             .style("stroke", function(d){return d3colors[d.key-1];} )
-             .style("fill", function(d){return d3colors[d.key-1];} )
-             .text(function(d) { return tracks[d.key-1]; });
+    trpanels.append("text")
+          .attr("x", w + 40)
+          .attr("y", h - 280)
+          .attr("class", "plot_text")
+          .style("text-anchor", "end")
+          .style("stroke", function (d) { return d3colors[d.key - 1]; })
+          .style("fill", function (d) { return d3colors[d.key - 1]; })
+          .text(function (d) { return tracks[d.key - 1]; });
 
-// associate tracksline with each subject
-    var  tracklines = trpanels.selectAll(".tracks")
-        .data(function(d){ return d.values; })
+    // associate tracksline with each subject
+    var tracklines = trpanels.selectAll(".tracks")
+        .data(function (d) { return d.values; })
         .enter().append("g")
         .attr("class", "tracks")
         .attr("id", function (d, i) {
@@ -223,82 +224,87 @@ var trpanels = d3.select("#trackdetails").selectAll("svg").data(tractdata);
                 return "Subject" + (i);
             }
         })
-        .style("opacity", 0.2)
+        .style("opacity", 0.3)
         .style("stroke-width", "1px")
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
         .on("click", onclick);
 
+    //if (ramp != null) {
+    //    tracklines.style("stroke", ramp(1));
+    //}
+
     d3.selectAll("#Mean0")
         .style("opacity", 0.99)
         .style("stroke-width", "3.5px")
 
+    
 
     tracklines.append("path")
         .attr("class", "line")
         .attr("d", function (d) { return line(d.values); });
 
-  function mouseover() {
-	  if (!brushing) {
-              if ($(this).css("stroke-width") == "1px") {			//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
-                  d3.selectAll('#' + this.id)
-                      //.transition()
-                      //.duration(50)
-                      .style("opacity", 1)
-                      .style("stroke-width", "2px");
-			  }
-		  }
-	  }
-  }
+    function mouseover() {
+        if (!brushing) {
+            if ($(this).css("stroke-width") == "1px") {			//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
+                d3.selectAll('#' + this.id)
+                    //.transition()
+                    //.duration(50)
+                    .style("opacity", 1)
+                    .style("stroke-width", "2px");
+            }
+        }
+    }
 
-  function onclick() {
-	  if (!brushing) {
-	      if ($(this).css("stroke-width") == "2px") {				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
 
-	          d3.selectAll('#' + this.id)
-                  //.transition()
-                  //.duration(50)
-                  .style("opacity", 0.2)
-                  .style("stroke-width", "1px");
-	      } else if ($(this).css("stroke-width") == "1px") {
-	          d3.selectAll('#' + this.id)
-                  //.transition()
-                  //.duration(50)
-                  .style("opacity", 1)
-                  .style("stroke-width", "2px");
-	      }
-	  }
-  }
+    function onclick() {
+        if (!brushing) {
+            if ($(this).css("stroke-width") == "2px") {				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
 
-  function mouseout() {
-	  if (!brushing) {
-	      if ($(this).css("stroke-width") == "2px") {				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
-	          d3.selectAll('#' + this.id)
-                  .transition()
-                  //.duration(50)
-                  .style("opacity", 0.2)
-                  .style("stroke-width", "1px");
-	      }
-	  }
-  }
+                d3.selectAll('#' + this.id)
+                    //.transition()
+                    //.duration(50)
+                    .style("opacity", 0.3)
+                    .style("stroke-width", "1px");
+            } else if ($(this).css("stroke-width") == "1px") {
+                d3.selectAll('#' + this.id)
+                    //.transition()
+                    //.duration(50)
+                    .style("opacity", 1)
+                    .style("stroke-width", "2px");
+            }
+        }
+    }
 
-  function brushed() {
-	  bundleBrush[this.parentElement.id].brushOn = !brush.empty();
-	  if (brush.empty()) {
-		  bundleBrush[this.parentElement.id].brushExtent = [0, 100];
-	  } else {
-		  bundleBrush[this.parentElement.id].brushExtent = brush.extent();
-	  }
-  }
+    function mouseout() {
+        if (!brushing) {
+            if ($(this).css("stroke-width") == "2px") {				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
+                d3.selectAll('#' + this.id)
+                    .transition()
+                    //.duration(50)
+                    .style("opacity", 0.3)
+                    .style("stroke-width", "1px");
+            }
+        }
+    }
 
-  function brushStart() {
-	  brushing = true;
-  }
+    function brushed() {
+        bundleBrush[this.parentElement.id].brushOn = !brush.empty();
+        if (brush.empty()) {
+            bundleBrush[this.parentElement.id].brushExtent = [0, 100];
+        } else {
+            bundleBrush[this.parentElement.id].brushExtent = brush.extent();
+        }
+    }
 
-  function brushEnd() {
-	  brushing = false;
-  }
+    function brushStart() {
+        brushing = true;
+    }
 
+    function brushEnd() {
+        brushing = false;
+    }
+}
 
 function showHideTrackDetails(state, name)
 {
@@ -314,11 +320,3 @@ function showHideTrackDetails(state, name)
   }
 
 }
-
-// var $window = $(window),
-//    $stickyEl = $('#statcontent'),
-//    elTop = $stickyEl.offset().top;
-
-// $window.scroll(function() {
-//     $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop);
-// });
