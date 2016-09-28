@@ -1,7 +1,7 @@
-//tracklist js
+//tractlist js
 
-//Data : track names
-var tracks=["Left Thalamic Radiation","Right Thalamic Radiation","Left Corticospinal","Right Corticospinal","Left Cingulum Cingulate","Right Cingulum Cingulate","Left Cingulum Hippocampus","Right Cingulum Hippocampus","Callosum Forceps Major","Callosum Forceps Minor","Left IFOF","Right IFOF","Left ILF","Right ILF","Left SLF","Right SLF","Left Uncinate","Right Uncinate","Left Arcuate","Right Arcuate"]
+//Data : tract names
+var tracts=["Left Thalamic Radiation","Right Thalamic Radiation","Left Corticospinal","Right Corticospinal","Left Cingulum Cingulate","Right Cingulum Cingulate","Left Cingulum Hippocampus","Right Cingulum Hippocampus","Callosum Forceps Major","Callosum Forceps Minor","Left IFOF","Right IFOF","Left ILF","Right ILF","Left SLF","Right SLF","Left Uncinate","Right Uncinate","Left Arcuate","Right Arcuate"]
 
 // color Palettes in Hex format, HTML needs colors in d3colors format
 // colors are the Tableau20 colors
@@ -16,14 +16,14 @@ h = 350 - m.top - m.bottom;
 var axisOffset = {bottom: 40};
 
 // init variable to hold data later
-var trackdata = d3.map();
+var tractdata = d3.map();
 var brushing = false;
 
-//insert trackname checkboxes in the tracklist panel
-var svg = d3.select('#tracklist').selectAll(".input").data(tracks).enter().append('div');
+//insert tractname checkboxes in the tractlist panel
+var svg = d3.select('#tractlist').selectAll(".input").data(tracts).enter().append('div');
 svg.append('input')
       .attr("type", "checkbox")
-      .attr("class", "tracks")
+      .attr("class", "tracts")
       .attr("id", function (d, i) { return "input" + (i + 1); })
       .attr("name", function (d, i) { return i; })
 // add label to the checkboxes
@@ -33,30 +33,30 @@ svg.append('label')
       .attr("id", function (d, i) { return "label" + i; });
 
 //add event handler to the checkbox
-d3.selectAll(".tracks")
+d3.selectAll(".tracts")
   .on("change", function () {
       var state = this.checked
       var name = this.name
-      //call trackdetails handler
-      showHideTrackDetails(state, name)
+      //call tractdetails handler
+      showHideTractDetails(state, name)
       highlightBundle(state, name)
   });
 
 
 // all select/un-select all checkbox
-d3.selectAll("#selectAllTracks")
+d3.selectAll("#selectAllTracts")
   .on("change", function () {
       var state = this.checked;
       if (state) {
-          d3.selectAll(".tracks").each(function (d, i) {
+          d3.selectAll(".tracts").each(function (d, i) {
               this.checked = true;
-              showHideTrackDetails(this.checked, this.name);
+              showHideTractDetails(this.checked, this.name);
               highlightBundle(this.checked, this.name);
           });
       } else {
-          d3.selectAll(".tracks").each(function (d, i) {
+          d3.selectAll(".tracts").each(function (d, i) {
               this.checked = false;
-              showHideTrackDetails(this.checked, this.name);
+              showHideTractDetails(this.checked, this.name);
               highlightBundle(this.checked, this.name);
           });
       }
@@ -88,7 +88,7 @@ function ready(error, data) {
 
   var k = d3.keys(data[0]).filter(function(key) { return (key !== "var" && key!=="subject") });
   var sub = d3.map(data, function(d){return  d.subject;}).keys()
-  trackdata = k.map(function(name) {
+  tractdata = k.map(function(name) {
      return {
       name: name,
       subjects: sub.map(function(sub){
@@ -98,7 +98,7 @@ function ready(error, data) {
     };
   });
 
-// set x and y domains for the track plots
+// set x and y domains for the tract plots
  y.domain([0,1]);
  x.domain(d3.extent(data, function(d) { return d.var; })).nice();
 
@@ -121,10 +121,10 @@ var brush = d3.svg.brush()
 	.on("brushstart", brushStart)
 	.on("brushend", brushEnd);
 
-//initialize panels for each track - and attach track data with them
-var trpanels = d3.select("#trackdetails").selectAll("svg").data(trackdata);
+//initialize panels for each tract - and attach tract data with them
+var trpanels = d3.select("#tractdetails").selectAll("svg").data(tractdata);
         trpanels.enter().append("svg")
-            .attr("id",function(d) {return "track"+ (+d.name-1); })
+            .attr("id",function(d) {return "tract"+ (+d.name-1); })
             .attr("width", w + m.left + m.right +40)
             .attr("height", h + m.top + m.bottom + axisOffset.bottom)
             .attr("display", "none")
@@ -143,7 +143,7 @@ var trpanels = d3.select("#trackdetails").selectAll("svg").data(trackdata);
 
 
 		// Populate budleBrush
-		d3.select("#trackdetails").selectAll("svg")[0]
+		d3.select("#tractdetails").selectAll("svg")[0]
 			.forEach(function(d) {
 				bundleBrush[d.id] = {
 					brushOn: false,
@@ -152,7 +152,7 @@ var trpanels = d3.select("#trackdetails").selectAll("svg").data(trackdata);
 			});
 
 		// brush
-		var brushg = d3.select("#trackdetails").selectAll("svg")
+		var brushg = d3.select("#tractdetails").selectAll("svg")
 			.append("g")
 			.attr("class", "brush")
 			.call(brush);
@@ -195,13 +195,13 @@ var trpanels = d3.select("#trackdetails").selectAll("svg").data(trackdata);
              .style("text-anchor", "end")
              .style("stroke", function(d){return d3colors[d.name-1];} )
              .style("fill", function(d){return d3colors[d.name-1];} )
-             .text(function(d) { return tracks[d.name-1]; });
+             .text(function(d) { return tracts[d.name-1]; });
 
-// associate tracksline with each subject
-    var  tracklines = trpanels.selectAll(".tracks")
+// associate tractsline with each subject
+    var  tractlines = trpanels.selectAll(".tracts")
         .data(function(d){ return d.subjects; })
         .enter().append("g")
-        .attr("class", "tracks")
+        .attr("class", "tracts")
         .attr("id", function(d,i){return "Subject"+(i);})
         .style("opacity", 0.5)
         .style("stroke-width", "2.5px")
@@ -210,7 +210,7 @@ var trpanels = d3.select("#trackdetails").selectAll("svg").data(trackdata);
         .on("click", onclick );
 
 
-        tracklines.append("path")
+        tractlines.append("path")
             .attr("class", "line")
             //.attr("id", function(d,i){return(i);})
             .attr("d",  function(d ) { return  line(d); });
@@ -296,15 +296,15 @@ var trpanels = d3.select("#trackdetails").selectAll("svg").data(trackdata);
   }
 }
 
-function showHideTrackDetails(state, name)
+function showHideTractDetails(state, name)
 {
   if (state==true){
-    d3.select("#track"+name).style("display", "inline");
+    d3.select("#tract"+name).style("display", "inline");
       d3.select("#label"+name)
         .style("color",d3colors[name]);
   }
   else {
-    d3.select("#track"+name).style("display", "none");
+    d3.select("#tract"+name).style("display", "none");
     d3.select("#label"+name)
       .style("color","#111111");
   }
