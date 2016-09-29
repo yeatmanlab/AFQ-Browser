@@ -117,7 +117,6 @@ function init() {
     // camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 1, 2000);
     camera = new THREE.PerspectiveCamera( 45, Width / sizeY, 1, 2000 );
     camera.position.x = -20;
-	camera.position.z = 0.1;
 	camera.up.set(0, 0, 1);
 
     // scene
@@ -127,7 +126,10 @@ function init() {
     scene.add(ambient);
 
     directionalLight = new THREE.DirectionalLight(0xffeedd, 1);
-    directionalLight.position.set(0, -1, 0);
+    directionalLight.position.set(
+			camera.position.x,
+			camera.position.y,
+			camera.position.z);
     scene.add(directionalLight);
 
     // texture
