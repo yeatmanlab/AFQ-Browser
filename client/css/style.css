@@ -56,8 +56,8 @@ h2 {
 #threeDbrain{
 }
 #tractdetails{
-  overflow:auto;
-  float:right;
+  overflow: auto;
+  float: left;
   align-items: center;
 }
 
@@ -72,7 +72,15 @@ h2 {
 .col-2 {width: 16.66%;}
 .col-3 {width: 25%;}
 .col-4 {width: 33.33%;}
-.col-5 {width: 41.66%;}
+.col-4#tractlist {
+  overflow-y: auto;
+  height: 560px;
+}
+.col-5 {width: 40%;}
+.col-5#tractdetails {
+  overflow-y: auto;
+  height: 790px;
+}
 .col-6 {width: 50%;}
 .col-7 {width: 58.33%;}
 .col-8 {width: 66.66%;}
@@ -80,12 +88,16 @@ h2 {
 .col-10 {width: 83.33%;}
 .col-11 {width: 91.66%;}
 .col-12 {width: 100%;}
+.col-12#table {
+  overflow-y: auto;
+  height: 500px;
+}
 
 [class*="col-"] {
-    float: left;
-    padding: 15px;
-
+  float: left;
+  padding: 15px;
 }
+
 
 #selectAllBox {
   font-weight: bold;
