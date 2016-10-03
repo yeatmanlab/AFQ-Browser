@@ -46,9 +46,9 @@ def nodes_table(mat_file_name, subject_ids=None, stats=None,
                     columns=['subjectID', 'tractID', 'nodeID'],
                     data=np.array([[subject_ids[subject]] * nodes_per_tract,
                                    [tract_ids[tract][0]] * nodes_per_tract,
-                                   np.arange(node_per_tract)]).T)
+                                   np.arange(nodes_per_tract)]).T)
             for stat in stats:
-                scalar = vals[stat][0, 0][:, tract_id][0][subject]
+                scalar = vals[stat][0, 0][:, tract][0][subject]
                 subj_df[stat] = scalar
         df = df.append(subj_df)
 
