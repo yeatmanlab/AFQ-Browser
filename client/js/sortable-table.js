@@ -42,6 +42,9 @@ function refreshTable(sortOn){
         .attr("transform", function (d, i){
             return "translate(" + i * fieldWidth + ",0)";
         })
+        .on("mouseover", function (d,i) {
+            d3.select(this).style("cursor", "n-resize");
+        })
         .on("click", function (d) { return refreshTable(d); }); // this is where the magic happens... (d) is the column being sorted
 
     header.append("rect")

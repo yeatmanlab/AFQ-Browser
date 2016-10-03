@@ -159,11 +159,12 @@ label:hover, label:active, input:hover+label, input:active+label {
 
 /*Added for table*/
 .t_header rect{
-fill: #ffffff;
+fill: #404040;
 }
 
 .t_header text{
     font: 13px;
+    fill: #eeeeee;
     font-weight: bold;
     text-anchor: middle;
 }
