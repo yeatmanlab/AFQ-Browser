@@ -176,7 +176,7 @@ function row_select() {                           //onclick function to toggle o
             .transition()
             .duration(50)
             .style("opacity", 1)
-            .style("stroke-width", "2px");
+            .style("stroke-width", "2.1px");
     } else {
 
         d3.selectAll('#' + this.id)
@@ -204,7 +204,7 @@ function table_mouseDown() {
                 .transition()
                 .duration(50)
                 .style("opacity", 1)
-                .style("stroke-width", "2px");
+                .style("stroke-width", "2.1px");
         } else {
 
             d3.selectAll('#' + this.id)

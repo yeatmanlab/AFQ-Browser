@@ -90,6 +90,72 @@ var line = d3.svg.line()
 
 var bundleBrush = {};
 
+// Set initial opacitites here
+var initBrainOpacity = 0.1;
+var initFiberOpacity = 0.05;
+var initColorOpacity = 0.75;
+var initHighlightOpacity = 0.75;
+
+// Set initial line widths here
+var initFiberLineWidth = 1.0;
+var initColorLineWidth = 2.0;
+var initHighlightLineWidth = 2.5;
+
+// var mouseoverHighlight = true
+
+var plotsGuiConfigObj = function () {
+    this.lhOpacity = 1.0;
+    this.rhOpacity = 100;
+    this.fiberOpacity = initFiberOpacity;
+    this.highlight = true;
+};
+
+var plotsGui = new dat.GUI({
+    autoplace: false,
+    width: 350,
+    scrollable: false
+});
+
+var plotsControlBox = new plotsGuiConfigObj();
+
+// gui.domElement.id = 'gui';
+var plotsGuiContainer = $('.plotsGUI').append($(plotsGui.domElement));
+
+var lhOpacityController = plotsGui.add(plotsControlBox, 'lhOpacity')
+		.min(0).max(1).name('y range');
+
+//lhOpacityController.onChange(function (value) {
+//    lh.traverse(function (child) {
+//        if (child instanceof THREE.Mesh) {
+//            child.material.opacity = value;
+//        }
+//    })
+//});
+
+var rhOpacityController = plotsGui.add(plotsControlBox, 'rhOpacity')
+    .min(0).max(100).name('x range');
+
+//rhOpacityController.onChange(function (value) {
+//    rh.traverse(function (child) {
+//        if (child instanceof THREE.Mesh) {
+//            child.material.opacity = value;
+//        }
+//    })
+//});
+
+var fiberOpacityController = plotsGui.add(plotsControlBox, 'fiberOpacity')
+    .min(0).max(1).name('Fiber Opacity');
+
+var highlightController = plotsGui.add(plotsControlBox, 'highlight')
+    .name('Mouseover Highlight');
+
+highlightController.onChange(function (value) {
+    console.log(value);
+});
+
+plotsGui.close();
+
+
 queue()
     .defer(d3.csv, "data/nodes.csv")
     .await(ready);
@@ -259,7 +325,7 @@ function ready(error, data) {
 
     function onclick() {
         if (!brushing) {
-            if ($(this).css("stroke-width") == "2px") {				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
+            if ($(this).css("stroke-width") == "2.1px") {				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
 
                 d3.selectAll('#' + this.id)
                     //.transition()
@@ -271,7 +337,7 @@ function ready(error, data) {
                     //.transition()
                     //.duration(50)
                     .style("opacity", 1)
-                    .style("stroke-width", "2px");
+                    .style("stroke-width", "2.1px");
             }
         }
     }
