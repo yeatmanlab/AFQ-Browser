@@ -9,6 +9,7 @@
 #body {
   font-family: "Arial", "Helvetica", sans-serif;
   color:#666;
+  background: #d9d9d9;
   /* Get rid of accidental text selection on drag */
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none;   /* Chrome/Safari/Opera */
@@ -24,6 +25,7 @@
   justify-content: center;
   align-items: center;
   background-color: #404040;
+  margin-bottom: 10px;
 }
 
 h1 {
@@ -34,70 +36,91 @@ h2 {
   text-align: center;
 }
 
-#title{
-  float:left;
-  height:40px;
-  display:flex;
-  justify-content: left;
-  align-items: center;
-}
-#statcontent{
-  float:left;
-  position:fixed;
-  top: 15;
-}
-#statcontent.sticky {
-  position: fixed;
-  top: 15;
-}
-#tractlist{
-  text-align: left;
-}
-#threeDbrain{
-}
-#tractdetails{
-  overflow: auto;
-  float: left;
+.title{
+  /* height: 40px; */
+  display: flex;
+  justify-content: center;
   align-items: center;
 }
 
-#table{
-  align: center;
+#statcontent{
+  float: left;
+  position: fixed;
+  top: 15;
 }
+
+#statcontent.sticky {
+  top: 15;
+}
+
 .focus text{
   font-size:11px;
 }
 
-.col-1 {width: 8.33%;}
-.col-2 {width: 16.66%;}
-.col-3 {width: 25%;}
-.col-4 {width: 33.33%;}
-.col-4#tractlist {
-  overflow-y: auto;
-  height: 560px;
+#container-list-3d-table {
+  width: 66.66%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
-.col-5 {width: 40%;}
-.col-5#tractdetails {
-  overflow-y: auto;
-  height: 790px;
-}
-.col-6 {width: 50%;}
-.col-7 {width: 58.33%;}
-.col-8 {width: 66.66%;}
-.col-9 {width: 75%;}
-.col-10 {width: 83.33%;}
-.col-11 {width: 91.66%;}
-.col-12 {width: 100%;}
-.col-12#table {
-  overflow-y: auto;
-  height: 500px;
+#container-plots {width: 33.34%;}
+
+/* Stuff within container-list-3d-table */
+#tractlist-with-title {width: 25%;}
+#threejsbrain-with-title {width: 75%;}
+#table-with-title {width: 100%}
+
+#tractlist {
+  /* Set a height restriction for the tract list. We can use a
+   * ridiculously small number here because flexbox will grow
+   * this item to match the height of the 3D window. We only
+   * need the height to be less than that of the 3D window. */
+  height: 1px;
+  text-align: left;
 }
 
-[class*="col-"] {
-  float: left;
+#tractdetails {
+  height: 1px;
+  text-align: center;
+}
+
+#table {
+  height: 300px;
+  align: center;
+}
+
+.title-and-content {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.content {
+  flex-grow: 1;
+  border-radius: 15px;
   padding: 15px;
+  background: #ffffff;
+  margin-bottom: 10px;
 }
 
+#threejsbrain {
+  border-radius: 15px;
+}
+
+.scrollable {
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.app {
+  display: flex;
+  align-items: stretch;
+}
+
+.app-element{
+  display: flex;
+  align-items: stretch;
+}
 
 #selectAllBox {
   font-weight: bold;
@@ -129,15 +152,14 @@ label:hover, label:active, input:hover+label, input:active+label {
     background:#ffffcc;
 }
 
-
 .moveGUI {
   padding: 0px;
 }
 
 .row::after {
-    content: "";
-    clear: both;
-    display: block;
+  content: "";
+  clear: both;
+  display: block;
 }
 
 .line {

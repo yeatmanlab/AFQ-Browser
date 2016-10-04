@@ -12,6 +12,7 @@
 
     <!-- CSS
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
     <link type="text/css" rel="stylesheet" href="css/style.css">
 
 </head>
@@ -21,29 +22,43 @@
     <div id="header">
         <h1 style="color:white;">AFQ Browser</h1>
     </div>
-    <div class="titlebar">
-        <div id="title" class="col-2"><h2>FIBER BUNDLES</h2></div>
-        <div id="title" class="col-5"><h2></h2></div>
-        <div id="title" class="col-5"><h2>FIBER BUNDLE DETAILS</h2></div>
-    </div>
-    <div class="col-7">
-        <div class="col-4" id="tractlist">
-            <div id="selectAllBox"> <input type="checkbox" id="selectAllTracts"><br> <label for="selectAllTracts">All Tracts</label></div>
-        </div>
-        <div class="col-8">
-            <div class="col-12" id="threejsbrain"></div>
-            <div class="moveGUI"></div>
-        </div>
 
-        <div id="table" class="col-12"><h2>SUBJECT METADATA</h2><br></div>
-    </div>
-<!--<<<<<< HEAD-->
-    <div class="col-5" id="tractdetails"></div>
-    <div class="plotsGUI"></div>
-<!--=======
-    <div class="col-5" id="tractdetails"></div>
->>>>>>> master-->
+    <div class="app" id="app">
+      <div class="app-element" id="container-list-3d-table">
+          <div class="w3-container title-and-content"
+               id="tractlist-with-title">
+            <div id="list-title" class="title"><h2>FIBER BUNDLES</h2></div>
+            <div class="content scrollable" id="tractlist">
+              <div id="selectAllBox">
+                <input type="checkbox" id="selectAllTracts">
+                <label for="selectAllTracts">All Tracts</label>
+              </div>
+            </div>
+          </div>
 
+          <div class="w3-container title-and-content"
+               id="threejsbrain-with-title">
+            <div id="subject-title" class="title"><h2>SUBJECT ID</h2></div>
+            <div id="three-and-controls" class="content scrollable">
+                <div id="threejsbrain"></div>
+                <div class="moveGUI"></div>
+            </div>
+          </div>
+
+          <div class="w3-container title-and-content"
+               id="table-with-title">
+            <div id="table-title" class="title"><h2>SUBJECT METADATA</h2><br></div>
+            <div id="table" class="content scrollable"></div>
+          </div>
+      </div>
+      <div class="w3-container app-element title-and-content"
+           id="container-plots">
+        <div id="plots-title" class="title"><h2>FIBER BUNDLE DETAILS</h2></div>
+        <div id="plots-and-controls" class="content scrollable">
+          <div id="tractdetails"></div>
+          <div class="plotsGUI"></div>
+        </div>
+      </div>
     </div>
 
     <!-- JS Libraries -->
