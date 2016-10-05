@@ -31,7 +31,7 @@ var colorGroups = new THREE.Object3D();
 var greyGroups = new THREE.Object3D();
 
 // Set initial opacitites here
-var initLHOpacity = 0.0;
+var initLHOpacity = 0.01;
 var initRHOpacity = 0.3;
 var initFiberOpacity = 0.1;
 var initColorOpacity = 0.75;
@@ -59,9 +59,6 @@ var gui = new dat.GUI({
 
 var controlBox = new guiConfigObj();
 
-// gui.domElement.id = 'gui';
-var guiContainer = $('.moveGUI').append($(gui.domElement));
-
 var greyLineMaterial = new THREE.LineBasicMaterial({
 	opacity: initFiberOpacity,
 	linewidth: initFiberLineWidth,
@@ -69,7 +66,7 @@ var greyLineMaterial = new THREE.LineBasicMaterial({
 	depthWrite: true
 });
 
-greyLineMaterial.color.setHex( 0x969696 );
+greyLineMaterial.color.setHex( 0x444444 );
 
 var colorLineMaterial = new THREE.LineBasicMaterial({
 	opacity: 0.0,
@@ -116,7 +113,7 @@ function init() {
 
     // camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 1, 2000);
     camera = new THREE.PerspectiveCamera( 45, Width / sizeY, 1, 2000 );
-    camera.position.x = -20;
+    camera.position.x = -15;
 	camera.up.set(0, 0, 1);
 
     // scene
@@ -139,7 +136,7 @@ function init() {
     };
 
     // renderer
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({ alpha: true });
 
     renderer.setSize(Width, sizeY);
     container.appendChild(renderer.domElement);
@@ -169,14 +166,19 @@ function init() {
             }
         });
 		lh.translateX(-0.05);
-        lh.material.opacity = initLHOpacity;
 		rh.translateX( 0.05);
+
+        lh.material.opacity = initLHOpacity;
         rh.material.opacity = initRHOpacity;
+
+		lh.material.color.setHex( 0xe8e3d3 );
+		rh.material.color.setHex( 0xe8e3d3 );
+
         scene.add(object);
     });
 
 	var lhOpacityController = gui.add(controlBox, 'lhOpacity')
-		.min(0).max(1).name('Left Hemi Opacity');
+		.min(0).max(1).step(0.01).name('Left Hemi Opacity');
 
 	lhOpacityController.onChange( function(value) {
 		lh.traverse(function (child) {
@@ -187,7 +189,7 @@ function init() {
 	});
 
 	var rhOpacityController = gui.add(controlBox, 'rhOpacity')
-		.min(0).max(1).name('Right Hemi Opacity');
+		.min(0).max(1).step(0.01).name('Right Hemi Opacity');
 
 	rhOpacityController.onChange( function(value) {
 		rh.traverse(function (child) {
@@ -220,6 +222,8 @@ function init() {
 		console.log(value);
 	});
 
+	var guiContainer = document.getElementById('gui-container');
+	guiContainer.appendChild(gui.domElement);
 	gui.close();
 
     // contain all bundles in this Group object
