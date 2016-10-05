@@ -317,7 +317,7 @@ function ready(error, data) {
                     //.transition()
                     //.duration(50)
                     .style("opacity", 1)
-                    .style("stroke-width", "2px");
+                    .style("stroke-width", "1.1px");
             }
         }
     }
@@ -332,7 +332,13 @@ function ready(error, data) {
                     //.duration(50)
                     .style("opacity", 0.3)
                     .style("stroke-width", "1px");
-            } else if ($(this).css("stroke-width") == "1px") {
+            } else if ($(this).css("stroke-width") == "1.1px") {
+                d3.selectAll('#' + this.id)
+                    //.transition()
+                    //.duration(50)
+                    .style("opacity", 1)
+                    .style("stroke-width", "2.1px");
+            } else if ($(this).css("opacity") == 0.3) {
                 d3.selectAll('#' + this.id)
                     //.transition()
                     //.duration(50)
@@ -344,9 +350,9 @@ function ready(error, data) {
 
     function mouseout() {
         if (!brushing) {
-            if ($(this).css("stroke-width") == "2px") {				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
+            if ($(this).css("stroke-width") == "1.1px") {				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
                 d3.selectAll('#' + this.id)
-                    .transition()
+                    //.transition()
                     //.duration(50)
                     .style("opacity", 0.3)
                     .style("stroke-width", "1px");

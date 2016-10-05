@@ -183,7 +183,7 @@ function row_select() {                           //onclick function to toggle o
             .transition()
             .duration(50)
             .style("opacity", 0.3)
-            .style("stroke-width", "1px");}
+            .style("stroke-width", "1.1px");}
 }
 
 var isDown = false;   // Tracks status of mouse button
