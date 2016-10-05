@@ -40,7 +40,7 @@ h2 {
   /* height: 40px; */
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: baseline;
 }
 
 #statcontent{
@@ -57,17 +57,40 @@ h2 {
   font-size:11px;
 }
 
+.app {
+  display: flex;
+  align-items: stretch;
+}
+
+.app-element{
+  display: flex;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
 #container-list-3d-table {
-  width: 66.66%;
+  width: 800px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
 }
-#container-plots {width: 33.34%;}
+
+#container-plots {
+  width: 33.34%;
+  flex-grow: 1;
+}
 
 /* Stuff within container-list-3d-table */
-#tractlist-with-title {width: 25%;}
-#threejsbrain-with-title {width: 75%;}
+#tractlist-with-title {width: 240px;}
+#threejsbrain-with-title {
+  width: 300px;
+  flex-grow: 1;
+}
+#gui-container {
+  display: flex;
+  justify-content: flex-end;
+  min-height: 20px;
+}
 #table-with-title {width: 100%}
 
 #tractlist {
@@ -97,29 +120,19 @@ h2 {
 
 .content {
   flex-grow: 1;
-  border-radius: 15px;
+  border-radius: 10px;
   padding: 15px;
   background: #ffffff;
   margin-bottom: 10px;
 }
 
 #threejsbrain {
-  border-radius: 15px;
+  cursor: pointer;
 }
 
 .scrollable {
   overflow-y: auto;
   overflow-x: auto;
-}
-
-.app {
-  display: flex;
-  align-items: stretch;
-}
-
-.app-element{
-  display: flex;
-  align-items: stretch;
 }
 
 #selectAllBox {
