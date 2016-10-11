@@ -38,6 +38,7 @@ h2 {
 
 .title{
   /* height: 40px; */
+  flex: 0 0 auto;
   display: flex;
   justify-content: center;
   align-items: baseline;
@@ -68,18 +69,37 @@ h2 {
   box-sizing: border-box;
 }
 
+.title-and-content {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+
+.content {
+  flex-grow: 1;
+  border-radius: 10px;
+  padding: 15px;
+  background: #ffffff;
+  margin-bottom: 10px;
+}
+
+.scrollable {
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
 #container-list-3d-table {
   width: 800px;
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
   border-right: dashed;
   border-width: 1px;
   border-color: #404040
 }
 
 #container-list-3d {
-  width: 100%;
   display: flex;
   flex-direction: row;
   border-bottom: dashed;
@@ -89,20 +109,48 @@ h2 {
 
 /* Stuff within container-list-3d-table */
 #tractlist-with-title {width: 240px;}
+
 #threejsbrain-with-title {
-  width: 300px;
-  flex-grow: 1;
+  flex: 1 1 auto;
 }
+
+#three-and-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+#threejsbrain {
+  display: flex;
+  flex-direction: column;
+  align-items: strecth;
+  /* overflow: auto; */
+
+  flex-grow: 1;
+  flex-shrink: 1;
+
+  width: 100%;
+  min-width: 300px;
+  min-height: 300px;
+}
+
+#threejsbrain > canvas {
+  flex-grow: 1;
+  flex-shrink: 1;
+  align-self: stretch;
+  min-width: 300px;
+  min-height: 300px;
+  cursor: pointer;
+}
+
 #gui-container {
   display: flex;
   justify-content: flex-end;
 }
-#table-with-title {width: 100%}
-
 
 #container-plots {
   width: 400px;
-  flex-grow: 1;
+  flex: 1 1 auto;
 }
 
 #tractlist {
@@ -122,29 +170,6 @@ h2 {
 #table {
   height: 300px;
   align: center;
-}
-
-.title-and-content {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-}
-
-.content {
-  flex-grow: 1;
-  border-radius: 10px;
-  padding: 15px;
-  background: #ffffff;
-  margin-bottom: 10px;
-}
-
-#threejsbrain {
-  cursor: pointer;
-}
-
-.scrollable {
-  overflow-y: auto;
-  overflow-x: auto;
 }
 
 #selectAllBox {
