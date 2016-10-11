@@ -90,24 +90,12 @@ var line = d3.svg.line()
 
 var bundleBrush = {};
 
-// Set initial opacitites here
-var initBrainOpacity = 0.1;
-var initFiberOpacity = 0.05;
-var initColorOpacity = 0.75;
-var initHighlightOpacity = 0.75;
-
-// Set initial line widths here
-var initFiberLineWidth = 1.0;
-var initColorLineWidth = 2.0;
-var initHighlightLineWidth = 2.5;
-
-// var mouseoverHighlight = true
-
 var plotsGuiConfigObj = function () {
-    this.lhOpacity = 1.0;
-    this.rhOpacity = 100;
-    this.fiberOpacity = initFiberOpacity;
-    this.highlight = true;
+    this.yMin = 0;
+    this.yMax = 1.0;
+    this.xMin = 0;
+    this.xMax = 100;
+    this.brushTract = false;
 };
 
 var plotsGui = new dat.GUI({
@@ -121,21 +109,25 @@ var plotsControlBox = new plotsGuiConfigObj();
 // gui.domElement.id = 'gui';
 var plotsGuiContainer = $('.plotsGUI').append($(plotsGui.domElement));
 
-var lhOpacityController = plotsGui.add(plotsControlBox, 'lhOpacity')
-		.min(0).max(1).name('y range');
+var axisController = plotsGui.addFolder('Axis Controls')
+axisController.add(plotsControlBox, 'yMin')
+		.min(-1).step(0.01).name('y min');
 
-//lhOpacityController.onChange(function (value) {
-//    lh.traverse(function (child) {
-//        if (child instanceof THREE.Mesh) {
-//            child.material.opacity = value;
-//        }
-//    })
-//});
+axisController.add(plotsControlBox, 'yMax')
+		.max(1).step(0.01).name('y max');
 
-var rhOpacityController = plotsGui.add(plotsControlBox, 'rhOpacity')
-    .min(0).max(100).name('x range');
+axisController.add(plotsControlBox, 'xMin')
+    .min(0).step(1).name('x min');
 
-//rhOpacityController.onChange(function (value) {
+var xMaxController = axisController.add(plotsControlBox, 'xMax')
+    .max(100).step(1).name('x max');
+
+xMaxController.onChange(function () {
+    d3.selectAll(".x.axis").call(xAxis)
+    queue()
+    .defer(d3.csv, "data/nodes.csv")
+    .await(ready)
+});
 //    rh.traverse(function (child) {
 //        if (child instanceof THREE.Mesh) {
 //            child.material.opacity = value;
@@ -143,18 +135,39 @@ var rhOpacityController = plotsGui.add(plotsControlBox, 'rhOpacity')
 //    })
 //});
 
-var fiberOpacityController = plotsGui.add(plotsControlBox, 'fiberOpacity')
-    .min(0).max(1).name('Fiber Opacity');
 
-var highlightController = plotsGui.add(plotsControlBox, 'highlight')
-    .name('Mouseover Highlight');
+var brushController = plotsGui.add(plotsControlBox, 'brushTract')
+    .name('Brushable Tracts');
 
-highlightController.onChange(function (value) {
-    console.log(value);
+brushController.onChange(function () {
+    var brushg = d3.selectAll(".brush").data([]);
+    brushg.exit().remove();
+
+    queue()
+    .defer(d3.csv, "data/nodes.csv")
+    .await(ready)
 });
 
 plotsGui.close();
 
+// set x and y domains for the track plots
+    y.domain([plotsControlBox.yMin, plotsControlBox.yMax]);
+    x.domain([plotsControlBox.xMin, plotsControlBox.xMax]).nice();
+
+    console.log(plotsControlBox.xMax)
+
+    //create axes
+    var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+        .tickSize(0 - w - 5)
+        .ticks(5);
+
+    var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom")
+            .tickPadding(8)
+            .ticks(5);
 
 queue()
     .defer(d3.csv, "data/nodes.csv")
@@ -180,8 +193,10 @@ function ready(error, data) {
         tractdata[i].values.push(tract_mean[i]);
     }
     // set x and y domains for the track plots
-    y.domain([0, 1]);
-    x.domain(d3.extent(data, function (d) { return d.pos; })).nice();
+    y.domain([plotsControlBox.yMin, plotsControlBox.yMax]);
+    x.domain([plotsControlBox.xMin, plotsControlBox.xMax]).nice();
+
+    console.log(plotsControlBox.xMax)
 
     //create axes
     var yAxis = d3.svg.axis()
@@ -233,14 +248,16 @@ function ready(error, data) {
         });
 
     // brush
-    var brushg = d3.select("#trackdetails").selectAll("svg")
+    if (plotsControlBox.brushTract) {
+        var brushg = d3.select("#trackdetails").selectAll("svg")
         .append("g")
         .attr("class", "brush")
         .call(brush);
 
-    brushg.selectAll("rect")
-        .attr("y", m.top)
-        .attr("height", h - axisOffset.bottom);
+        brushg.selectAll("rect")
+            .attr("y", m.top)
+            .attr("height", h - axisOffset.bottom);
+    }
 
     trpanels.append("rect")
            .attr("class", "plot")
@@ -319,9 +336,29 @@ function ready(error, data) {
                     .style("opacity", 1)
                     .style("stroke-width", "1.1px");
             }
+            if (isDown) {
+                if ($(this).css("stroke-width") == "2.1px") {				  //uses the opacity of the row for selection and deselection
+                    d3.selectAll('#' + this.id)
+                        //.transition()
+                        //.duration(50)
+                        .style("opacity", 0.3)
+                        .style("stroke-width", "1px");
+                } else if ($(this).css("stroke-width") == "1.1px") {
+                    d3.selectAll('#' + this.id)
+                        //.transition()
+                        //.duration(50)
+                        .style("opacity", 1)
+                        .style("stroke-width", "2.1px");
+                } else if ($(this).css("stroke-width") == "1px") {
+                    d3.selectAll('#' + this.id)
+                        //.transition()
+                        //.duration(50)
+                        .style("opacity", 1)
+                        .style("stroke-width", "2.1px");
+                }
+            }
         }
     }
-
 
     function onclick() {
         if (!brushing) {
