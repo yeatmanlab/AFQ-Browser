@@ -91,10 +91,10 @@ var line = d3.svg.line()
 var bundleBrush = {};
 
 var plotsGuiConfigObj = function () {
-    this.yMin = 0;
-    this.yMax = 1.0;
-    this.xMin = 0;
-    this.xMax = 100;
+    //this.yMin = 0;
+    //this.yMax = 1.0;
+    //this.xMin = 0;
+    //this.xMax = 100;
     this.brushTract = false;
 };
 
@@ -109,25 +109,25 @@ var plotsControlBox = new plotsGuiConfigObj();
 // gui.domElement.id = 'gui';
 var plotsGuiContainer = $('.plotsGUI').append($(plotsGui.domElement));
 
-var axisController = plotsGui.addFolder('Axis Controls')
-axisController.add(plotsControlBox, 'yMin')
-		.min(-1).step(0.01).name('y min');
+//var axisController = plotsGui.addFolder('Axis Controls')
+//axisController.add(plotsControlBox, 'yMin')
+//		.min(-1).step(0.01).name('y min');
 
-axisController.add(plotsControlBox, 'yMax')
-		.max(1).step(0.01).name('y max');
+//axisController.add(plotsControlBox, 'yMax')
+//		.max(1).step(0.01).name('y max');
 
-axisController.add(plotsControlBox, 'xMin')
-    .min(0).step(1).name('x min');
+//axisController.add(plotsControlBox, 'xMin')
+//    .min(0).step(1).name('x min');
 
-var xMaxController = axisController.add(plotsControlBox, 'xMax')
-    .max(100).step(1).name('x max');
+//var xMaxController = axisController.add(plotsControlBox, 'xMax')
+//    .max(100).step(1).name('x max');
 
-xMaxController.onChange(function () {
-    d3.selectAll(".x.axis").call(xAxis)
-    queue()
-    .defer(d3.csv, "data/nodes.csv")
-    .await(ready)
-});
+//xMaxController.onChange(function () {
+//    d3.selectAll(".x.axis").call(xAxis)
+//    queue()
+//    .defer(d3.csv, "data/nodes.csv")
+//    .await(ready)
+//});
 //    rh.traverse(function (child) {
 //        if (child instanceof THREE.Mesh) {
 //            child.material.opacity = value;
@@ -149,25 +149,6 @@ brushController.onChange(function () {
 });
 
 plotsGui.close();
-
-// set x and y domains for the track plots
-    y.domain([plotsControlBox.yMin, plotsControlBox.yMax]);
-    x.domain([plotsControlBox.xMin, plotsControlBox.xMax]).nice();
-
-    console.log(plotsControlBox.xMax)
-
-    //create axes
-    var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left")
-        .tickSize(0 - w - 5)
-        .ticks(5);
-
-    var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom")
-            .tickPadding(8)
-            .ticks(5);
 
 queue()
     .defer(d3.csv, "data/nodes.csv")
@@ -193,8 +174,8 @@ function ready(error, data) {
         tractdata[i].values.push(tract_mean[i]);
     }
     // set x and y domains for the track plots
-    y.domain([plotsControlBox.yMin, plotsControlBox.yMax]);
-    x.domain([plotsControlBox.xMin, plotsControlBox.xMax]).nice();
+    y.domain([0,1.0]);
+    x.domain([0, 100]).nice();
 
     console.log(plotsControlBox.xMax)
 
