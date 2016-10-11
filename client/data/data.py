@@ -3,10 +3,10 @@ import scipy.io as sio
 import pandas as pd
 import numpy as np
 
-def nodes_table(mat_file_name, subject_ids=None, stats=None,
-                out_file=None):
+def mat2tables(mat_file_name, subject_ids=None, stats=None,
+               out_path=None):
     """
-    Create a nodes table from an AFQ `.mat` file
+    Create a nodes table and a subjects table from an AFQ `.mat` file
 
     Parameters
     ----------
@@ -23,10 +23,14 @@ def nodes_table(mat_file_name, subject_ids=None, stats=None,
 
     out_file : str
         Full path to the CSV file to be saved as output
+
+    Returns
+    -------
+    tuple: paths to the files that get generated: (nodes, subjects)
     """
-    afq = sio.loadmat(mat_file_name)['afq']
+    afq = sio.loadmat(mat_file_name, squeeze_me=True)['afq']
     vals = afq['vals'].item()
-    tract_ids = afq['fgnames'][0][0][0]
+    tract_ids = afq['fgnames'].item()
 
     n_tracts = len(tract_ids)
     if stats is None:
@@ -34,25 +38,49 @@ def nodes_table(mat_file_name, subject_ids=None, stats=None,
     columns = ['subjectID', 'tractID', 'nodeID']
     columns = columns + stats
     df = pd.DataFrame(columns=columns)
-    n_subjects, nodes_per_tract = vals[stats[0]][0, 0][:, 0][0].shape
+    n_subjects, nodes_per_tract = vals[stats[0]].item()[0].shape
 
+    # Check if subject ids is defined in the afq structure
     if subject_ids is None:
-        # XXX Make the number of zeros flexible and depend on n_subjects:
-        subject_ids = ['subject_%03d' % i for i in range(n_subjects)]
+        if 'sub_ids' in afq.dtype.names and len(afq['sub_ids'].item()):
+            subject_ids = afq['sub_ids'].item()
+        else:
+            # XXX Make the number of zeros flexible and depend on n_subjects:
+            subject_ids = ['subject_%03d' % i for i in range(n_subjects)]
 
+    # Loop over subjects
     for subject in range(len(subject_ids)):
+        # Loop over tracts
         for tract in range(n_tracts):
+            # Making a subject and tract specific dataframe
             subj_df = pd.DataFrame(
                     columns=['subjectID', 'tractID', 'nodeID'],
                     data=np.array([[subject_ids[subject]] * nodes_per_tract,
-                                   [tract_ids[tract][0]] * nodes_per_tract,
+                                   [tract_ids[tract]] * nodes_per_tract,
                                    np.arange(nodes_per_tract)]).T)
+            # We're looping over the desired stats (eg fa, md) and adding them
+            # to the subjects dataframe
             for stat in stats:
-                scalar = vals[stat][0, 0][:, tract][0][subject]
+                scalar = vals[stat].item()[tract][subject, :]
                 subj_df[stat] = scalar
-        df = df.append(subj_df)
+            # The subject's dataframe for this tract is now appended to the
+            # whole dataframe here:
+            df = df.append(subj_df)
 
-    if out_file is None:
-        out_file = op.join('.', 'nodes.csv')
+    # Set output path from the input kwarg:
+    if out_path is None:
+        out_path = '.'
 
-    df.to_csv(out_file, index=False)
+    nodes_fname = op.join(out_path, 'nodes.csv')
+    # Write to file
+    df.to_csv(nodes_fname, index=False)
+
+    # Create metadata
+    metadata = afq['metadata'].item()
+    meta_df = pd.DataFrame(data=np.array(metadata.item()).T,
+                           columns=metadata.dtype.names)
+
+    meta_fname = op.join(out_path, 'subjects.csv')
+    meta_df.to_csv(meta_fname, index=False)
+
+    return nodes_fname, meta_fname
