@@ -50,12 +50,12 @@ h2 {
   position: fixed;
   top: 15;
 }
-#tracklist{
+#tractlist{
   text-align: left;
 }
 #threeDbrain{
 }
-#trackdetails{
+#tractdetails{
   overflow:auto;
   float:right;
   align-items: center;
@@ -134,7 +134,7 @@ label:hover, label:active, input:hover+label, input:active+label {
   stroke-linecap:round;
 }
 
-.tracks {
+.tracts {
   fill: none;
   stroke: #666;
   stroke-width: 1.5px;

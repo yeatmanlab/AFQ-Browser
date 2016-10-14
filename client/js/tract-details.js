@@ -1,7 +1,7 @@
-//tracklist js
+//tractlist js
 
-//Data : track names
-var tracks=["Left Thalamic Radiation","Right Thalamic Radiation","Left Corticospinal","Right Corticospinal","Left Cingulum Cingulate","Right Cingulum Cingulate","Left Cingulum Hippocampus","Right Cingulum Hippocampus","Callosum Forceps Major","Callosum Forceps Minor","Left IFOF","Right IFOF","Left ILF","Right ILF","Left SLF","Right SLF","Left Uncinate","Right Uncinate","Left Arcuate","Right Arcuate"]
+//Data : tract names
+var tracts=["Left Thalamic Radiation","Right Thalamic Radiation","Left Corticospinal","Right Corticospinal","Left Cingulum Cingulate","Right Cingulum Cingulate","Left Cingulum Hippocampus","Right Cingulum Hippocampus","Callosum Forceps Major","Callosum Forceps Minor","Left IFOF","Right IFOF","Left ILF","Right ILF","Left SLF","Right SLF","Left Uncinate","Right Uncinate","Left Arcuate","Right Arcuate"]
 
 // color Palettes in Hex format, HTML needs colors in d3colors format
 // colors are the Tableau20 colors
@@ -19,11 +19,11 @@ var axisOffset = {bottom: 40};
 var tractdata = d3.map();
 var brushing = false;
 
-//insert trackname checkboxes in the tracklist panel
-var svg = d3.select('#tracklist').selectAll(".input").data(tracks).enter().append('div');
+//insert tractname checkboxes in the tractlist panel
+var svg = d3.select('#tractlist').selectAll(".input").data(tracts).enter().append('div');
 svg.append('input')
       .attr("type", "checkbox")
-      .attr("class", "tracks")
+      .attr("class", "tracts")
       .attr("id", function (d, i) { return "input" + (i + 1); })
       .attr("name", function (d, i) { return i; })
 // add label to the checkboxes
@@ -33,30 +33,30 @@ svg.append('label')
       .attr("id", function (d, i) { return "label" + i; });
 
 //add event handler to the checkbox
-d3.selectAll(".tracks")
+d3.selectAll(".tracts")
   .on("change", function () {
       var state = this.checked
       var name = this.name
-      //call trackdetails handler
-      showHideTrackDetails(state, name)
+      //call tractdetails handler
+      showHideTractDetails(state, name)
       highlightBundle(state, name)
   });
 
 
 // all select/un-select all checkbox
-d3.selectAll("#selectAllTracks")
+d3.selectAll("#selectAllTracts")
   .on("change", function () {
       var state = this.checked;
       if (state) {
-          d3.selectAll(".tracks").each(function (d, i) {
+          d3.selectAll(".tracts").each(function (d, i) {
               this.checked = true;
-              showHideTrackDetails(this.checked, this.name);
+              showHideTractDetails(this.checked, this.name);
               highlightBundle(this.checked, this.name);
           });
       } else {
-          d3.selectAll(".tracks").each(function (d, i) {
+          d3.selectAll(".tracts").each(function (d, i) {
               this.checked = false;
-              showHideTrackDetails(this.checked, this.name);
+              showHideTractDetails(this.checked, this.name);
               highlightBundle(this.checked, this.name);
           });
       }
@@ -109,31 +109,6 @@ var plotsControlBox = new plotsGuiConfigObj();
 // gui.domElement.id = 'gui';
 var plotsGuiContainer = $('.plotsGUI').append($(plotsGui.domElement));
 
-//var axisController = plotsGui.addFolder('Axis Controls')
-//axisController.add(plotsControlBox, 'yMin')
-//		.min(-1).step(0.01).name('y min');
-
-//axisController.add(plotsControlBox, 'yMax')
-//		.max(1).step(0.01).name('y max');
-
-//axisController.add(plotsControlBox, 'xMin')
-//    .min(0).step(1).name('x min');
-
-//var xMaxController = axisController.add(plotsControlBox, 'xMax')
-//    .max(100).step(1).name('x max');
-
-//xMaxController.onChange(function () {
-//    d3.selectAll(".x.axis").call(xAxis)
-//    queue()
-//    .defer(d3.csv, "data/nodes.csv")
-//    .await(ready)
-//});
-//    rh.traverse(function (child) {
-//        if (child instanceof THREE.Mesh) {
-//            child.material.opacity = value;
-//        }
-//    })
-//});
 
 
 var brushController = plotsGui.add(plotsControlBox, 'brushTract')
@@ -173,24 +148,24 @@ function ready(error, data) {
     for (i = 0; i < tract_mean.length; i++) {
         tractdata[i].values.push(tract_mean[i]);
     }
-    // set x and y domains for the track plots
+    // set x and y domains for the tract plots
     y.domain([0,1.0]);
     x.domain([0, 100]).nice();
 
-    console.log(plotsControlBox.xMax)
 
-    //create axes
-    var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left")
-        .tickSize(0 - w - 5)
+//create axes
+var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+	    .tickSize(0-w-5)
+	    .ticks(5);
+
+var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom")
+        .tickPadding(8)
         .ticks(5);
 
-    var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom")
-            .tickPadding(8)
-            .ticks(5);
 
     var brush = d3.svg.brush()
         .x(x)
@@ -198,10 +173,10 @@ function ready(error, data) {
         .on("brushstart", brushStart)
         .on("brushend", brushEnd);
 
-    //initialize panels for each track - and attach track data with them
-    var trpanels = d3.select("#trackdetails").selectAll("svg").data(tractdata);
+    //initialize panels for each tract - and attach tract data with them
+    var trpanels = d3.select("#tractdetails").selectAll("svg").data(tractdata);
     trpanels.enter().append("svg")
-        .attr("id", function (d) { return "track" + (+d.key - 1); })
+        .attr("id", function (d) { return "tract" + (+d.key - 1); })
         .attr("width", w + m.left + m.right + 40)
         .attr("height", h + m.top + m.bottom + axisOffset.bottom)
         .attr("display", "none")
@@ -220,7 +195,7 @@ function ready(error, data) {
 
 
     // Populate budleBrush
-    d3.select("#trackdetails").selectAll("svg")[0]
+    d3.select("#tractdetails").selectAll("svg")[0]
         .forEach(function (d) {
             bundleBrush[d.id] = {
                 brushOn: false,
@@ -230,7 +205,7 @@ function ready(error, data) {
 
     // brush
     if (plotsControlBox.brushTract) {
-        var brushg = d3.select("#trackdetails").selectAll("svg")
+        var brushg = d3.select("#tractdetails").selectAll("svg")
         .append("g")
         .attr("class", "brush")
         .call(brush);
@@ -267,20 +242,20 @@ function ready(error, data) {
         	.style("stroke", "#888888;")
         	.text("% Distance Along Fiber Bundle");
 
-    trpanels.append("text")
-          .attr("x", w + 40)
-          .attr("y", h - 280)
-          .attr("class", "plot_text")
-          .style("text-anchor", "end")
-          .style("stroke", function (d) { return d3colors[d.key - 1]; })
-          .style("fill", function (d) { return d3colors[d.key - 1]; })
-          .text(function (d) { return tracks[d.key - 1]; });
+       trpanels.append("text")
+             .attr("x", w + 40)
+             .attr("y", h - 280)
+             .attr("class", "plot_text")
+             .style("text-anchor", "end")
+             .style("stroke", function(d){return d3colors[d.name-1];} )
+             .style("fill", function(d){return d3colors[d.name-1];} )
+             .text(function(d) { return tracts[d.name-1]; });
 
-    // associate tracksline with each subject
-    var tracklines = trpanels.selectAll(".tracks")
-        .data(function (d) { return d.values; })
+// associate tractsline with each subject
+    var  tractlines = trpanels.selectAll(".tracts")
+        .data(function(d){ return d.values; })
         .enter().append("g")
-        .attr("class", "tracks")
+        .attr("class", "tracts")
         .attr("id", function (d, i) {
             if (i >= sub_data.length) {
                 return "Mean" + (i - sub_data.length);
@@ -293,9 +268,9 @@ function ready(error, data) {
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
         .on("click", onclick);
-
+   
     //if (ramp != null) {
-    //    tracklines.style("stroke", ramp(1));
+    //    tractlines.style("stroke", ramp(1));
     //}
 
     d3.selectAll("#Mean0")
@@ -304,7 +279,7 @@ function ready(error, data) {
 
     
 
-    tracklines.append("path")
+    tractlines.append("path")
         .attr("class", "line")
         .attr("d", function (d) { return line(d.values); });
 
@@ -378,33 +353,34 @@ function ready(error, data) {
         }
     }
 
-    function brushed() {
-        bundleBrush[this.parentElement.id].brushOn = !brush.empty();
-        if (brush.empty()) {
-            bundleBrush[this.parentElement.id].brushExtent = [0, 100];
-        } else {
-            bundleBrush[this.parentElement.id].brushExtent = brush.extent();
-        }
-    }
 
-    function brushStart() {
-        brushing = true;
-    }
+  function brushed() {
+	  bundleBrush[this.parentElement.id].brushOn = !brush.empty();
+	  if (brush.empty()) {
+		  bundleBrush[this.parentElement.id].brushExtent = [0, 100];
+	  } else {
+		  bundleBrush[this.parentElement.id].brushExtent = brush.extent();
+	  }
+  }
 
-    function brushEnd() {
-        brushing = false;
-    }
+  function brushStart() {
+	  brushing = true;
+  }
+
+  function brushEnd() {
+	  brushing = false;
+  }
 }
 
-function showHideTrackDetails(state, name)
+function showHideTractDetails(state, name)
 {
   if (state==true){
-    d3.select("#track"+name).style("display", "inline");
+    d3.select("#tract"+name).style("display", "inline");
       d3.select("#label"+name)
         .style("color",d3colors[name]);
   }
   else {
-    d3.select("#track"+name).style("display", "none");
+    d3.select("#tract"+name).style("display", "none");
     d3.select("#label"+name)
       .style("color","#111111");
   }

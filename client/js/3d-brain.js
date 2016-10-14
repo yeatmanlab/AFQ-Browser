@@ -1,7 +1,7 @@
-//tracklist js
+//tractlist js
 
-//Data : track names
-var tracks=["Left Thalamic Radiation","Right Thalamic Radiation","Left Corticospinal","Right Corticospinal","Left Cingulum Cingulate","Right Cingulum Cingulate","Left Cingulum Hippocampus","Right Cingulum Hippocampus","Callosum Forceps Major","Callosum Forceps Minor","Left IFOF","Right IFOF","Left ILF","Right ILF","Left SLF","Right SLF","Left Uncinate","Right Uncinate","Left Arcuate","Right Arcuate"]
+//Data : tract names
+var tracts=["Left Thalamic Radiation","Right Thalamic Radiation","Left Corticospinal","Right Corticospinal","Left Cingulum Cingulate","Right Cingulum Cingulate","Left Cingulum Hippocampus","Right Cingulum Hippocampus","Callosum Forceps Major","Callosum Forceps Minor","Left IFOF","Right IFOF","Left ILF","Right ILF","Left SLF","Right SLF","Left Uncinate","Right Uncinate","Left Arcuate","Right Arcuate"]
 
 // color Palettes in Hex format, HTML needs colors in d3colors format
 // colors are the Tableau20 colors
@@ -31,8 +31,9 @@ var colorGroups = new THREE.Object3D();
 var greyGroups = new THREE.Object3D();
 
 // Set initial opacitites here
-var initBrainOpacity = 0.1;
-var initFiberOpacity = 0.05;
+var initLHOpacity = 0.0;
+var initRHOpacity = 0.3;
+var initFiberOpacity = 0.1;
 var initColorOpacity = 0.75;
 var initHighlightOpacity = 0.75;
 
@@ -44,8 +45,8 @@ var initHighlightLineWidth = 2.5;
 // var mouseoverHighlight = true
 
 var guiConfigObj = function () {
-	this.lhOpacity = initBrainOpacity;
-	this.rhOpacity = initBrainOpacity;
+	this.lhOpacity = initLHOpacity;
+	this.rhOpacity = initRHOpacity;
 	this.fiberOpacity = initFiberOpacity;
 	this.highlight = true;
 };
@@ -115,7 +116,7 @@ function init() {
 
     // camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 1, 2000);
     camera = new THREE.PerspectiveCamera( 45, Width / sizeY, 1, 2000 );
-    camera.position.y = -15;
+    camera.position.x = -20;
 	camera.up.set(0, 0, 1);
 
     // scene
@@ -125,7 +126,10 @@ function init() {
     scene.add(ambient);
 
     directionalLight = new THREE.DirectionalLight(0xffeedd, 1);
-    directionalLight.position.set(0, -1, 0);
+    directionalLight.position.set(
+			camera.position.x,
+			camera.position.y,
+			camera.position.z);
     scene.add(directionalLight);
 
     // texture
@@ -156,7 +160,6 @@ function init() {
 
         object.traverse(function (child) {
             if (child instanceof THREE.Mesh) {
-                child.material.opacity = initBrainOpacity;
                 child.material.depthWrite = true;
                 child.material.transparent = true;
 
@@ -166,7 +169,9 @@ function init() {
             }
         });
 		lh.translateX(-0.05);
+        lh.material.opacity = initLHOpacity;
 		rh.translateX( 0.05);
+        rh.material.opacity = initRHOpacity;
         scene.add(object);
     });
 
@@ -313,7 +318,7 @@ function init() {
                 colorBundleLine.position.set(0, 0.8, -0.5);
 
 				// Record some useful info for later
-				colorBundleLine.name = tracks[ bundleIdx ];
+				colorBundleLine.name = tracts[ bundleIdx ];
 				colorBundleLine.nFibers = nFibers;
 				colorBundleLine.idx = bundleIdx;
 
@@ -341,9 +346,9 @@ function init() {
         				});
 				domEvents.addEventListener(child, 'mouseup', function(event) {
 							if(!mouseMove) {
-								var myBundle = d3.selectAll("input.tracks")[0][child.idx];
+								var myBundle = d3.selectAll("input.tracts")[0][child.idx];
 								myBundle.checked = !myBundle.checked;
-								showHideTrackDetails(myBundle.checked, myBundle.name)
+								showHideTractDetails(myBundle.checked, myBundle.name)
 								highlightBundle(myBundle.checked, myBundle.name)
 								return renderer.render(scene, camera);
 							} else {
@@ -351,8 +356,8 @@ function init() {
 							}
 						});
                 domEvents.addEventListener(child, 'mouseout', function(event) {
-        					var myBundle = d3.selectAll("input.tracks")[0][child.idx];
-        					showHideTrackDetails(myBundle.checked, myBundle.name)
+        					var myBundle = d3.selectAll("input.tracts")[0][child.idx];
+        					showHideTractDetails(myBundle.checked, myBundle.name)
         					highlightBundle(myBundle.checked, myBundle.name)
         					return renderer.render(scene, camera);
                 });
@@ -399,9 +404,9 @@ function animate() {
 	// For each fiber bundle update the length of fiber to be plotted
 	// based on the d3 brushes in the FA plots
 	for (var i = 0; i < colorGroups.children.length; i++) {
-		var track = 'track' + i;
-		var lo = Math.floor(bundleBrush[track].brushExtent[0]);
-		var hi = Math.ceil(bundleBrush[track].brushExtent[1]) - 1;
+		var tract = 'tract' + i;
+		var lo = Math.floor(bundleBrush[tract].brushExtent[0]);
+		var hi = Math.ceil(bundleBrush[tract].brushExtent[1]) - 1;
 
 		// loIdx is the low index and count is the number of indices
 		// This is a little sloppy and sometimes the count will be too high
@@ -461,7 +466,7 @@ function mouseoverBundle(name) {
 
 		if (bundle !== undefined) {
 			tmpLineMaterial.color.setHex( highlightColors[name] );
-			if (bundleBrush['track' + name].brushOn) {
+			if (bundleBrush['tract' + name].brushOn) {
 				tmpLineMaterial.color.setHex( 0x000000 );
 			}
 			bundle.material = tmpLineMaterial;
