@@ -73,14 +73,25 @@ var y = d3.scale.linear()
 
 var line = d3.svg.line()
     .interpolate("basis")
-    .x(function(d) {
-      return x(d.variable);})
-    .y(function(d) { return y(d.value);})
+    .x(function (d) {
+        if (d.pos) {
+            return x(+d.pos);
+        } else {
+            return x(+d.key);
+        }
+    })
+    .y(function (d) {
+        if (d.FA) {
+            return y(+d.FA);
+        } else {
+            return y(+d.values);
+        }
+    });
 
 var bundleBrush = {};
 
 queue()
-    .defer(d3.csv, "data/data.csv")
+    .defer(d3.csv, "data/nodes.csv")
     .await(ready);
 
 function ready(error, data) {
@@ -185,7 +196,7 @@ var trpanels = d3.select("#tractdetails").selectAll("svg").data(tractdata);
         	.attr("y", h + 25)
             .attr("class", "plot_text")
         	.style("text-anchor", "end")
-        	.style("stroke", "#888888;" )
+        	.style("stroke", "#888888;")
         	.text("% Distance Along Fiber Bundle");
 
        trpanels.append("text")
@@ -310,11 +321,3 @@ function showHideTractDetails(state, name)
   }
 
 }
-
-// var $window = $(window),
-//    $stickyEl = $('#statcontent'),
-//    elTop = $stickyEl.offset().top;
-
-// $window.scroll(function() {
-//     $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop);
-// });
