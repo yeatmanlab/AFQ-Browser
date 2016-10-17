@@ -73,41 +73,92 @@ var y = d3.scale.linear()
 
 var line = d3.svg.line()
     .interpolate("basis")
-    .x(function(d) {
-      return x(d.variable);})
-    .y(function(d) { return y(d.value);})
+    .x(function (d) {
+        if (d.pos) {
+            return x(+d.pos);
+        } else {
+            return x(+d.key);
+        }
+    })
+    .y(function (d) {
+        if (d.FA) {
+            return y(+d.FA);
+        } else {
+            return y(+d.values);
+        }
+    });
 
 var bundleBrush = {};
 
+var plotsGuiConfigObj = function () {
+    //this.yMin = 0;
+    //this.yMax = 1.0;
+    //this.xMin = 0;
+    //this.xMax = 100;
+    this.brushTract = false;
+};
+
+var plotsGui = new dat.GUI({
+    autoplace: false,
+    width: 350,
+    scrollable: false
+});
+
+var plotsControlBox = new plotsGuiConfigObj();
+
+// gui.domElement.id = 'gui';
+var plotsGuiContainer = $('.plotsGUI').append($(plotsGui.domElement));
+
+
+
+var brushController = plotsGui.add(plotsControlBox, 'brushTract')
+    .name('Brushable Tracts');
+
+brushController.onChange(function () {
+    var brushg = d3.selectAll(".brush").data([]);
+    brushg.exit().remove();
+
+    queue()
+    .defer(d3.csv, "data/nodes.csv")
+    .await(ready)
+});
+
+plotsGui.close();
+
 queue()
-    .defer(d3.csv, "data/data.csv")
+    .defer(d3.csv, "data/nodes.csv")
     .await(ready);
 
 function ready(error, data) {
-  if (error) throw error;
+    if (error) throw error;
 
-  var k = d3.keys(data[0]).filter(function(key) { return (key !== "var" && key!=="subject") });
-  var sub = d3.map(data, function(d){return  d.subject;}).keys()
-  tractdata = k.map(function(name) {
-     return {
-      name: name,
-      subjects: sub.map(function(sub){
-          values: return data.filter( function(d){ return d.subject==sub;})
-                      .map(function(d){ return { variable: d.var, value: +d[name] }; })
-      })
-    };
-  });
+    tractdata = d3.nest()
+     .key(function (d) { return d.tract; })
+     .key(function (d) { return d.subject; })
+     .entries(data);
 
-// set x and y domains for the tract plots
- y.domain([0,1]);
- x.domain(d3.extent(data, function(d) { return d.var; })).nice();
+
+    var tract_mean = d3.nest()
+      .key(function (d) { return d.tract; })
+      .key(function (d) { return d.pos; })
+      .rollup(function (v) { return d3.mean(v, function (d) { return +d.FA; }); })
+      .entries(data);
+
+
+    for (i = 0; i < tract_mean.length; i++) {
+        tractdata[i].values.push(tract_mean[i]);
+    }
+    // set x and y domains for the tract plots
+    y.domain([0,1.0]);
+    x.domain([0, 100]).nice();
+
 
 //create axes
 var yAxis = d3.svg.axis()
-       	.scale(y)
+        .scale(y)
         .orient("left")
-	.tickSize(0-w-5)
-	.ticks(5);
+	    .tickSize(0-w-5)
+	    .ticks(5);
 
 var xAxis = d3.svg.axis()
         .scale(x)
@@ -115,77 +166,80 @@ var xAxis = d3.svg.axis()
         .tickPadding(8)
         .ticks(5);
 
-var brush = d3.svg.brush()
-	.x(x)
-	.on("brush", brushed)
-	.on("brushstart", brushStart)
-	.on("brushend", brushEnd);
 
-//initialize panels for each tract - and attach tract data with them
-var trpanels = d3.select("#tractdetails").selectAll("svg").data(tractdata);
-        trpanels.enter().append("svg")
-            .attr("id",function(d) {return "tract"+ (+d.name-1); })
-            .attr("width", w + m.left + m.right +40)
-            .attr("height", h + m.top + m.bottom + axisOffset.bottom)
-            .attr("display", "none")
-            .append("g")
-            .attr("transform", "translate(" + m.left + "," + m.top + ")")
-   	//y-axis
-            .append("g")
-            .attr("class", "y axis")
-            .attr("transform", "translate(" + m.left + ",0)")
-            .call(yAxis)
-        //x-axis
-            .append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(-40," + (h - axisOffset.bottom) + ")")
-            .call(xAxis);
+    var brush = d3.svg.brush()
+        .x(x)
+        .on("brush", brushed)
+        .on("brushstart", brushStart)
+        .on("brushend", brushEnd);
+
+    //initialize panels for each tract - and attach tract data with them
+    var trpanels = d3.select("#tractdetails").selectAll("svg").data(tractdata);
+    trpanels.enter().append("svg")
+        .attr("id", function (d) { return "tract" + (+d.key - 1); })
+        .attr("width", w + m.left + m.right + 40)
+        .attr("height", h + m.top + m.bottom + axisOffset.bottom)
+        .attr("display", "none")
+        .append("g")
+        .attr("transform", "translate(" + m.left + "," + m.top + ")")
+//y-axis
+        .append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(" + m.left + ",0)")
+        .call(yAxis)
+    //x-axis
+        .append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(-40," + (h - axisOffset.bottom) + ")")
+        .call(xAxis);
 
 
-		// Populate budleBrush
-		d3.select("#tractdetails").selectAll("svg")[0]
-			.forEach(function(d) {
-				bundleBrush[d.id] = {
-					brushOn: false,
-					brushExtent: [0, 100]
-				}
-			});
+    // Populate budleBrush
+    d3.select("#tractdetails").selectAll("svg")[0]
+        .forEach(function (d) {
+            bundleBrush[d.id] = {
+                brushOn: false,
+                brushExtent: [0, 100]
+            }
+        });
 
-		// brush
-		var brushg = d3.select("#tractdetails").selectAll("svg")
-			.append("g")
-			.attr("class", "brush")
-			.call(brush);
+    // brush
+    if (plotsControlBox.brushTract) {
+        var brushg = d3.select("#tractdetails").selectAll("svg")
+        .append("g")
+        .attr("class", "brush")
+        .call(brush);
 
-		brushg.selectAll("rect")
-			.attr("y", m.top)
-			.attr("height", h - axisOffset.bottom);
-	
-        trpanels.append("rect")
-               .attr("class", "plot")
-       	       .attr("width",  w + m.left + m.right +20 )
-               .attr("height", h + m.top + m.bottom + 15 )
-         			 .attr("x", 0)
-         			 .attr("y", 0)
-         			.style("stroke", function(d){return d3colors[d.name-1];})
-         			.style("fill", "none")
-         			.style("stroke-width", 2);
+        brushg.selectAll("rect")
+            .attr("y", m.top)
+            .attr("height", h - axisOffset.bottom);
+    }
 
-      // 	trpanels.append("text")
-      //   	.attr("transform", "rotate(-90)")
-      //   	.attr("x", -h/2)
-      //   	.attr("y",0)
-      //   	.style("stroke", "#AFBABF")
-      //   	.attr("dy", "1em")
-      //   	.style("text-anchor", "middle")
-      //   	.text("Fractional Anisotropy");
+    trpanels.append("rect")
+           .attr("class", "plot")
+           .attr("width", w + m.left + m.right + 20)
+           .attr("height", h + m.top + m.bottom + 15)
+                 .attr("x", 0)
+                 .attr("y", 0)
+                .style("stroke", function (d) { return d3colors[d.key - 1]; })
+                .style("fill", "none")
+                .style("stroke-width", 2);
 
-	trpanels.append("text")
+    // 	trpanels.append("text")
+    //   	.attr("transform", "rotate(-90)")
+    //   	.attr("x", -h/2)
+    //   	.attr("y",0)
+    //   	.style("stroke", "#AFBABF")
+    //   	.attr("dy", "1em")
+    //   	.style("text-anchor", "middle")
+    //   	.text("Fractional Anisotropy");
+
+    trpanels.append("text")
         	.attr("x", 350)
         	.attr("y", h + 25)
             .attr("class", "plot_text")
         	.style("text-anchor", "end")
-        	.style("stroke", "#888888;" )
+        	.style("stroke", "#888888;")
         	.text("% Distance Along Fiber Bundle");
 
        trpanels.append("text")
@@ -199,84 +253,106 @@ var trpanels = d3.select("#tractdetails").selectAll("svg").data(tractdata);
 
 // associate tractsline with each subject
     var  tractlines = trpanels.selectAll(".tracts")
-        .data(function(d){ return d.subjects; })
+        .data(function(d){ return d.values; })
         .enter().append("g")
         .attr("class", "tracts")
-        .attr("id", function(d,i){return "Subject"+(i);})
-        .style("opacity", 0.5)
-        .style("stroke-width", "2.5px")
+        .attr("id", function (d, i) {
+            if (i >= sub_data.length) {
+                return "Mean" + (i - sub_data.length);
+            } else {
+                return "Subject" + (i);
+            }
+        })
+        .style("opacity", 0.3)
+        .style("stroke-width", "1px")
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
-        .on("click", onclick );
+        .on("click", onclick);
+   
+    //if (ramp != null) {
+    //    tractlines.style("stroke", ramp(1));
+    //}
 
+    d3.selectAll("#Mean0")
+        .style("opacity", 0.99)
+        .style("stroke-width", "3.5px")
 
-        tractlines.append("path")
-            .attr("class", "line")
-            //.attr("id", function(d,i){return(i);})
-            .attr("d",  function(d ) { return  line(d); });
+    
 
-  function mouseover() {
-	  if (!brushing) {
-		  if (isDown) {
-			  if ($(this).css("opacity") == 0.5) {
-				  // uses the opacity of the row for selection and deselection
-				  d3.selectAll('#' + this.id)
-					  .transition()
-					  .duration(50)
-					  .style("opacity", 1)
-					  .style("stroke-width", "5px");
-			  } else {
-				  d3.selectAll('#' + this.id)
-					  .transition()
-					  .duration(50)
-					  .style("opacity", 0.5)
-					  .style("stroke-width", "2.5px");
-			  }
-		  } else {
-			  if ($(this).css("stroke-width") == "2.5px") {
-				  // uses the stroke-width of the line clicked on to determine
-				  // whether to turn the line on or off
-				  d3.selectAll('#' + this.id)
-					  .transition()
-					  .duration(50)
-					  .style("opacity", 1);
-			  }
-		  }
-	  }
-  }
+    tractlines.append("path")
+        .attr("class", "line")
+        .attr("d", function (d) { return line(d.values); });
 
-  function onclick() {
-	  if (!brushing) {
-		  if ($(this).css("stroke-width") == "5px") {
-			  // uses the stroke-width of the line clicked on to determine whether
-			  // to turn the line on or off
-			  d3.selectAll( '#' + this.id)
-				  .transition()
-				  .duration(50)
-				  .style("opacity", 0.5)
-				  .style("stroke-width", "2.5px");
-		  } else {
-			  d3.selectAll( '#' + this.id )
-				  .transition()
-				  .duration(50)
-				  .style("opacity", 1)
-				  .style("stroke-width", "5px");
-		  }
-	  }
-  }
+    function mouseover() {
+        if (!brushing) {
+            if ($(this).css("stroke-width") == "1px") {			//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
+                d3.selectAll('#' + this.id)
+                    //.transition()
+                    //.duration(50)
+                    .style("opacity", 1)
+                    .style("stroke-width", "1.1px");
+            }
+            if (isDown) {
+                if ($(this).css("stroke-width") == "2.1px") {				  //uses the opacity of the row for selection and deselection
+                    d3.selectAll('#' + this.id)
+                        //.transition()
+                        //.duration(50)
+                        .style("opacity", 0.3)
+                        .style("stroke-width", "1px");
+                } else if ($(this).css("stroke-width") == "1.1px") {
+                    d3.selectAll('#' + this.id)
+                        //.transition()
+                        //.duration(50)
+                        .style("opacity", 1)
+                        .style("stroke-width", "2.1px");
+                } else if ($(this).css("stroke-width") == "1px") {
+                    d3.selectAll('#' + this.id)
+                        //.transition()
+                        //.duration(50)
+                        .style("opacity", 1)
+                        .style("stroke-width", "2.1px");
+                }
+            }
+        }
+    }
 
-  function mouseout() {
-	  if (!brushing) {
-		  if($(this).css("stroke-width") == "2.5px"){
-			  // uses the stroke-width of the line clicked on to determine whether
-			  // to turn the line on or off
-			  d3.selectAll('#' + this.id)
-				  .transition()
-				  .duration(50)
-				  .style("opacity",0.5);
-		  }
-	  }
-  }
+    function onclick() {
+        if (!brushing) {
+            if ($(this).css("stroke-width") == "2.1px") {				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
+
+                d3.selectAll('#' + this.id)
+                    //.transition()
+                    //.duration(50)
+                    .style("opacity", 0.3)
+                    .style("stroke-width", "1px");
+            } else if ($(this).css("stroke-width") == "1.1px") {
+                d3.selectAll('#' + this.id)
+                    //.transition()
+                    //.duration(50)
+                    .style("opacity", 1)
+                    .style("stroke-width", "2.1px");
+            } else if ($(this).css("opacity") == 0.3) {
+                d3.selectAll('#' + this.id)
+                    //.transition()
+                    //.duration(50)
+                    .style("opacity", 1)
+                    .style("stroke-width", "2.1px");
+            }
+        }
+    }
+
+    function mouseout() {
+        if (!brushing) {
+            if ($(this).css("stroke-width") == "1.1px") {				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
+                d3.selectAll('#' + this.id)
+                    //.transition()
+                    //.duration(50)
+                    .style("opacity", 0.3)
+                    .style("stroke-width", "1px");
+            }
+        }
+    }
+
 
   function brushed() {
 	  bundleBrush[this.parentElement.id].brushOn = !brush.empty();
@@ -310,11 +386,3 @@ function showHideTractDetails(state, name)
   }
 
 }
-
-// var $window = $(window),
-//    $stickyEl = $('#statcontent'),
-//    elTop = $stickyEl.offset().top;
-
-// $window.scroll(function() {
-//     $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop);
-// });
