@@ -77,10 +77,12 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
 
     # Create metadata
     metadata = afq['metadata'].item()
-    meta_df = pd.DataFrame(data=np.array(metadata.item()).T,
-                           columns=metadata.dtype.names)
+    meta_df = pd.DataFrame(data=np.hstack([subject_ids.reshape((6, 1)),
+                                           np.array(metadata.item()).T]),
+                           columns=["subjectID"] + list(metadata.dtype.names))
 
-    meta_fname = op.join(out_path, 'subjects.csv')
-    meta_df.to_csv(meta_fname, index=False)
+    meta_fname = op.join(out_path, 'subjects.json')
+    meta_df['subjectID'] = subject_ids
+    meta_df.to_json(meta_fname, orient='records')
 
     return nodes_fname, meta_fname
