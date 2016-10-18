@@ -256,6 +256,7 @@ var xAxis = d3.svg.axis()
         .attr("class", "tracts")
         .attr("id", function (d, i) {
             if (i >= sub_data.length) {
+                console.log(i - sub_data.length);
                 return "Mean" + (i - sub_data.length);
             } else {
                 return "Subject" + (i);
