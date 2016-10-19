@@ -82,7 +82,6 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
                            columns=["subjectID"] + list(metadata.dtype.names))
 
     meta_fname = op.join(out_path, 'subjects.json')
-    meta_df['subjectID'] = subject_ids
     meta_df.to_json(meta_fname, orient='records')
 
     return nodes_fname, meta_fname
