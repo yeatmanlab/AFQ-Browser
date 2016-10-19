@@ -30,8 +30,8 @@ var greyGroups = new THREE.Object3D();
 
 // Set initial opacitites here
 var initLHOpacity = 0.01;
-var initRHOpacity = 0.3;
-var initFiberOpacity = 0.1;
+var initRHOpacity = 0.70;
+var initFiberOpacity = 0.25;
 var initColorOpacity = 0.75;
 var initHighlightOpacity = 0.75;
 
@@ -211,7 +211,7 @@ function init() {
 
 	var highlightController = gui.add(controlBox, 'highlight')
 		.name('Mouseover Highlight');
-	
+
 	highlightController.onChange( function(value) {
 		console.log(value);
 	});
