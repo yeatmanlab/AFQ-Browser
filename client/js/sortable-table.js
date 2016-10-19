@@ -7,17 +7,19 @@ var previousSort = null;
 var format = d3.time.format("%m/%d/%Y");
 //var dateFn = function(date) { return format.parse(d.created_at) };
 
-/*var sub_data = []
-d3.csv("/data/subjects.csv", function (data) {
-    sub_data = []
+
+
+var sub_data = []
+
+d3.json("/data/subjects.json", function (data) {
     data.forEach(function (d) {
         sub_data.push(d);
     });
     console.log(JSON.stringify(sub_data));
     refreshTable(null);
-});*/
+});
 
-
+/*
 var sub_data = [
     { "ID": 'Subject1', "GENDER": "M", "DOB": "12/4/1980", "R SCORE": 90, "SYMPTOMATIC": true },
     { "ID": 'Subject2', "GENDER": "F", "DOB": "10/23/1981", "R SCORE": 122, "SYMPTOMATIC": false },
@@ -29,7 +31,7 @@ var sub_data = [
     { "ID": 'Subject9', "GENDER": "F", "DOB": "6/22/1980", "R SCORE": 95, "SYMPTOMATIC": false },
     { "ID": 'Subject8', "GENDER": "M", "DOB": "2/14/1983", "R SCORE": 87, "SYMPTOMATIC": true },
     { "ID": 'Subject0', "GENDER": "F", "DOB": "11/3/1982", "R SCORE": 115, "SYMPTOMATIC": false }
-];
+];*/
 
 var table_svg = d3.select("#table").append("svg")
     .attr("width", 700)

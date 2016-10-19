@@ -122,7 +122,7 @@ brushController.onChange(function () {
 });
 
 plotsGui.close();
-
+// FIGURE OUT QUEUE TO MAKE SURE METADATA TABLE LOADS FIRST
 queue()
     .defer(d3.csv, "data/nodes.csv")
     .await(ready);
@@ -256,7 +256,6 @@ var xAxis = d3.svg.axis()
         .attr("class", "tracts")
         .attr("id", function (d, i) {
             if (i >= sub_data.length) {
-                console.log(i - sub_data.length);
                 return "Mean" + (i - sub_data.length);
             } else {
                 return "Subject" + (i);
@@ -267,7 +266,7 @@ var xAxis = d3.svg.axis()
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
         .on("click", onclick);
-   
+
     //if (ramp != null) {
     //    tractlines.style("stroke", ramp(1));
     //}
@@ -276,7 +275,7 @@ var xAxis = d3.svg.axis()
         .style("opacity", 0.99)
         .style("stroke-width", "3.5px")
 
-    
+
 
     tractlines.append("path")
         .attr("class", "line")
