@@ -6,6 +6,11 @@
     /*border: 0;*/
 }
 
+.w3-container {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
 #body {
   font-family: "Arial", "Helvetica", sans-serif;
   color: #404040;
@@ -123,7 +128,7 @@ h2 {
 #threejsbrain {
   display: flex;
   flex-direction: column;
-  align-items: strecth;
+  align-items: stretch;
   /* overflow: auto; */
 
   flex-grow: 1;
@@ -143,7 +148,7 @@ h2 {
   cursor: pointer;
 }
 
-#gui-container {
+.gui-container {
   display: flex;
   justify-content: flex-end;
 }
@@ -151,6 +156,12 @@ h2 {
 #container-plots {
   width: 400px;
   flex: 1 1 auto;
+}
+
+#plots-and-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 #tractlist {
@@ -165,6 +176,8 @@ h2 {
 #tractdetails {
   height: 1px;
   text-align: center;
+  flex-grow: 1;
+  flex-shrink: 1;
 }
 
 #table {

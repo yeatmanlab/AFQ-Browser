@@ -216,7 +216,7 @@ function init() {
 		console.log(value);
 	});
 
-	var guiContainer = document.getElementById('gui-container');
+	var guiContainer = document.getElementById('three-gui-container');
 	guiContainer.appendChild(gui.domElement);
 	gui.close();
 
