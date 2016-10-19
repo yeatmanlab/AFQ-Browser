@@ -100,16 +100,14 @@ var plotsGuiConfigObj = function () {
 
 var plotsGui = new dat.GUI({
     autoplace: false,
-    width: 350,
+    width: 250,
     scrollable: false
 });
 
 var plotsControlBox = new plotsGuiConfigObj();
 
-// gui.domElement.id = 'gui';
-var plotsGuiContainer = $('.plotsGUI').append($(plotsGui.domElement));
-
-
+var plotsGuiContainer = document.getElementById('plots-gui-container');
+plotsGuiContainer.appendChild(plotsGui.domElement);
 
 var brushController = plotsGui.add(plotsControlBox, 'brushTract')
     .name('Brushable Tracts');
