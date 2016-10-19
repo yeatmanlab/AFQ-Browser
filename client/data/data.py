@@ -3,6 +3,7 @@ import scipy.io as sio
 import pandas as pd
 import numpy as np
 
+
 def mat2tables(mat_file_name, subject_ids=None, stats=None,
                out_path=None):
     """
