@@ -17,8 +17,6 @@ h = 350 - m.top - m.bottom;
 
 // =========== three js part
 
-var container;
-
 var camera, scene, renderer;
 var directionalLight;
 
@@ -31,9 +29,9 @@ var colorGroups = new THREE.Object3D();
 var greyGroups = new THREE.Object3D();
 
 // Set initial opacitites here
-var initLHOpacity = 0.0;
-var initRHOpacity = 0.3;
-var initFiberOpacity = 0.1;
+var initLHOpacity = 0.01;
+var initRHOpacity = 0.70;
+var initFiberOpacity = 0.25;
 var initColorOpacity = 0.75;
 var initHighlightOpacity = 0.75;
 
@@ -53,14 +51,11 @@ var guiConfigObj = function () {
 
 var gui = new dat.GUI({
 	autoplace: false,
-	width: 350,
+	width: 250,
 	scrollable: false
 });
 
 var controlBox = new guiConfigObj();
-
-// gui.domElement.id = 'gui';
-var guiContainer = $('.moveGUI').append($(gui.domElement));
 
 var greyLineMaterial = new THREE.LineBasicMaterial({
 	opacity: initFiberOpacity,
@@ -69,7 +64,7 @@ var greyLineMaterial = new THREE.LineBasicMaterial({
 	depthWrite: true
 });
 
-greyLineMaterial.color.setHex( 0x969696 );
+greyLineMaterial.color.setHex( 0x444444 );
 
 var colorLineMaterial = new THREE.LineBasicMaterial({
 	opacity: 0.0,
@@ -97,26 +92,22 @@ var faPlotLength = 100;
 var showStats = false;
 var stats;
 
+// We put the renderer inside a div with id #threejsbrain
+var container;
+
 if (showStats) {
 	stats = new Stats();
 	container.appendChild( stats.dom );
 }
 
 function init() {
+	container = document.getElementById("threejsbrain");
 
-    // We put the container inside a div with id #threejsbrain
-    var puthere = document.getElementById("threejsbrain");
-    container = document.createElement('div');
-    puthere.appendChild(container);
+    var width = container.clientWidth;
+	var height = container.clientHeight;
 
-    // var WIDTH = window.innerWidth,
-        // HEIGHT = window.innerHeight;
-
-    Width = container.clientWidth;
-
-    // camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 1, 2000);
-    camera = new THREE.PerspectiveCamera( 45, Width / sizeY, 1, 2000 );
-    camera.position.x = -20;
+    camera = new THREE.PerspectiveCamera( 45, width / height, 1, 2000 );
+    camera.position.x = -15;
 	camera.up.set(0, 0, 1);
 
     // scene
@@ -139,9 +130,9 @@ function init() {
     };
 
     // renderer
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({ alpha: true });
 
-    renderer.setSize(Width, sizeY);
+    renderer.setSize(width, height);
     container.appendChild(renderer.domElement);
 
     // dom event
@@ -169,14 +160,19 @@ function init() {
             }
         });
 		lh.translateX(-0.05);
-        lh.material.opacity = initLHOpacity;
 		rh.translateX( 0.05);
+
+        lh.material.opacity = initLHOpacity;
         rh.material.opacity = initRHOpacity;
+
+		lh.material.color.setHex( 0xe8e3d3 );
+		rh.material.color.setHex( 0xe8e3d3 );
+
         scene.add(object);
     });
 
 	var lhOpacityController = gui.add(controlBox, 'lhOpacity')
-		.min(0).max(1).name('Left Hemi Opacity');
+		.min(0).max(1).step(0.01).name('Left Hemi Opacity');
 
 	lhOpacityController.onChange( function(value) {
 		lh.traverse(function (child) {
@@ -187,7 +183,7 @@ function init() {
 	});
 
 	var rhOpacityController = gui.add(controlBox, 'rhOpacity')
-		.min(0).max(1).name('Right Hemi Opacity');
+		.min(0).max(1).step(0.01).name('Right Hemi Opacity');
 
 	rhOpacityController.onChange( function(value) {
 		rh.traverse(function (child) {
@@ -215,11 +211,13 @@ function init() {
 
 	var highlightController = gui.add(controlBox, 'highlight')
 		.name('Mouseover Highlight');
-	
+
 	highlightController.onChange( function(value) {
 		console.log(value);
 	});
 
+	var guiContainer = document.getElementById('three-gui-container');
+	guiContainer.appendChild(gui.domElement);
 	gui.close();
 
     // contain all bundles in this Group object
@@ -386,12 +384,17 @@ function init() {
 
 // Resize the three.js window on full window resize.
 function onWindowResize() {
-    var Width = container.clientWidth;
+    var width = container.clientWidth;
+	var height = container.clientHeight;
 
-    camera.aspect = Width / sizeY;
+    camera.aspect = width / height;
     camera.updateProjectionMatrix();
 
-    renderer.setSize(Width, sizeY);
+    renderer.setSize(width, height);
+	console.log("(cw, ch, rw, rh) = ("
+			+ width + ", " + height + ", "
+			+ renderer.domElement.clientWidth + ", "
+			+ renderer.domElement.clientHeight + ")");
 }
 
 function animate() {
