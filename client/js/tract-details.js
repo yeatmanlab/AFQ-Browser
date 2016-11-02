@@ -18,6 +18,7 @@ var axisOffset = {bottom: 40};
 // init variable to hold data later
 var tractdata = d3.map();
 var brushing = false;
+var trpanels = null;
 
 //insert tractname checkboxes in the tractlist panel
 var svg = d3.select('#tractlist').selectAll(".input").data(tracts).enter().append('div');
@@ -74,15 +75,15 @@ var y = d3.scale.linear()
 var line = d3.svg.line()
     .interpolate("basis")
     .x(function (d) {
-        if (d.pos) {
-            return x(+d.pos);
+        if (d.nodeID) {
+            return x(+d.nodeID);
         } else {
             return x(+d.key);
         }
     })
     .y(function (d) {
-        if (d.FA) {
-            return y(+d.FA);
+        if (d[plotsControlBox.plotKey]) {
+            return y(+d[plotsControlBox.plotKey]);// *****
         } else {
             return y(+d.values);
         }
@@ -90,12 +91,25 @@ var line = d3.svg.line()
 
 var bundleBrush = {};
 
+/*
+var nodeKeys = []
+
+d3.csv("/data/nodes.csv", function (data) {
+    Object.keys(data[0]).slice(3,-1).forEach(function (d) {
+        nodeKeys.push(d);
+    })
+    console.log(nodeKeys)
+    });
+    */
+
+
 var plotsGuiConfigObj = function () {
     //this.yMin = 0;
     //this.yMax = 1.0;
     //this.xMin = 0;
     //this.xMax = 100;
     this.brushTract = false;
+    this.plotKey = null;
 };
 
 var plotsGui = new dat.GUI({
@@ -108,22 +122,40 @@ var plotsControlBox = new plotsGuiConfigObj();
 
 // gui.domElement.id = 'gui';
 var plotsGuiContainer = $('.plotsGUI').append($(plotsGui.domElement));
-
-
-
-var brushController = plotsGui.add(plotsControlBox, 'brushTract')
-    .name('Brushable Tracts');
-
-brushController.onChange(function () {
-    var brushg = d3.selectAll(".brush").data([]);
-    brushg.exit().remove();
-
-    queue()
+queue()
     .defer(d3.csv, "data/nodes.csv")
-    .await(ready)
-});
+    .await(buildPlotGui);
 
+function buildPlotGui(error, data) {
+    if (error) throw error;
+
+    var nodeKeys = Object.keys(data[0]).slice(3, -1)
+    plotsControlBox.plotKey = nodeKeys[0]
+
+    var keyController = plotsGui.add(plotsControlBox, 'plotKey', nodeKeys)
+        .name('Plot Type')
+        .onChange(function () {
+            var trpanels = d3.selectAll(".tracts").data([]);
+            trpanels.exit().remove();
+
+            queue()
+            .defer(d3.csv, "data/nodes.csv")
+            .await(ready)
+        });
+
+    var brushController = plotsGui.add(plotsControlBox, 'brushTract')
+        .name('Brushable Tracts')
+        .onChange(function () {
+            var brushg = d3.selectAll(".brush").data([]);
+            brushg.exit().remove();
+
+            queue()
+            .defer(d3.csv, "data/nodes.csv")
+            .await(ready)
+        });
+}
 plotsGui.close();
+
 // FIGURE OUT QUEUE TO MAKE SURE METADATA TABLE LOADS FIRST
 queue()
     .defer(d3.csv, "data/nodes.csv")
@@ -132,25 +164,62 @@ queue()
 function ready(error, data) {
     if (error) throw error;
 
-    tractdata = d3.nest()
-     .key(function (d) { return d.tract; })
-     .key(function (d) { return d.subject; })
+    //var extent = d3.nest()
+    //    .key(function (d) { return d[plotsControlBox.plotKey]; })
+    //    .entries(data);
+
+    var tractdata = d3.nest()
+     .key(function (d) { return d.tractID; })
+     .key(function (d) { return d.subjectID; }) 
      .entries(data);
 
+    //data[0].subjectID
+
+    //console.log(JSON.stringify(data[0].subjectID))
 
     var tract_mean = d3.nest()
-      .key(function (d) { return d.tract; })
-      .key(function (d) { return d.pos; })
-      .rollup(function (v) { return d3.mean(v, function (d) { return +d.FA; }); })
+      .key(function (d) { return d.tractID; })
+      //.key(function (d) { return d.group; })
+      .key(function (d) { return d.nodeID; })
+      .rollup(function (v) { return d3.mean(v, function (d) { return +d[plotsControlBox.plotKey]; }); }) 
       .entries(data);
 
-
-    for (i = 0; i < tract_mean.length; i++) {
-        tractdata[i].values.push(tract_mean[i]);
+    function setGroups(element, index, array) {
+        for (i = 0; i < element.length; i++) {
+            for (z = 0; z < data.length; z++) {
+                if (data[z].subjectID == element[i]) {
+                    data[z].group = index
+                }
+            }
+        }
     }
-    // set x and y domains for the tract plots
-    y.domain([0,1.0]);
-    x.domain([0, 100]).nice();
+
+    if (subjectGroups) {
+        subjectGroups.forEach(setGroups);
+        tract_mean = d3.nest()
+        .key(function (d) { return d.tractID; })
+        .key(function (d) { return d.group; })
+        .key(function (d) { return d.nodeID; })
+        .rollup(function (v) { return d3.mean(v, function (d) { return +d[plotsControlBox.plotKey]; }); })
+        .entries(data);
+
+        for (i = 0; i < tract_mean.length; i++) {
+            for (j = 0; j < tract_mean[i].length; j++) {
+                tractdata[i].values.push(tract_mean[i].values[j]);
+            }
+        }
+    } else {
+        for (i = 0; i < tract_mean.length; i++) {
+            tractdata[i].values.push(tract_mean[i]);
+        }
+    }
+
+    console.log(JSON.stringify(tract_mean[0].values.length))
+
+    
+    // set x and y domains for the tract plots  
+    y.domain([0,1]); // **NEED TO INCORPORATE extent of plotsControlBox.plotKey
+    x.domain([0, 100]).nice(); 
 
 
 //create axes
@@ -176,7 +245,7 @@ var xAxis = d3.svg.axis()
     //initialize panels for each tract - and attach tract data with them
     var trpanels = d3.select("#tractdetails").selectAll("svg").data(tractdata);
     trpanels.enter().append("svg")
-        .attr("id", function (d) { return "tract" + (+d.key - 1); })
+        .attr("id", function (d,i) { return "tract"+ i}) //d.values[0].values[0].tractID; })
         .attr("width", w + m.left + m.right + 40)
         .attr("height", h + m.top + m.bottom + axisOffset.bottom)
         .attr("display", "none")
@@ -221,7 +290,7 @@ var xAxis = d3.svg.axis()
            .attr("height", h + m.top + m.bottom + 15)
                  .attr("x", 0)
                  .attr("y", 0)
-                .style("stroke", function (d) { return d3colors[d.key - 1]; })
+                .style("stroke", function (d,i) { return d3colors[i]; }) // ?????????????????????????????????????????????????????????????????????????????????????
                 .style("fill", "none")
                 .style("stroke-width", 2);
 
@@ -258,9 +327,9 @@ var xAxis = d3.svg.axis()
         .attr("class", "tracts")
         .attr("id", function (d, i) {
             if (i >= sub_data.length) {
-                return "Mean" + (i - sub_data.length);
+                return "Mean";// + (i - sub_data.length);
             } else {
-                return "Subject" + (i);
+                return d.values[0].subjectID; 
             }
         })
         .style("opacity", 0.3)
@@ -273,15 +342,17 @@ var xAxis = d3.svg.axis()
     //    tractlines.style("stroke", ramp(1));
     //}
 
-    d3.selectAll("#Mean0")
+    d3.selectAll("#Mean")
         .style("opacity", 0.99)
         .style("stroke-width", "3.5px")
-
+        //.style("stroke", function (d,i) { return ramp(i); })
     
 
     tractlines.append("path")
         .attr("class", "line")
         .attr("d", function (d) { return line(d.values); });
+
+    tractlines.selectAll("path").transition().duration(1000)
 
     function mouseover() {
         if (!brushing) {
