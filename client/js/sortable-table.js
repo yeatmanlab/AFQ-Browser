@@ -8,14 +8,13 @@ var format = d3.time.format("%m/%d/%Y");
 //var dateFn = function(date) { return format.parse(d.created_at) };
 
 
-
+var subjectGroups = false;
 var sub_data = []
 
 d3.json("/data/subjects.json", function (data) {
     data.forEach(function (d) {
         sub_data.push(d);
     });
-    console.log(JSON.stringify(sub_data));
     refreshTable(null);
 });
 
@@ -43,8 +42,6 @@ var headerGrp = table_svg.append("g").attr("class", "headerGrp");
 var rowsGrp = table_svg.append("g").attr("class","rowsGrp");
 
 
-refreshTable(null);
-
 var tableGuiConfigObj = function () {
     this.groupCount = 2;
 };
@@ -66,6 +63,10 @@ var groupCountController = tableGui.add(tableControlBox, 'groupCount')
 groupCountController.onChange(function () {
     refreshTable(sortOn);
 });
+tableGui.close()
+
+var sortOn = null
+refreshTable(sortOn)
 
 function refreshTable(sortOn){
 
@@ -98,12 +99,12 @@ function refreshTable(sortOn){
     // fill the table
     // select rows
     var rows = rowsGrp.selectAll("g.row").data(sub_data,
-        function(d){ return d.ID; });
+        function(d){ return d.subjectID; });
 
     // create rows
     var rowsEnter = rows.enter().append("svg:g")
         .attr("class","row")
-        .attr("id", function(d){ return d.ID; })
+        .attr("id", function(d){ return d.subjectID; })
         .attr("opacity",0.3)
         .attr("transform", function (d, i){
             return "translate(0," + (i+1) * (fieldHeight+1) + ")";
@@ -155,29 +156,23 @@ function refreshTable(sortOn){
         var numGroups = tableControlBox.groupCount;
         var finalSplit = Math.min(numGroups, splitGroups.length)
 
-        var subjectGroups = []
+        subjectGroups = []
         for (g = 0; g < finalSplit; g++) {
             var group_arr = [];
             var groupSize = Math.floor(sub_data.length / finalSplit);
             var splitSize = Math.floor(splitGroups.length / finalSplit);
             if (splitSize == 1) {
                 for (j = 0; j < splitGroups[g].values.length; j++) {
-                    group_arr.push(splitGroups[g].values[j].ID);
+                    group_arr.push(splitGroups[g].values[j].subjectID);
                 }
             } else { //if (splitSize = groupSize) {
                 var stopGroup = (g + 1) * groupSize;
                 for (k = g * groupSize; k < stopGroup; k++) {
-                    group_arr.push(splitGroups[k].values[0].ID);
+                    group_arr.push(splitGroups[k].values[0].subjectID);
                 }
             };
             subjectGroups.push(group_arr);
         }
-
-        var ordered_subject
-
-
-
-        //console.log(JSON.stringify(subjectGroups));
 
         var ramp = d3.scale.linear().domain([0, finalSplit-1]).range(["red", "blue"]);
 
@@ -191,6 +186,8 @@ function refreshTable(sortOn){
         }
 
         subjectGroups.forEach(IDcolor);
+
+        ready(d3.csv("data/nodes.csv"))
 
         rows.transition()
            .duration(500)
