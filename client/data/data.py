@@ -78,8 +78,9 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
 
     # Create metadata
     metadata = afq['metadata'].item()
-    meta_df = pd.DataFrame(data=np.hstack([subject_ids.reshape((6, 1)),
-                                           np.array(metadata.item()).T]),
+    meta_df = pd.DataFrame(data=np.hstack([
+                                subject_ids.reshape((len(subject_ids), 1)),
+                                np.array(metadata.item()).T]),
                            columns=["subjectID"] + list(metadata.dtype.names))
 
     meta_fname = op.join(out_path, 'subjects.json')
