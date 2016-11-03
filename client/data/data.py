@@ -5,7 +5,7 @@ import numpy as np
 
 
 def mat2tables(mat_file_name, subject_ids=None, stats=None,
-               out_path=None):
+               out_path=None, make_nodes=True):
     """
     Create a nodes table and a subjects table from an AFQ `.mat` file
 
@@ -49,32 +49,34 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
             # XXX Make the number of zeros flexible and depend on n_subjects:
             subject_ids = ['subject_%03d' % i for i in range(n_subjects)]
 
-    # Loop over subjects
-    for subject in range(len(subject_ids)):
-        # Loop over tracts
-        for tract in range(n_tracts):
-            # Making a subject and tract specific dataframe
-            subj_df = pd.DataFrame(
-                    columns=['subjectID', 'tractID', 'nodeID'],
-                    data=np.array([[subject_ids[subject]] * nodes_per_tract,
-                                   [tract_ids[tract]] * nodes_per_tract,
-                                   np.arange(nodes_per_tract)]).T)
-            # We're looping over the desired stats (eg fa, md) and adding them
-            # to the subjects dataframe
-            for stat in stats:
-                scalar = vals[stat].item()[tract][subject, :]
-                subj_df[stat] = scalar
-            # The subject's dataframe for this tract is now appended to the
-            # whole dataframe here:
-            df = df.append(subj_df)
+    # Check if a nodes table is desired
+    if make_nodes:
+        # Loop over subjects
+        for subject in range(len(subject_ids)):
+            # Loop over tracts
+            for tract in range(n_tracts):
+                # Making a subject and tract specific dataframe
+                subj_df = pd.DataFrame(
+                        columns=['subjectID', 'tractID', 'nodeID'],
+                        data=np.array([[subject_ids[subject]] * nodes_per_tract,
+                                       [tract_ids[tract]] * nodes_per_tract,
+                                       np.arange(nodes_per_tract)]).T)
+                # We're looping over the desired stats (eg fa, md) and adding them
+                # to the subjects dataframe
+                for stat in stats:
+                    scalar = vals[stat].item()[tract][subject, :]
+                    subj_df[stat] = scalar
+                # The subject's dataframe for this tract is now appended to the
+                # whole dataframe here:
+                df = df.append(subj_df)
 
-    # Set output path from the input kwarg:
-    if out_path is None:
-        out_path = '.'
+        # Set output path from the input kwarg:
+        if out_path is None:
+            out_path = '.'
 
-    nodes_fname = op.join(out_path, 'nodes.csv')
-    # Write to file
-    df.to_csv(nodes_fname, index=False)
+        nodes_fname = op.join(out_path, 'nodes.csv')
+        # Write to file
+        df.to_csv(nodes_fname, index=False)
 
     # Create metadata
     metadata = afq['metadata'].item()
