@@ -472,7 +472,7 @@ function updatePlots(error, data) {
         .style("opacity", 0.3)
         .style("stroke-width", "1px");
 
-        tractlines.append("path")
+        trlines.append("path")
             .attr("class", "line")
             .attr("d", function (d) { return line(d.values); });
             
