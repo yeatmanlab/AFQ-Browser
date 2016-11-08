@@ -20,6 +20,10 @@ var tractdata = d3.map();
 var brushing = false;
 var trpanels = null;
 
+// transition variable for consistency
+var t = d3.transition()
+    .duration(750);
+
 //insert tractname checkboxes in the tractlist panel
 var svg = d3.select('#tractlist').selectAll(".input").data(tracts).enter().append('div');
 svg.append('input')
@@ -72,6 +76,19 @@ var x = d3.scale.linear()
 var y = d3.scale.linear()
     .range([h - axisOffset.bottom, 0]);
 
+//create axes
+var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+	    .tickSize(0 - w - 5)
+	    .ticks(5);
+
+var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom")
+        .tickPadding(8)
+        .ticks(5);
+
 var line = d3.svg.line()
     .interpolate("basis")
     .x(function (d) {
@@ -83,25 +100,13 @@ var line = d3.svg.line()
     })
     .y(function (d) {
         if (d[plotsControlBox.plotKey]) {
-            return y(+d[plotsControlBox.plotKey]);// *****
+            return y(+d[plotsControlBox.plotKey]);
         } else {
             return y(+d.values);
         }
     });
 
 var bundleBrush = {};
-
-/*
-var nodeKeys = []
-
-d3.csv("/data/nodes.csv", function (data) {
-    Object.keys(data[0]).slice(3,-1).forEach(function (d) {
-        nodeKeys.push(d);
-    })
-    console.log(nodeKeys)
-    });
-    */
-
 
 var plotsGuiConfigObj = function () {
     //this.yMin = 0;
@@ -136,12 +141,7 @@ function buildPlotGui(error, data) {
     var keyController = plotsGui.add(plotsControlBox, 'plotKey', nodeKeys)
         .name('Plot Type')
         .onChange(function () {
-            var trpanels = d3.selectAll(".tracts").data([]);
-            trpanels.exit().remove();
-
-            queue()
-            .defer(d3.csv, "data/nodes.csv")
-            .await(ready)
+            d3.csv("data/nodes.csv", updatePlots);
         });
 
     var brushController = plotsGui.add(plotsControlBox, 'brushTract')
@@ -150,9 +150,7 @@ function buildPlotGui(error, data) {
             var brushg = d3.selectAll(".brush").data([]);
             brushg.exit().remove();
 
-            queue()
-            .defer(d3.csv, "data/nodes.csv")
-            .await(ready)
+            d3.csv("data/nodes.csv", ready);
         });
 }
 plotsGui.close();
@@ -165,77 +163,24 @@ queue()
 function ready(error, data) {
     if (error) throw error;
 
-    //var extent = d3.nest()
-    //    .key(function (d) { return d[plotsControlBox.plotKey]; })
-    //    .entries(data);
-
     var tractdata = d3.nest()
      .key(function (d) { return d.tractID; })
      .key(function (d) { return d.subjectID; })
      .entries(data);
 
-    //data[0].subjectID
-
-    //console.log(JSON.stringify(data[0].subjectID))
-
     var tract_mean = d3.nest()
       .key(function (d) { return d.tractID; })
-      //.key(function (d) { return d.group; })
       .key(function (d) { return d.nodeID; })
       .rollup(function (v) { return d3.mean(v, function (d) { return +d[plotsControlBox.plotKey]; }); })
       .entries(data);
 
-    function setGroups(element, index, array) {
-        for (i = 0; i < element.length; i++) {
-            for (z = 0; z < data.length; z++) {
-                if (data[z].subjectID == element[i]) {
-                    data[z].group = index
-                }
-            }
-        }
+    for (i = 0; i < tract_mean.length; i++) {
+        tractdata[i].values.push(tract_mean[i]);
     }
-
-    if (subjectGroups) {
-        subjectGroups.forEach(setGroups);
-        tract_mean = d3.nest()
-        .key(function (d) { return d.tractID; })
-        .key(function (d) { return d.group; })
-        .key(function (d) { return d.nodeID; })
-        .rollup(function (v) { return d3.mean(v, function (d) { return +d[plotsControlBox.plotKey]; }); })
-        .entries(data);
-
-        for (i = 0; i < tract_mean.length; i++) {
-            for (j = 0; j < tract_mean[i].length; j++) {
-                tractdata[i].values.push(tract_mean[i].values[j]);
-            }
-        }
-    } else {
-        for (i = 0; i < tract_mean.length; i++) {
-            tractdata[i].values.push(tract_mean[i]);
-        }
-    }
-
-    console.log(JSON.stringify(tract_mean[0].values.length))
-
 
     // set x and y domains for the tract plots
-    y.domain([0,1]); // **NEED TO INCORPORATE extent of plotsControlBox.plotKey
+    y.domain(d3.extent(data, function (d) { return +d[plotsControlBox.plotKey]; }));
     x.domain([0, 100]).nice();
-
-
-//create axes
-var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("left")
-	    .tickSize(0-w-5)
-	    .ticks(5);
-
-var xAxis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom")
-        .tickPadding(8)
-        .ticks(5);
-
 
     var brush = d3.svg.brush()
         .x(x)
@@ -244,7 +189,7 @@ var xAxis = d3.svg.axis()
         .on("brushend", brushEnd);
 
     //initialize panels for each tract - and attach tract data with them
-    var trpanels = d3.select("#tractdetails").selectAll("svg").data(tractdata);
+    trpanels = d3.select("#tractdetails").selectAll("svg").data(tractdata);
     trpanels.enter().append("svg")
         .attr("id", function (d,i) { return "tract"+ i}) //d.values[0].values[0].tractID; })
         .attr("width", w + m.left + m.right + 40)
@@ -291,18 +236,18 @@ var xAxis = d3.svg.axis()
            .attr("height", h + m.top + m.bottom + 15)
                  .attr("x", 0)
                  .attr("y", 0)
-                .style("stroke", function (d,i) { return d3colors[i]; }) // ?????????????????????????????????????????????????????????????????????????????????????
+                .style("stroke", function (d,i) { return d3colors[i]; }) 
                 .style("fill", "none")
                 .style("stroke-width", 2);
 
-    // 	trpanels.append("text")
-    //   	.attr("transform", "rotate(-90)")
-    //   	.attr("x", -h/2)
-    //   	.attr("y",0)
-    //   	.style("stroke", "#AFBABF")
-    //   	.attr("dy", "1em")
-    //   	.style("text-anchor", "middle")
-    //   	.text("Fractional Anisotropy");
+    /*trpanels.append("text")
+       	.attr("transform", "rotate(-90)")
+       	.attr("x", -h/2)
+       	.attr("y",0)
+       	.style("stroke", "#AFBABF")
+       	.attr("dy", "1em")
+       	.style("text-anchor", "middle")
+       	.text("Fractional Anisotropy");
 
     trpanels.append("text")
         	.attr("x", 350)
@@ -310,7 +255,7 @@ var xAxis = d3.svg.axis()
             .attr("class", "plot_text")
         	.style("text-anchor", "end")
         	.style("stroke", "#888888;")
-        	.text("% Distance Along Fiber Bundle");
+        	.text("% Distance Along Fiber Bundle");*/
 
        trpanels.append("text")
              .attr("x", w + 40)
@@ -339,10 +284,6 @@ var xAxis = d3.svg.axis()
         .on("mouseout", mouseout)
         .on("click", onclick);
 
-    //if (ramp != null) {
-    //    tractlines.style("stroke", ramp(1));
-    //}
-
     d3.selectAll("#Mean")
         .style("opacity", 0.99)
         .style("stroke-width", "3.5px")
@@ -350,8 +291,6 @@ var xAxis = d3.svg.axis()
     tractlines.append("path")
         .attr("class", "line")
         .attr("d", function (d) { return line(d.values); });
-
-    tractlines.selectAll("path").transition().duration(1000)
 
     function mouseover() {
         if (!brushing) {
@@ -440,6 +379,103 @@ var xAxis = d3.svg.axis()
   function brushEnd() {
 	  brushing = false;
   }
+}
+
+function updatePlots(error, data) {
+    if (error) throw error;
+
+    tractdata = d3.nest()
+     .key(function (d) { return d.tractID; })
+     .key(function (d) { return d.subjectID; })
+     .entries(data);
+
+    function setGroups(element, index, array) {
+        for (i = 0; i < element.length; i++) {
+            for (z = 0; z < data.length; z++) {
+                if (data[z].subjectID == element[i]) {
+                    data[z].group = index
+                }
+            }
+        }
+    }
+
+    if (subjectGroups) {
+        subjectGroups.forEach(setGroups);
+        tract_mean = d3.nest()
+        .key(function (d) { return d.tractID; })
+        .key(function (d) { return d.group; })
+        .key(function (d) { return d.nodeID; })
+        .rollup(function (v) { return d3.mean(v, function (d) { return +d[plotsControlBox.plotKey]; }); })
+        .entries(data);
+
+        for (i = 0; i < tract_mean.length; i++) {
+            for (j = 0; j < tract_mean[i].values.length; j++) {
+                tractdata[i].values.push(tract_mean[i].values[j]);
+            }
+        }
+    } else {
+        for (i = 0; i < tract_mean.length; i++) {
+            tractdata[i].values.push(tract_mean[i]);
+        }
+    }
+
+    y.domain(d3.extent(data, function (d) { return +d[plotsControlBox.plotKey]; }));
+    x.domain([0, 100]).nice();
+
+    // Select the section we want to apply our changes to
+    var svg = d3.select("#tractdetails").selectAll("svg").data(tractdata).transition();
+   
+    //svg.select(".x.axis") // change the x axis
+    //    .duration(750)
+    //    .call(xAxis);
+    svg.select(".y.axis") // change the y axis
+        .duration(750)
+        .call(yAxis);
+
+    //svg.selectAll(".tracts")
+    //    .data(function (d) { return d.values; });
+
+    // JOIN new data with old elements.
+    var trlines = d3.select("#tractdetails").selectAll("svg").data(tractdata, function (d) { return d; }).selectAll(".tracts")
+        .data(function (d) { return d.values; }); //.select("#path").attr("d", function (d) { return line(d.values); });
+      
+    // EXIT old elements not present in new data.
+    trlines.exit()
+      .attr("class", "exit")
+    .transition(t)
+      .remove();
+
+    // UPDATE old elements present in new data.
+    trlines.attr("class", "update")
+        .style("fill-opacity", 1)
+      .transition(t);
+        //.attr("x", function (d, i) { return i * 32; });
+
+    trlines.select(".line")
+        .attr("d", function (d) { return line(d.values); });
+        
+
+    // ENTER new elements present in new data.
+    trlines.enter().append("g")
+            .attr("class", "tracts")
+            .attr("id", function (d, i) {
+                if (i >= sub_data.length) {
+                    return "Mean";
+                } else {
+                    return d.values[0].subjectID;
+                }
+            })
+            //.on("mouseover", mouseover)
+            //.on("mouseout", mouseout)
+            //.on("click", onclick)
+      .transition(t)
+        .style("opacity", 0.3)
+        .style("stroke-width", "1px");
+
+        tractlines.append("path")
+            .attr("class", "line")
+            .attr("d", function (d) { return line(d.values); });
+            
 }
 
 function showHideTractDetails(state, name)

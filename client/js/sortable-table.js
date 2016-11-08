@@ -187,7 +187,8 @@ function refreshTable(sortOn){
 
         subjectGroups.forEach(IDcolor);
 
-        ready(d3.csv("data/nodes.csv"))
+     
+        d3.csv("data/nodes.csv", updatePlots);
 
         rows.transition()
            .duration(500)
