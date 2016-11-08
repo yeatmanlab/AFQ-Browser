@@ -10,17 +10,10 @@ var d3colors = ["#1F77B4", "#AEC7E8", "#FF7F0E", "#FFBB78", "#2CA02C", "#98DF8A"
 // highlightColors[i] = (colors[i] + 10 lightness) converted to RGB hex
 var highlightColors = [0x2991DB, 0xD7E4F4, 0xFF9A42, 0xFFD6AD, 0x37C837, 0xBCEAB3, 0xDF5353, 0xFFC8C7, 0xAC8ACC, 0xDDD0E6, 0xA96C60, 0xD5B9B3, 0xECA2D6, 0xFCE3EE, 0x909090, 0xE0E0E0, 0xDCDC38, 0xE8E8B5, 0x30D6E8, 0xC7EAF0];
 
-var m = {top: 20, right: 10, bottom: 10, left: 20},
-w = 400 - m.left - m.right,
-h = 350 - m.top - m.bottom;
-
-
 // =========== three js part
 
 var camera, scene, renderer;
 var directionalLight;
-
-var sizeX = 600, sizeY = 500;
 
 var brain;
 var lh, rh;
@@ -123,7 +116,6 @@ function init() {
 			camera.position.z);
     scene.add(directionalLight);
 
-    // texture
     var manager = new THREE.LoadingManager();
     manager.onProgress = function (item, loaded, total) {
         //console.log(item, loaded, total);

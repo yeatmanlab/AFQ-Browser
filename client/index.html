@@ -1,41 +1,45 @@
 ﻿<html lang="en">
 <head>
 
-    <!-- Basic Page Needs
+<!-- Basic Page Needs
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <meta charset="utf-8">
-    <title>AFQ Browser</title>
+<meta charset="utf-8">
+<title>AFQ Browser</title>
 
-    <!-- FONT
+<!-- FONT
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <link type="text/css" rel="stylesheet"
-          href="//fonts.googleapis.com/css?family=Raleway:400,300,600">
+<link type="text/css" rel="stylesheet"
+    href="//fonts.googleapis.com/css?family=Raleway:400,300,600">
 
-    <!-- CSS
+<!-- CSS
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <link type="text/css" rel="stylesheet"
-          href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link type="text/css" rel="stylesheet" href="css/style.css">
-    <link type="text/css" rel="stylesheet"
-          href="http://www.w3schools.com/lib/w3.css">
+<link type="text/css" rel="stylesheet"
+    href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link type="text/css" rel="stylesheet" href="css/style.css">
+<link type="text/css" rel="stylesheet"
+    href="http://www.w3schools.com/lib/w3.css">
 
 </head>
 
 <body id="body">
 
-    <div id="header">
-        <h1 style="color:white;">AFQ Browser</h1>
-    </div>
+<div class="page-container">
+  <div id="header">
+    <h1 style="color:white;">AFQ Browser</h1>
+  </div>
 
-    <div class="app" id="app">
-      <div class="app-element ew-resize" id="container-list-3d-table">
+  <div class="app-container">
+    <div class="panel-container">
+      <div id="container-list-3d-table"
+          class="panel-left panel-container-vertical ew-resize">
 
-        <div class="app-element ns-resize" id="container-list-3d">
+        <div id="container-list-3d"
+            class="panel-top panel-container ns-resize">
 
-          <div class="w3-container title-and-content"
-               id="tractlist-with-title">
+          <div id="tractlist-with-title"
+              class="w3-container title-and-content panel-left ew-resize">
             <div id="list-title" class="title"><h2>BUNDLES</h2></div>
-            <div class="content scrollable" id="tractlist">
+            <div id="tractlist" class="content scrollable">
               <div id="selectAllBox">
                 <input type="checkbox" id="selectAllTracts">
                 <label for="selectAllTracts">All Tracts</label>
@@ -43,26 +47,28 @@
             </div>
           </div>
 
-          <div class="w3-container title-and-content"
-               id="threejsbrain-with-title">
+          <div id="threejsbrain-with-title"
+              class="w3-container title-and-content panel-right">
             <div id="subject-title" class="title"><h2>SUBJECT ID</h2></div>
             <div id="three-and-controls" class="content">
-                <div id="threejsbrain" class="canvasloader-container"></div>
-                <div id="three-gui-container" class="gui-container"></div>
+              <div id="threejsbrain" class="canvasloader-container"></div>
+              <div id="three-gui-container" class="gui-container"></div>
             </div>
           </div>
-
         </div>
 
-        <div class="w3-container title-and-content"
-             id="table-with-title">
-          <div id="table-title" class="title"><h2>SUBJECT METADATA</h2><br></div>
+        <div id="table-with-title"
+            class="w3-container title-and-content panel-bottom">
+          <div id="table-title" class="title">
+            <h2>SUBJECT METADATA</h2><br>
+          </div>
           <div id="table" class="content scrollable"></div>
         </div>
 
       </div>
-      <div class="w3-container app-element title-and-content"
-           id="container-plots">
+
+      <div id="container-plots"
+          class="w3-container title-and-content panel-right">
         <div id="plots-title" class="title"><h2>BUNDLE DETAILS</h2></div>
         <div id="plots-and-controls" class="content">
           <div id="tractdetails" class="scrollable"></div>
@@ -70,32 +76,33 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- JS Libraries -->
-    <script type="text/javascript" src="//d3js.org/queue.v1.min.js"></script>
-    <script type="text/javascript" src="js/stats.min.js"></script>
-    <script type="text/javascript" src="js/three.min.js"></script>
-    <script type="text/javascript" src="//d3js.org/d3.v3.min.js"></script>
-    <script type="text/javascript"
-            src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script type="text/javascript"
-            src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script type="text/javascript" src="js/resizing.js"></script>
-    <script type="text/javascript" src="js/dat.gui.min.js"></script>
-    <link type="text/css" rel="stylesheet" href="css/dat-gui-afq.css">
-    <script type="text/javascript" src="http://heartcode-canvasloader.googlecode.com/files/heartcode-canvasloader-min-0.9.1.js"></script>
+<!-- JS Libraries -->
+<script type="text/javascript" src="//d3js.org/queue.v1.min.js"></script>
+<script type="text/javascript" src="js/stats.min.js"></script>
+<script type="text/javascript" src="js/three.min.js"></script>
+<script type="text/javascript" src="//d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript"
+    src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script type="text/javascript"
+    src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type="text/javascript" src="js/dat.gui.min.js"></script>
+<link type="text/css" rel="stylesheet" href="css/dat-gui-afq.css">
 
-    <!--custom JS code -->
+<!--custom JS code -->
 
-    <script type="text/javascript" src="js/Projector.js"></script>
-    <script type="text/javascript" src="js/threex.domevent.js"></script>
-    <script type="text/javascript" src="js/OrbitControls.js"></script>
-    <script type="text/javascript" src="js/OBJLoader.js"></script>
-    
-    <script type="text/javascript" src="js/tract-details.js"></script>
-    <script type="text/javascript" src="js/canvas-loader.js"></script>
-    <script type="text/javascript" src="js/3d-brain.js"></script>
-    <script type="text/javascript" src="js/sortable-table.js"></script>
+<script type="text/javascript" src="js/Projector.js"></script>
+<script type="text/javascript" src="js/threex.domevent.js"></script>
+<script type="text/javascript" src="js/OrbitControls.js"></script>
+<script type="text/javascript" src="js/OBJLoader.js"></script>
+
+<script type="text/javascript" src="js/tract-details.js"></script>
+<script type="text/javascript" src="js/canvas-loader.js"></script>
+<script type="text/javascript" src="js/3d-brain.js"></script>
+<script type="text/javascript" src="js/sortable-table.js"></script>
+<script type="text/javascript" src="js/resizing.js"></script>
 
 </body>
 </html>

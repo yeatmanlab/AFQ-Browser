@@ -23,16 +23,6 @@
     -ms-user-select: none;       /* Internet Explorer/Edge */
 }
 
-#header {
-  /*overflow:hidden;*/
-  height: 60px;
-  display:flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #404040;
-  margin-bottom: 10px;
-}
-
 h1 {
   text-align: center;
 }
@@ -63,15 +53,65 @@ h2 {
   font-size:11px;
 }
 
-.app {
+.page-container {
+  width: 100%;
+  height: 100%;
   display: flex;
-  align-items: stretch;
+  flex-direction: column;
 }
 
-.app-element{
+#header {
+  flex: 0 0 auto;
+  height: 60px;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #404040;
+  margin-bottom: 10px;
+}
+
+.app-container {
+  flex: 1 1 auto;
+
   display: flex;
   align-items: stretch;
-  box-sizing: border-box;
+
+  width: 100%;
+}
+
+.panel-container {
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  
+  width: 100%;
+}
+
+.panel-left {
+  flex: 0 0 auto;
+  /* only manually resize */
+}
+
+.panel-right {
+  flex: 1 1 auto;
+  /* resizable */
+  width: 100%;
+}
+
+/* vertical panel */
+.panel-container-vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-top {
+  flex: 0 0 auto;
+  /* only manually resize */
+}
+
+.panel-bottom {
+  flex: 1 1 auto;
+  /* resizable */
 }
 
 .title-and-content {
@@ -94,29 +134,33 @@ h2 {
   overflow-x: auto;
 }
 
-#container-list-3d-table {
-  width: 800px;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
+.ew-resize {
   border-right: dashed;
-  border-width: 1px;
-  border-color: #404040
 }
 
-#container-list-3d {
-  display: flex;
-  flex-direction: row;
+.ns-resize {
   border-bottom: dashed;
-  border-width: 1px;
-  border-color: #404040
 }
 
-/* Stuff within container-list-3d-table */
+.ns-resize, .ew-resize {
+  border-width: 1px;
+  border-color: #404040;
+}
+
+#container-list-3d-table {
+  width: 750px;
+}
+
 #tractlist-with-title {width: 240px;}
 
 #threejsbrain-with-title {
   flex: 1 1 auto;
+  /* There was an issue where this div would not shrink when the user
+   * shortened the main left panel. This next line fixes that issue. It 
+   * makes absolutely no sense to me why this works. But it works.      
+   * I hereby bequeash this bug, this comment, and this hacky fix to    
+   * the flexbox ninja brave enough to give it a legitimate solution. */
+  width: 30%;
 }
 
 #three-and-controls {
@@ -129,23 +173,23 @@ h2 {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  /* overflow: auto; */
+  overflow: hidden;
 
   flex-grow: 1;
   flex-shrink: 1;
 
   width: 100%;
-  min-width: 300px;
-  min-height: 300px;
+  min-width: 200px;
+  min-height: 200px;
+  cursor: pointer;
 }
 
 #threejsbrain > canvas {
   flex-grow: 1;
   flex-shrink: 1;
   align-self: stretch;
-  min-width: 300px;
-  min-height: 300px;
-  cursor: pointer;
+  min-width: 200px;
+  min-height: 200px;
 }
 
 .gui-container {
@@ -185,6 +229,9 @@ h2 {
   align: center;
 }
 
+/*----------------------------*/
+/* Begin tractlist formatting */
+/*----------------------------*/
 #selectAllBox {
   font-weight: bold;
   cursor:pointer;
@@ -250,28 +297,32 @@ label:hover, label:active, input:hover+label, input:active+label {
     border-spacing: 10px; /*Optional*/
 }
 
-/*Added for table*/
-.t_header rect{
+/*------------------------*/
+/* Begin table formatting */
+/*------------------------*/
+.t_header rect {
 fill: #404040;
 }
 
-.t_header text{
+.t_header text {
     font: 13px;
     fill: #eeeeee;
     font-weight: bold;
     text-anchor: middle;
 }
 
-.cell rect{
+.cell rect {
  fill: #dddddd;
 }
 
-.cell text{
+.cell text {
   font: 13px ;
   text-anchor: middle;
 }
 
-/* Graph axes */
+/*------------------------*/
+/* Begin graph formatting */
+/*------------------------*/
 .axis path,
 .axis line {
     fill: none;
@@ -285,7 +336,7 @@ fill: #404040;
 .x.axis path {
     display: none;
 }
-.y.axis path{
+.y.axis path {
     display: none;
 }
 
