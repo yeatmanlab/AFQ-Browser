@@ -44,10 +44,11 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
     # Check if subject ids is defined in the afq structure
     if subject_ids is None:
         if 'sub_ids' in afq.dtype.names and len(afq['sub_ids'].item()):
-            subject_ids = afq['sub_ids'].item()
+            subject_ids = [str(x) for x in afq['sub_ids'].item()]
         else:
             # XXX Make the number of zeros flexible and depend on n_subjects:
             subject_ids = ['subject_%03d' % i for i in range(n_subjects)]
+    subject_ids = np.array(subject_ids)
 
     # Loop over subjects
     for subject in range(len(subject_ids)):
