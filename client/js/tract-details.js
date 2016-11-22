@@ -150,7 +150,7 @@ function buildPlotGui(error, data) {
             var brushg = d3.selectAll(".brush").data([]);
             brushg.exit().remove();
 
-            d3.csv("data/nodes.csv", ready);
+            //d3.csv("data/nodes.csv", ready);
         });
 }
 plotsGui.close();
@@ -201,11 +201,11 @@ function ready(error, data) {
         .append("g")
         .attr("class", "y axis")
         .attr("transform", "translate(" + m.left + ",0)")
-        .call(yAxis)
+        .call(yAxis);
     //x-axis
-        .append("g")
+   trpanels.select("g").append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(-40," + (h - axisOffset.bottom) + ")")
+        .attr("transform", "translate(-20," + (h - axisOffset.bottom) + ")")
         .call(xAxis);
 
 
@@ -247,7 +247,7 @@ function ready(error, data) {
        	.style("stroke", "#AFBABF")
        	.attr("dy", "1em")
        	.style("text-anchor", "middle")
-       	.text("Fractional Anisotropy");
+       	.text("Fractional Anisotropy");*/
 
     trpanels.append("text")
         	.attr("x", 350)
@@ -255,7 +255,7 @@ function ready(error, data) {
             .attr("class", "plot_text")
         	.style("text-anchor", "end")
         	.style("stroke", "#888888;")
-        	.text("% Distance Along Fiber Bundle");*/
+        	.text("% Distance Along Fiber Bundle");
 
        trpanels.append("text")
              .attr("x", w + 40)
@@ -419,63 +419,31 @@ function updatePlots(error, data) {
         }
     }
 
+    //console.log(JSON.stringify(tractdata[2]));
+
     y.domain(d3.extent(data, function (d) { return +d[plotsControlBox.plotKey]; }));
     x.domain([0, 100]).nice();
 
     // Select the section we want to apply our changes to
     var svg = d3.select("#tractdetails").selectAll("svg").data(tractdata).transition();
    
-    //svg.select(".x.axis") // change the x axis
-    //    .duration(750)
-    //    .call(xAxis);
+    /*svg.select(".x.axis") // change the x axis
+        .duration(750)
+        .call(xAxis);*/
     svg.select(".y.axis") // change the y axis
         .duration(750)
         .call(yAxis);
 
-    //svg.selectAll(".tracts")
-    //    .data(function (d) { return d.values; });
+    
 
     // JOIN new data with old elements.
-    var trlines = d3.select("#tractdetails").selectAll("svg").data(tractdata, function (d) { return d; }).selectAll(".tracts")
-        .data(function (d) { return d.values; }); //.select("#path").attr("d", function (d) { return line(d.values); });
-      
-    // EXIT old elements not present in new data.
-    trlines.exit()
-      .attr("class", "exit")
-    .transition(t)
-      .remove();
+    var trlines = d3.select("#tractdetails").selectAll("svg").data(tractdata).selectAll(".tracts")
+        .data(function (d) { return d.values; }).transition();//.select("#path").attr("d", function (d) { return d.values; });
 
-    // UPDATE old elements present in new data.
-    trlines.attr("class", "update")
-        .style("fill-opacity", 1)
-      .transition(t);
-        //.attr("x", function (d, i) { return i * 32; });
-
-    trlines.select(".line")
+    trlines.select("path")
+        .duration(1000)
         .attr("d", function (d) { return line(d.values); });
-        
 
-    // ENTER new elements present in new data.
-    trlines.enter().append("g")
-            .attr("class", "tracts")
-            .attr("id", function (d, i) {
-                if (i >= sub_data.length) {
-                    return "Mean";
-                } else {
-                    return d.values[0].subjectID;
-                }
-            })
-            //.on("mouseover", mouseover)
-            //.on("mouseout", mouseout)
-            //.on("click", onclick)
-      .transition(t)
-        .style("opacity", 0.3)
-        .style("stroke-width", "1px");
-
-        trlines.append("path")
-            .attr("class", "line")
-            .attr("d", function (d) { return line(d.values); });
-            
 }
 
 function showHideTractDetails(state, name)

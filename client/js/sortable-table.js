@@ -187,7 +187,6 @@ function refreshTable(sortOn){
 
         subjectGroups.forEach(IDcolor);
 
-     
         d3.csv("data/nodes.csv", updatePlots);
 
         rows.transition()
