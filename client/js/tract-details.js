@@ -109,10 +109,6 @@ var line = d3.svg.line()
 var bundleBrush = {};
 
 var plotsGuiConfigObj = function () {
-    //this.yMin = 0;
-    //this.yMax = 1.0;
-    //this.xMin = 0;
-    //this.xMax = 100;
     this.brushTract = false;
     this.plotKey = null;
 };
@@ -147,10 +143,9 @@ function buildPlotGui(error, data) {
     var brushController = plotsGui.add(plotsControlBox, 'brushTract')
         .name('Brushable Tracts')
         .onChange(function () {
-            var brushg = d3.selectAll(".brush").data([]);
-            brushg.exit().remove();
+            d3.selectAll(".brush").data([]).exit().remove();
 
-            //d3.csv("data/nodes.csv", ready);
+            d3.csv("data/nodes.csv", updatePlots);
         });
 }
 plotsGui.close();
@@ -182,12 +177,6 @@ function ready(error, data) {
     y.domain(d3.extent(data, function (d) { return +d[plotsControlBox.plotKey]; }));
     x.domain([0, 100]).nice();
 
-    var brush = d3.svg.brush()
-        .x(x)
-        .on("brush", brushed)
-        .on("brushstart", brushStart)
-        .on("brushend", brushEnd);
-
     //initialize panels for each tract - and attach tract data with them
     trpanels = d3.select("#tractdetails").selectAll("svg").data(tractdata);
     trpanels.enter().append("svg")
@@ -207,28 +196,6 @@ function ready(error, data) {
         .attr("class", "x axis")
         .attr("transform", "translate(-20," + (h - axisOffset.bottom) + ")")
         .call(xAxis);
-
-
-    // Populate budleBrush
-    d3.select("#tractdetails").selectAll("svg")[0]
-        .forEach(function (d) {
-            bundleBrush[d.id] = {
-                brushOn: false,
-                brushExtent: [0, 100]
-            }
-        });
-
-    // brush
-    if (plotsControlBox.brushTract) {
-        var brushg = d3.select("#tractdetails").selectAll("svg")
-        .append("g")
-        .attr("class", "brush")
-        .call(brush);
-
-        brushg.selectAll("rect")
-            .attr("y", m.top)
-            .attr("height", h - axisOffset.bottom);
-    }
 
     trpanels.append("rect")
            .attr("class", "plot")
@@ -291,6 +258,52 @@ function ready(error, data) {
     tractlines.append("path")
         .attr("class", "line")
         .attr("d", function (d) { return line(d.values); });
+
+    // generate brush
+    var brush = d3.svg.brush()
+        .x(x)
+        .on("brush", brushed)
+        .on("brushstart", brushStart)
+        .on("brushend", brushEnd);
+
+    // Populate budleBrush
+    d3.select("#tractdetails").selectAll("svg")[0]
+        .forEach(function (d) {
+            bundleBrush[d.id] = {
+                brushOn: false,
+                brushExtent: [0, 100]
+            }
+        });
+
+    // brush
+    if (plotsControlBox.brushTract) {
+        var brushg = d3.select("#tractdetails").selectAll("svg")
+        .append("g")
+        .attr("class", "brush")
+        .call(brush);
+
+        brushg.selectAll("rect")
+            .attr("y", m.top)
+            .attr("height", h - axisOffset.bottom);
+    }
+
+    function brushed() {
+        bundleBrush[this.parentElement.id].brushOn = !brush.empty();
+        if (brush.empty()) {
+            bundleBrush[this.parentElement.id].brushExtent = [0, 100];
+        } else {
+            bundleBrush[this.parentElement.id].brushExtent = brush.extent();
+        }
+    }
+
+    function brushStart() {
+        brushing = true;
+    }
+
+    function brushEnd() {
+        brushing = false;
+    }
+
 
     function mouseover() {
         if (!brushing) {
@@ -362,23 +375,6 @@ function ready(error, data) {
         }
     }
 
-
-  function brushed() {
-	  bundleBrush[this.parentElement.id].brushOn = !brush.empty();
-	  if (brush.empty()) {
-		  bundleBrush[this.parentElement.id].brushExtent = [0, 100];
-	  } else {
-		  bundleBrush[this.parentElement.id].brushExtent = brush.extent();
-	  }
-  }
-
-  function brushStart() {
-	  brushing = true;
-  }
-
-  function brushEnd() {
-	  brushing = false;
-  }
 }
 
 function updatePlots(error, data) {
@@ -414,13 +410,17 @@ function updatePlots(error, data) {
             }
         }
     } else {
+        tract_mean = d3.nest()
+        .key(function (d) { return d.tractID; })
+        .key(function (d) { return d.nodeID; })
+        .rollup(function (v) { return d3.mean(v, function (d) { return +d[plotsControlBox.plotKey]; }); })
+        .entries(data);
         for (i = 0; i < tract_mean.length; i++) {
             tractdata[i].values.push(tract_mean[i]);
         }
     }
 
-    //console.log(JSON.stringify(tractdata[2]));
-
+    // update axes based on selected data
     y.domain(d3.extent(data, function (d) { return +d[plotsControlBox.plotKey]; }));
     x.domain([0, 100]).nice();
 
@@ -434,8 +434,6 @@ function updatePlots(error, data) {
         .duration(750)
         .call(yAxis);
 
-    
-
     // JOIN new data with old elements.
     var trlines = d3.select("#tractdetails").selectAll("svg").data(tractdata).selectAll(".tracts")
         .data(function (d) { return d.values; }).transition();//.select("#path").attr("d", function (d) { return d.values; });
@@ -443,6 +441,73 @@ function updatePlots(error, data) {
     trlines.select("path")
         .duration(1000)
         .attr("d", function (d) { return line(d.values); });
+
+    var meanStuff = d3.select("#tractdetails").selectAll("svg").data(tractdata).selectAll(".tracts")
+        .data(function (d) { return d.values; });
+
+    meanStuff.exit().remove();
+
+    var newMeans = meanStuff.enter().append("g")
+        .attr("class", "tracts")
+        .attr("id", "Mean")
+        .style("opacity", 0.99)
+        .style("stroke-width", "3.5px")
+        .append("path")
+        .attr("class", "line")
+        .attr("d", function (d) { return line(d.values); });
+
+    // set mean colors
+    if (subjectGroups) {
+        d3.select("#tractdetails").selectAll("svg").selectAll("#Mean")
+            .style("stroke", function (d, i) { return ramp(i); });
+    };
+    
+    d3.selectAll(".brush").data([]).exit().remove();
+    // generate brush
+    var brush = d3.svg.brush()
+        .x(x)
+        .on("brush", brushed)
+        .on("brushstart", brushStart)
+        .on("brushend", brushEnd);
+
+    // Populate budleBrush
+    d3.select("#tractdetails").selectAll("svg")[0]
+        .forEach(function (d) {
+            bundleBrush[d.id] = {
+                brushOn: false,
+                brushExtent: [0, 100]
+            }
+        });
+
+    // brush
+    if (plotsControlBox.brushTract) {
+        var brushg = d3.select("#tractdetails").selectAll("svg")
+        .append("g")
+        .attr("class", "brush")
+        .call(brush);
+
+        brushg.selectAll("rect")
+            .attr("y", m.top)
+            .attr("height", h - axisOffset.bottom);
+    }
+
+    function brushed() {
+        bundleBrush[this.parentElement.id].brushOn = !brush.empty();
+        if (brush.empty()) {
+            bundleBrush[this.parentElement.id].brushExtent = [0, 100];
+        } else {
+            bundleBrush[this.parentElement.id].brushExtent = brush.extent();
+        }
+    }
+
+    function brushStart() {
+        brushing = true;
+    }
+
+    function brushEnd() {
+        brushing = false;
+    }
+
 
 }
 
