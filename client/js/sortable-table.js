@@ -13,6 +13,7 @@ var sub_data = []
 
 d3.json("/data/subjects.json", function (data) {
     data.forEach(function (d) {
+        d.subjectID = "a" + d.subjectID.toString();
         sub_data.push(d);
     });
     refreshTable(null);

@@ -158,6 +158,10 @@ queue()
 function ready(error, data) {
     if (error) throw error;
 
+    data.forEach(function (d) {
+        d.subjectID = "a" + d.subjectID.toString();
+    });
+
     var tractdata = d3.nest()
      .key(function (d) { return d.tractID; })
      .key(function (d) { return d.subjectID; })
@@ -259,13 +263,6 @@ function ready(error, data) {
         .attr("class", "line")
         .attr("d", function (d) { return line(d.values); });
 
-    // generate brush
-    var brush = d3.svg.brush()
-        .x(x)
-        .on("brush", brushed)
-        .on("brushstart", brushStart)
-        .on("brushend", brushEnd);
-
     // Populate budleBrush
     d3.select("#tractdetails").selectAll("svg")[0]
         .forEach(function (d) {
@@ -274,36 +271,6 @@ function ready(error, data) {
                 brushExtent: [0, 100]
             }
         });
-
-    // brush
-    if (plotsControlBox.brushTract) {
-        var brushg = d3.select("#tractdetails").selectAll("svg")
-        .append("g")
-        .attr("class", "brush")
-        .call(brush);
-
-        brushg.selectAll("rect")
-            .attr("y", m.top)
-            .attr("height", h - axisOffset.bottom);
-    }
-
-    function brushed() {
-        bundleBrush[this.parentElement.id].brushOn = !brush.empty();
-        if (brush.empty()) {
-            bundleBrush[this.parentElement.id].brushExtent = [0, 100];
-        } else {
-            bundleBrush[this.parentElement.id].brushExtent = brush.extent();
-        }
-    }
-
-    function brushStart() {
-        brushing = true;
-    }
-
-    function brushEnd() {
-        brushing = false;
-    }
-
 
     function mouseover() {
         if (!brushing) {
@@ -469,15 +436,6 @@ function updatePlots(error, data) {
         .on("brush", brushed)
         .on("brushstart", brushStart)
         .on("brushend", brushEnd);
-
-    // Populate budleBrush
-    d3.select("#tractdetails").selectAll("svg")[0]
-        .forEach(function (d) {
-            bundleBrush[d.id] = {
-                brushOn: false,
-                brushExtent: [0, 100]
-            }
-        });
 
     // brush
     if (plotsControlBox.brushTract) {
