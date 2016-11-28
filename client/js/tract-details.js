@@ -157,10 +157,10 @@ queue()
 
 function ready(error, data) {
     if (error) throw error;
-
+    /*
     data.forEach(function (d) {
         d.subjectID = "a" + d.subjectID.toString();
-    });
+    });*/
 
     var tractdata = d3.nest()
      .key(function (d) { return d.tractID; })
