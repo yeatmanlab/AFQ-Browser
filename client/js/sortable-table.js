@@ -7,18 +7,17 @@ var previousSort = null;
 var format = d3.time.format("%m/%d/%Y");
 //var dateFn = function(date) { return format.parse(d.created_at) };
 
-var sub_data = [
-    { "ID": 'Subject1', "GENDER": "M", "DOB": "12/4/1980", "R SCORE": 90, "SYMPTOMATIC": true },
-    { "ID": 'Subject2', "GENDER": "F", "DOB": "10/23/1981", "R SCORE": 122, "SYMPTOMATIC": false },
-    { "ID": 'Subject3', "GENDER": "M", "DOB": "1/12/1980", "R SCORE": 112, "SYMPTOMATIC": false },
-    { "ID": 'Subject4', "GENDER": "M", "DOB": "4/23/1982", "R SCORE": 125, "SYMPTOMATIC": false },
-    { "ID": 'Subject6', "GENDER": "M", "DOB": "8/25/1979", "R SCORE": 109, "SYMPTOMATIC": false },
-    { "ID": 'Subject5', "GENDER": "F", "DOB": "10/26/1983", "R SCORE": 97, "SYMPTOMATIC": true },
-    { "ID": 'Subject7', "GENDER": "M", "DOB": "9/4/1980", "R SCORE": 118, "SYMPTOMATIC": false },
-    { "ID": 'Subject9', "GENDER": "F", "DOB": "6/22/1980", "R SCORE": 95, "SYMPTOMATIC": false },
-    { "ID": 'Subject8', "GENDER": "M", "DOB": "2/14/1983", "R SCORE": 87, "SYMPTOMATIC": true },
-    { "ID": 'Subject0', "GENDER": "F", "DOB": "11/3/1982", "R SCORE": 115, "SYMPTOMATIC": false }
-];
+
+var subjectGroups = false;
+var sub_data = []
+
+d3.json("/data/subjects.json", function (data) {
+    data.forEach(function (d) {
+        //d.subjectID = "a" + d.subjectID.toString();
+        sub_data.push(d);
+    });
+    refreshTable(null);
+});
 
 var table_svg = d3.select("#table").append("svg")
     .attr("width", 700)
@@ -30,7 +29,31 @@ var headerGrp = table_svg.append("g").attr("class", "headerGrp");
 var rowsGrp = table_svg.append("g").attr("class","rowsGrp");
 
 
-refreshTable(null);
+var tableGuiConfigObj = function () {
+    this.groupCount = 2;
+};
+
+var tableGui = new dat.GUI({
+    autoplace: false,
+    width: 350,
+    scrollable: false
+});
+
+var tableControlBox = new tableGuiConfigObj();
+
+// gui.domElement.id = 'gui';
+var tableGuiContainer = $('.tableGUI').append($(tableGui.domElement));
+
+var groupCountController = tableGui.add(tableControlBox, 'groupCount')
+    .name('Number of Groups');
+
+groupCountController.onChange(function () {
+    refreshTable(sortOn);
+});
+tableGui.close()
+
+var sortOn = null
+refreshTable(sortOn)
 
 function refreshTable(sortOn){
 
@@ -57,18 +80,15 @@ function refreshTable(sortOn){
         .attr("dy", ".35em")
         .text(String);
 
-    //header.append('input') <--- not necessary for sort
-      //.attr("type", "checkbox");
-
     // fill the table
     // select rows
     var rows = rowsGrp.selectAll("g.row").data(sub_data,
-        function(d){ return d.ID; });
+        function(d){ return d.subjectID; });
 
     // create rows
     var rowsEnter = rows.enter().append("svg:g")
         .attr("class","row")
-        .attr("id", function(d){ return d.ID; })
+        .attr("id", function(d){ return d.subjectID; })
         .attr("opacity",0.3)
         .attr("transform", function (d, i){
             return "translate(0," + (i+1) * (fieldHeight+1) + ")";
@@ -107,27 +127,35 @@ function refreshTable(sortOn){
             rows.sort(function(a,b){return sort(b[sortOn], a[sortOn]);});
             previousSort = null;
         }
-        //rows.transition()
-        //    .duration(500)
-        //    .attr("transform", function (d, i){
-        //        return "translate(0," + (i+1) * (fieldHeight+1) + ")";
-        //    });
 
+        // prepare to split on metadata
         var splitGroups = d3.nest()
             .key(function (d) { return d[sortOn]; })
             .entries(sub_data);
 
-        var subjectGroups = []
-        for (i = 0; i < splitGroups.length; i++) {
-            group_arr = []
-            for (j = 0; j < splitGroups[i].values.length; j++) {
-                group_arr.push(splitGroups[i].values[j].ID);
-            }
+        var numGroups = tableControlBox.groupCount;
+        var finalSplit = Math.min(numGroups, splitGroups.length)
+
+        // push subject ids into respective groups
+        subjectGroups = []
+        for (g = 0; g < finalSplit; g++) {
+            var group_arr = [];
+            var groupSize = Math.floor(sub_data.length / finalSplit);
+            var splitSize = Math.floor(splitGroups.length / finalSplit);
+            if (splitSize == 1) {
+                for (j = 0; j < splitGroups[g].values.length; j++) {
+                    group_arr.push(splitGroups[g].values[j].subjectID);
+                }
+            } else { //if (splitSize = groupSize) {
+                var stopGroup = (g + 1) * groupSize;
+                for (k = g * groupSize; k < stopGroup; k++) {
+                    group_arr.push(splitGroups[k].values[0].subjectID);
+                }
+            };
             subjectGroups.push(group_arr);
         }
-        //console.log(JSON.stringify(subjectGroups));
 
-        var ramp = d3.scale.linear().domain([0, splitGroups.length-1]).range(["red", "blue"]);
+        ramp = d3.scale.linear().domain([0, finalSplit-1]).range(["red", "blue"]); // color ramp for subject groups
 
         function IDcolor(element, index, array) {
             for (i = 0; i < element.length; i++) {
@@ -138,15 +166,16 @@ function refreshTable(sortOn){
             }
         }
 
-        subjectGroups.forEach(IDcolor);
+        subjectGroups.forEach(IDcolor); // color lines
 
-        rows.transition()
+        d3.csv("data/nodes.csv", updatePlots); // call update
+
+        rows.transition() // sort row position
            .duration(500)
            .attr("transform", function (d, i) {
                return "translate(0," + (i + 1) * (fieldHeight + 1) + ")";
            });
-        //update cells
-        // rows.selectAll("g.cell").select("text").text(String);
+
     }
 }
 
