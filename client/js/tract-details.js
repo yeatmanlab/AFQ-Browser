@@ -162,6 +162,8 @@ function ready(error, data) {
         d.subjectID = "s" + d.subjectID.toString();
     });
 
+    data = data.filter(function (d) { return Boolean(d[plotsControlBox.plotKey]); });
+
     var tractdata = d3.nest()
      .key(function (d) { return d.tractID; })
      .key(function (d) { return d.subjectID; })
@@ -350,6 +352,8 @@ function updatePlots(error, data) {
     data.forEach(function (d) {
         d.subjectID = "s" + d.subjectID.toString();
     });
+
+    data = data.filter(function (d) { return Boolean(d[plotsControlBox.plotKey]); });
 
     tractdata = d3.nest()
      .key(function (d) { return d.tractID; })
