@@ -169,16 +169,6 @@ function ready(error, data) {
      .key(function (d) { return d.subjectID; })
      .entries(data);
 
-    var tract_mean = d3.nest()
-      .key(function (d) { return d.tractID; })
-      .key(function (d) { return d.nodeID; })
-      .rollup(function (v) { return d3.mean(v, function (d) { return +d[plotsControlBox.plotKey]; }); })
-      .entries(data);
-
-    for (i = 0; i < tract_mean.length; i++) {
-        tractdata[i].values.push(tract_mean[i]);
-    }
-
     // set x and y domains for the tract plots
     y.domain(d3.extent(data, function (d) { return +d[plotsControlBox.plotKey]; }));
     x.domain([0, 100]).nice();
@@ -245,11 +235,7 @@ function ready(error, data) {
         .enter().append("g")
         .attr("class", "tracts")
         .attr("id", function (d, i) {
-            if (i >= sub_data.length) {
-                return "Mean";
-            } else {
                 return d.values[0].subjectID;
-            }
         })
         .style("opacity", 0.3)
         .style("stroke-width", "1px")
@@ -257,11 +243,29 @@ function ready(error, data) {
         .on("mouseout", mouseout)
         .on("click", onclick);
 
-    d3.selectAll("#Mean")
+    tractlines.append("path")
+        .attr("class", "line")
+        .attr("d", function (d) { return line(d.values); });
+
+    // draw mean line
+    var tract_mean = d3.nest()
+        .key(function (d) { return d.tractID; })
+        .key(function (d) { return d.nodeID; })
+        .rollup(function (v) { return d3.mean(v, function (d) { return +d[plotsControlBox.plotKey]; }); })
+        .entries(data);
+    for (i = 0; i < tract_mean.length; i++) {
+        tractdata[i].values.push(tract_mean[i]);
+    }
+
+    var meanStuff = d3.select("#tractdetails").selectAll("svg").data(tractdata).selectAll(".tracts")
+        .data(function (d) { return d.values; });
+
+    var newMeans = meanStuff.enter().append("g")
+        .attr("class", "tracts")
+        .attr("id", "Mean")
         .style("opacity", 0.99)
         .style("stroke-width", "3.5px")
-
-    tractlines.append("path")
+        .append("path")
         .attr("class", "line")
         .attr("d", function (d) { return line(d.values); });
 
