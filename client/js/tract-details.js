@@ -158,14 +158,14 @@ queue()
 function ready(error, data) {
     if (error) throw error;
 
-    data.forEach(function (d) {
-      if (typeof d.subjectID === 'number'){
-        d.subjectID = "s" + d.subjectID.toString();}
-    });
+    // data.forEach(function (d) {
+    //   if (typeof d.subjectID === 'number'){
+    //     d.subjectID = "s" + d.subjectID.toString();}
+    // });
 
     var tractdata = d3.nest()
      .key(function (d) { return d.tractID; })
-     .key(function (d) { return d.subjectID; })
+     .key(function (d) { return stringifySubjectID(d.subjectID); })
      .entries(data);
 
     var tract_mean = d3.nest()
@@ -247,7 +247,7 @@ function ready(error, data) {
             if (i >= sub_data.length) {
                 return "Mean";
             } else {
-                return d.values[0].subjectID;
+                return stringifySubjectID(d.values[0].subjectID);
             }
         })
         .style("opacity", 0.3)
@@ -348,14 +348,14 @@ function ready(error, data) {
 function updatePlots(error, data) {
     if (error) throw error;
 
-    data.forEach(function (d) {
-      if (typeof d.subjectID === 'number'){
-        d.subjectID = "s" + d.subjectID.toString();}
-    });
+    // data.forEach(function (d) {
+    //   if (typeof d.subjectID === 'number'){
+    //     d.subjectID = "s" + d.subjectID.toString();}
+    // });
 
     tractdata = d3.nest()
      .key(function (d) { return d.tractID; })
-     .key(function (d) { return d.subjectID; })
+     .key(function (d) { return stringifySubjectID(d.subjectID); })
      .entries(data);
 
     function setGroups(element, index, array) {
