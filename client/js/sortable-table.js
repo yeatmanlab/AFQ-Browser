@@ -12,14 +12,6 @@ var format = d3.time.format("%m/%d/%Y");
 var subjectGroups = false;
 var sub_data = []
 
-d3.json("/data/subjects.json", function (data) {
-    data.forEach(function (d) {
-        if (typeof d.subjectID === 'number'){
-          d.subjectID = "s" + d.subjectID.toString();}
-        sub_data.push(d);
-    });
-    refreshTable(null);
-});
 var ramp = null;
 var headerGrp;
 var rowsGrp;
@@ -31,6 +23,8 @@ queue()
 
 function buildTable(error, data) {
 	data.forEach(function (d) {
+        if (typeof d.subjectID === 'number'){
+          d.subjectID = "s" + d.subjectID.toString();}
 		sub_data.push(d);
 	});
 
