@@ -1,6 +1,6 @@
 function stringifySubjectID(sid) {
 	if (typeof sid === 'number') {
-		return "s" + d.subjectID.toString();
+		return "s" + sid.toString();
 	} else {
 		return sid
 	}
