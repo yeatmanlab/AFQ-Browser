@@ -157,9 +157,10 @@ queue()
 
 function ready(error, data) {
     if (error) throw error;
-    
+
     data.forEach(function (d) {
-        d.subjectID = "s" + d.subjectID.toString();
+      if (typeof d.subjectID === 'number'){
+        d.subjectID = "s" + d.subjectID.toString();}
     });
 
     var tractdata = d3.nest()
@@ -207,7 +208,7 @@ function ready(error, data) {
            .attr("height", h + m.top + m.bottom + 15)
                  .attr("x", 0)
                  .attr("y", 0)
-                .style("stroke", function (d,i) { return d3colors[i]; }) 
+                .style("stroke", function (d,i) { return d3colors[i]; })
                 .style("fill", "none")
                 .style("stroke-width", 2);
 
@@ -348,7 +349,8 @@ function updatePlots(error, data) {
     if (error) throw error;
 
     data.forEach(function (d) {
-        d.subjectID = "s" + d.subjectID.toString();
+      if (typeof d.subjectID === 'number'){
+        d.subjectID = "s" + d.subjectID.toString();}
     });
 
     tractdata = d3.nest()
@@ -397,7 +399,7 @@ function updatePlots(error, data) {
 
     // Select the section we want to apply our changes to
     var svg = d3.select("#tractdetails").selectAll("svg").data(tractdata).transition();
-   
+
     /*svg.select(".x.axis") // change the x axis
         .duration(750)
         .call(xAxis);*/
@@ -432,7 +434,7 @@ function updatePlots(error, data) {
         d3.select("#tractdetails").selectAll("svg").selectAll("#Mean")
             .style("stroke", function (d, i) { return ramp(i); });
     };
-    
+
     d3.selectAll(".brush").data([]).exit().remove();
     // generate brush
     var brush = d3.svg.brush()

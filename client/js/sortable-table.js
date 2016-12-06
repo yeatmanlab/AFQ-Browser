@@ -13,7 +13,8 @@ var sub_data = []
 
 d3.json("/data/subjects.json", function (data) {
     data.forEach(function (d) {
-        d.subjectID = "s" + d.subjectID.toString();
+        if (typeof d.subjectID === 'number'){
+          d.subjectID = "s" + d.subjectID.toString();}
         sub_data.push(d);
     });
     refreshTable(null);
