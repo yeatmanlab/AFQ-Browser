@@ -158,11 +158,6 @@ queue()
 function ready(error, data) {
     if (error) throw error;
 
-    data.forEach(function (d) {
-      if (typeof d.subjectID === 'number'){
-        d.subjectID = "s" + d.subjectID.toString();}
-    });
-
     var tractdata = d3.nest()
      .key(function (d) { return d.tractID; })
      .key(function (d) { return d.subjectID; })
@@ -347,11 +342,6 @@ function ready(error, data) {
 
 function updatePlots(error, data) {
     if (error) throw error;
-
-    data.forEach(function (d) {
-      if (typeof d.subjectID === 'number'){
-        d.subjectID = "s" + d.subjectID.toString();}
-    });
 
     tractdata = d3.nest()
      .key(function (d) { return d.tractID; })
