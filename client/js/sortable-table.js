@@ -45,7 +45,7 @@ var tableControlBox = new tableGuiConfigObj();
 // gui.domElement.id = 'gui';
 var tableGuiContainer = $('.tableGUI').append($(tableGui.domElement));
 
-var groupCountController = tableGui.add(tableControlBox, 'groupCount')
+var groupCountController = tableGui.add(tableControlBox, 'groupCount').min(1).step(1)
     .name('Number of Groups');
 
 groupCountController.onChange(function () {
