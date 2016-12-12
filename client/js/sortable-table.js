@@ -1,6 +1,7 @@
 // ========== Adding Table code ============
 
 var fieldHeight = 30;
+var rowPadding = 1;
 var fieldWidth = 140;
 
 var previousSort = null;
@@ -11,50 +12,58 @@ var format = d3.time.format("%m/%d/%Y");
 var subjectGroups = false;
 var sub_data = []
 
-d3.json("/data/subjects.json", function (data) {
-    data.forEach(function (d) {
+var ramp = null;
+var headerGrp;
+var rowsGrp;
+var tableControlBox;
+
+queue()
+	.defer(d3.json, "data/subjects.json")
+	.await(buildTable);
+
+function buildTable(error, data) {
+	data.forEach(function (d) {
         if (typeof d.subjectID === 'number'){
           d.subjectID = "s" + d.subjectID.toString();}
-        sub_data.push(d);
-    });
-    refreshTable(null);
-});
+		sub_data.push(d);
+	});
 
-var table_svg = d3.select("#table").append("svg")
-    .attr("width", 700)
-    .attr("height", 400);
+	var table_svg = d3.select("#table").append("svg")
+		.attr("width", d3.keys(sub_data[0]).length * fieldWidth)
+		.attr("height", (sub_data.length + 1) * (fieldHeight + rowPadding));
 
-var ramp = null;
+	ramp = null;
 
-var headerGrp = table_svg.append("g").attr("class", "headerGrp");
-var rowsGrp = table_svg.append("g").attr("class","rowsGrp");
+	headerGrp = table_svg.append("g").attr("class", "headerGrp");
+	rowsGrp = table_svg.append("g").attr("class","rowsGrp");
 
+	var tableGuiConfigObj = function () {
+		this.groupCount = 2;
+	};
 
-var tableGuiConfigObj = function () {
-    this.groupCount = 2;
-};
+	var tableGui = new dat.GUI({
+		autoplace: false,
+		width: 350,
+		scrollable: false
+	});
 
-var tableGui = new dat.GUI({
-    autoplace: false,
-    width: 350,
-    scrollable: false
-});
+	tableControlBox = new tableGuiConfigObj();
 
-var tableControlBox = new tableGuiConfigObj();
+	// gui.domElement.id = 'gui';
+	var tableGuiContainer = $('.tableGUI').append($(tableGui.domElement));
 
-// gui.domElement.id = 'gui';
-var tableGuiContainer = $('.tableGUI').append($(tableGui.domElement));
+	var groupCountController = tableGui.add(tableControlBox, 'groupCount')
+		.name('Number of Groups');
 
-var groupCountController = tableGui.add(tableControlBox, 'groupCount')
-    .name('Number of Groups');
+	groupCountController.onChange(function () {
+		refreshTable(sortOn);
+	});
 
-groupCountController.onChange(function () {
-    refreshTable(sortOn);
-});
-tableGui.close()
+	tableGui.close();
 
-var sortOn = null
-refreshTable(sortOn)
+	var sortOn = null;
+	refreshTable(sortOn);
+}
 
 function refreshTable(sortOn){
 
@@ -92,7 +101,7 @@ function refreshTable(sortOn){
         .attr("id", function(d){ return d.subjectID; })
         .attr("opacity",0.3)
         .attr("transform", function (d, i){
-            return "translate(0," + (i+1) * (fieldHeight+1) + ")";
+            return "translate(0," + (i+1) * (fieldHeight+rowPadding) + ")";
         })
         //.on('click', row_select )
         .on('mouseover', table_mouseDown )
