@@ -16,6 +16,7 @@ var t = d3.transition()
 
 // Read in tract names and build tract checklist panel
 var tracts;
+var faPlotLength;
 
 queue()
     .defer(d3.csv, "data/nodes.csv")
@@ -28,6 +29,12 @@ function buildTractCheckboxes(error, data) {
 	tracts = data.map(function(a) {return a.tractID});
 	// Get only the unique entries from the tract list
 	tracts = [...new Set(tracts)];
+
+	// Also read the length of each line in the FA plots
+	// Determine length by filtering on the first subject and first tractID.
+	faPlotLength = data.filter(function(obj) {
+		return (obj.subjectID === data[0].subjectID && obj.tractID === data[0].tractID);
+	}).length;
 
 	//insert tractname checkboxes in the tractlist panel
 	var svg = d3.select('#tractlist').selectAll(".input").data(tracts).enter().append('div');

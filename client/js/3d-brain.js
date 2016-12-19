@@ -66,10 +66,6 @@ document.body.onmouseup = function() {
   --mouseDown;
 }
 
-// Hard coded FA plot data length
-// TODO: Read this from an input file so that the user can change fidelity
-var faPlotLength = 100;
-
 var showStats = false;
 var stats;
 
