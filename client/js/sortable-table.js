@@ -23,8 +23,6 @@ queue()
 
 function buildTable(error, data) {
 	data.forEach(function (d) {
-        if (typeof d.subjectID === 'number'){
-          d.subjectID = "s" + d.subjectID.toString();}
 		sub_data.push(d);
 	});
 
