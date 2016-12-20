@@ -367,10 +367,6 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
 
     renderer.setSize(width, height);
-	console.log("(cw, ch, rw, rh) = ("
-			+ width + ", " + height + ", "
-			+ renderer.domElement.clientWidth + ", "
-			+ renderer.domElement.clientHeight + ")");
 }
 
 function animate() {
