@@ -44,12 +44,11 @@ var tableControlBox = new tableGuiConfigObj();
 // gui.domElement.id = 'gui';
 var tableGuiContainer = $('.tableGUI').append($(tableGui.domElement));
 
-var groupCountController = tableGui.add(tableControlBox, 'groupCount').min(1).step(1)
-    .name('Number of Groups');
-
-groupCountController.onChange(function () {
-    refreshTable(sortOn);
-});
+var groupCountController = tableGui.add(tableControlBox, 'groupCount').min(2).step(1)
+    .name('Number of Groups')
+    .onChange(function () {
+        return refreshTable(sortOn); // Not really sure why this isn't working
+    });
 tableGui.close()
 
 var sortOn = null
@@ -138,30 +137,38 @@ function refreshTable(sortOn){
 
         // push subject ids into respective groups
         subjectGroups = []
+        var groupSize = Math.floor(sub_data.length / finalSplit);
+        var splitSize = Math.floor(splitGroups.length / finalSplit);
+        
         for (g = 0; g < finalSplit; g++) {
             var group_arr = [];
-            var groupSize = Math.floor(sub_data.length / finalSplit);
-            var splitSize = Math.floor(splitGroups.length / finalSplit);
-            if (splitSize == 1) {
+            if (splitSize == 1) { // corresponds to one group for each unique value in d[sortOn]
                 for (j = 0; j < splitGroups[g].values.length; j++) {
                     group_arr.push(splitGroups[g].values[j].subjectID);
                 }
-            } else { //if (splitSize = groupSize) {
+            } else if (splitSize == groupSize) { // corresponds to all values unique in d[sortOn]
                 var stopGroup = (g + 1) * groupSize;
                 for (k = g * groupSize; k < stopGroup; k++) {
                     group_arr.push(splitGroups[k].values[0].subjectID);
                 }
+            } else { // mixed continuous and repeat values (splitSize < groupSize) This part's still messed up!
+                var stopGroup = (g + 1) * splitSize;
+                for (k = g * groupSize; k < stopGroup; k++) {
+                    for (j = 0; j < splitGroups[g].values.length; j++) {
+                        group_arr.push(splitGroups[k].values[j].subjectID);
+                    }
+                }
             };
             subjectGroups.push(group_arr);
-        }
+        };
 
         ramp = d3.scale.linear().domain([0, finalSplit-1]).range(["red", "blue"]); // color ramp for subject groups
 
         function IDcolor(element, index, array) {
             for (i = 0; i < element.length; i++) {
                 d3.selectAll('#' + element[i])
-                .transition()
-                .duration(500)
+                //.transition()
+                //.duration(500)
                 .style("stroke", ramp(index));
             }
         }
@@ -170,8 +177,8 @@ function refreshTable(sortOn){
 
         d3.csv("data/nodes.csv", updatePlots); // call update
 
-        rows.transition() // sort row position
-           .duration(500)
+        rows//.transition() // sort row position
+           //.duration(500)
            .attr("transform", function (d, i) {
                return "translate(0," + (i + 1) * (fieldHeight + 1) + ")";
            });

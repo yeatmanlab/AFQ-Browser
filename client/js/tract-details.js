@@ -359,11 +359,6 @@ function updatePlots(error, data) {
 
     data = data.filter(function (d) { return Boolean(d[plotsControlBox.plotKey]); });
 
-    tractdata = d3.nest()
-     .key(function (d) { return d.tractID; })
-     .key(function (d) { return d.subjectID; })
-     .entries(data);
-
     function setGroups(element, index, array) {
         for (i = 0; i < element.length; i++) {
             for (z = 0; z < data.length; z++) {
@@ -375,7 +370,13 @@ function updatePlots(error, data) {
     }
 
     if (subjectGroups) {
-        subjectGroups.forEach(setGroups);
+        subjectGroups.forEach(setGroups); // Potentially really slow. wanna look for a way to speed this up
+
+        tractdata = d3.nest()
+        .key(function (d) { return d.tractID; })
+        .key(function (d) { return d.subjectID; })
+        .entries(data);
+
         tract_mean = d3.nest()
         .key(function (d) { return d.tractID; })
         .key(function (d) { return d.group; })
@@ -389,6 +390,11 @@ function updatePlots(error, data) {
             }
         }
     } else {
+        tractdata = d3.nest()
+        .key(function (d) { return d.tractID; })
+        .key(function (d) { return d.subjectID; })
+        .entries(data);
+
         tract_mean = d3.nest()
         .key(function (d) { return d.tractID; })
         .key(function (d) { return d.nodeID; })
