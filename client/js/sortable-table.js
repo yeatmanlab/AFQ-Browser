@@ -130,10 +130,12 @@ function refreshTable(sortOn){
         // prepare to split on metadata
         var splitGroups = d3.nest()
             .key(function (d) { return d[sortOn]; })
+            .sortKeys(d3.ascending)
             .entries(sub_data);
 
         var numGroups = tableControlBox.groupCount;
         var finalSplit = Math.min(numGroups, splitGroups.length)
+
 
         // push subject ids into respective groups
         subjectGroups = []
@@ -175,7 +177,9 @@ function refreshTable(sortOn){
 
         subjectGroups.forEach(IDcolor); // color lines
 
-        d3.csv("data/nodes.csv", updatePlots); // call update
+        console.log(JSON.stringify(subjectGroups[0]));
+
+        d3.csv("data/nodes.csv", updatePlots); // call update -> noticed there is a delay here. update plots may be the slow down
 
         rows//.transition() // sort row position
            //.duration(500)
