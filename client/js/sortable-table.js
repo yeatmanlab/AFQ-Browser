@@ -142,23 +142,27 @@ function refreshTable(sortOn){
         var groupSize = Math.round(sub_data.length / numGroups);
         var splitSize = Math.round(splitGroups.length / numGroups);
 
-        for (g = 0; g < numGroups; g++) {
-            var group_arr = [];
-            if (splitSize == 1) { // corresponds to one group for each unique value in d[sortOn]
+        if (splitSize == 1) { // corresponds to one group for each unique value in d[sortOn]
+            for (g = 0; g < numGroups; g++) {
+                var group_arr = [];
                 for (j = 0; j < splitGroups[g].values.length; j++) {
                     group_arr.push(splitGroups[g].values[j].subjectID);
                 }
-            } else { // mixed continuous and repeat values (splitSize < groupSize) This part's still messed up!
+                subjectGroups.push(group_arr);
+            }
+        } else { // mixed continuous and repeat values (splitSize < groupSize) This part's still messed up!
+            for (g = 0; g < numGroups; g++) {
+                var group_arr = [];
                 var stopGroup = (g + 1) * groupSize;
                 for (k = g * groupSize; k < stopGroup; k++) {
-                  if (k<splitGroups.length){
-                    for (j = 0; j < splitGroups[k].values.length; j++) {
-                        group_arr.push(splitGroups[k].values[j].subjectID);
+                    if (k<splitGroups.length){
+                      for (j = 0; j < splitGroups[k].values.length; j++) {
+                          group_arr.push(splitGroups[k].values[j].subjectID);
+                        }
                     }
-                  }
                 }
-            };
-            subjectGroups.push(group_arr);
+                subjectGroups.push(group_arr);
+            }
         };
 
         ramp = d3.scale.linear().domain([0, numGroups-1]).range(["red", "blue"]); // color ramp for subject groups
