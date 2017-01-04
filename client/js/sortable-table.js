@@ -49,10 +49,12 @@ function buildTable(error, data) {
 
 	tableControlBox = new tableGuiConfigObj();
 
+var tableGuiContainer = $('.tableGUI').append($(tableGui.domElement));
+
 var groupCountController = tableGui.add(tableControlBox, 'groupCount').min(2).step(1)
     .name('Number of Groups')
     .onChange(function () {
-        return refreshTable(sortOn); // Not really sure why this isn't working
+        return refreshTable(sortOn);
     });
 tableGui.close()
 
