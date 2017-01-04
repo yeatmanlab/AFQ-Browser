@@ -120,6 +120,7 @@ function refreshTable(sortOn){
         // update rows
         if(sortOn != previousSort){
             rows.sort(function(a,b){return sort(a[sortOn], b[sortOn]);});
+            sub_data.sort(function(a,b){return sort(a[sortOn], b[sortOn]);})
             previousSort = sortOn;
         }
         else{
@@ -130,7 +131,7 @@ function refreshTable(sortOn){
         // prepare to split on metadata
         var splitGroups = d3.nest()
             .key(function (d) { return d[sortOn]; })
-            .sortKeys(d3.ascending)
+            //.sortKeys(d3.ascending) // Problem sorting floats... treats them like strings
             .entries(sub_data);
 
         var usrGroups = tableControlBox.groupCount;
