@@ -17,9 +17,9 @@ var headerGrp;
 var rowsGrp;
 var tableControlBox;
 
-queue()
-	.defer(d3.json, "data/subjects.json")
-	.await(buildTable);
+var subjectQ = d3_queue.queue();
+subjectQ.defer(d3.json, "data/subjects.json");
+subjectQ.await(buildTable);
 
 function buildTable(error, data) {
 	data.forEach(function (d) {
