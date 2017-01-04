@@ -1,15 +1,5 @@
 //tractlist js
 
-//Data : tract names
-var tracts=["Left Thalamic Radiation","Right Thalamic Radiation","Left Corticospinal","Right Corticospinal","Left Cingulum Cingulate","Right Cingulum Cingulate","Left Cingulum Hippocampus","Right Cingulum Hippocampus","Callosum Forceps Major","Callosum Forceps Minor","Left IFOF","Right IFOF","Left ILF","Right ILF","Left SLF","Right SLF","Left Uncinate","Right Uncinate","Left Arcuate","Right Arcuate"]
-
-// color Palettes in Hex format, HTML needs colors in d3colors format
-// colors are the Tableau20 colors
-var colors = [0x1F77B4, 0xAEC7E8, 0xFF7F0E, 0xFFBB78, 0x2CA02C, 0x98DF8A, 0xD62728, 0xFF9896, 0x9467BD, 0xC5B0D5, 0x8C564B, 0xC49C94, 0xE377C2, 0xF7B6D2, 0x7F7F7F, 0xC7C7C7, 0xBCBD22, 0xDBDB8D, 0x17BECF, 0x9EDAE5];
-var d3colors = ["#1F77B4", "#AEC7E8", "#FF7F0E", "#FFBB78", "#2CA02C", "#98DF8A", "#D62728", "#FF9896", "#9467BD", "#C5B0D5", "#8C564B", "#C49C94", "#E377C2", "#F7B6D2", "#7F7F7F", "#C7C7C7", "#BCBD22", "#DBDB8D", "#17BECF", "#9EDAE5"];
-// highlightColors[i] = (colors[i] + 10 lightness) converted to RGB hex
-var highlightColors = [0x2991DB, 0xD7E4F4, 0xFF9A42, 0xFFD6AD, 0x37C837, 0xBCEAB3, 0xDF5353, 0xFFC8C7, 0xAC8ACC, 0xDDD0E6, 0xA96C60, 0xD5B9B3, 0xECA2D6, 0xFCE3EE, 0x999, 0xE0E0E0, 0xDCDC38, 0xE8E8B5, 0x30D6E8, 0xC7EAF0];
-
 var m = {top: 20, right: 10, bottom: 10, left: 20},
 w = 400 - m.left - m.right,
 h = 350 - m.top - m.bottom;
@@ -24,51 +14,73 @@ var trpanels = null;
 var t = d3.transition()
     .duration(750);
 
-//insert tractname checkboxes in the tractlist panel
-var svg = d3.select('#tractlist').selectAll(".input").data(tracts).enter().append('div');
-svg.append('input')
-      .attr("type", "checkbox")
-      .attr("class", "tracts")
-      .attr("id", function (d, i) { return "input" + (i + 1); })
-      .attr("name", function (d, i) { return i; })
-// add label to the checkboxes
-svg.append('label')
-      .text(function (d) { return d; })
-      .attr("for", function (d, i) { return "input" + (i + 1); })
-      .attr("id", function (d, i) { return "label" + i; });
+// Read in tract names and build tract checklist panel
+var tracts;
+var faPlotLength;
 
-//add event handler to the checkbox
-d3.selectAll(".tracts")
-  .on("change", function () {
-      var state = this.checked
-      var name = this.name
-      //call tractdetails handler
-      showHideTractDetails(state, name)
-      highlightBundle(state, name)
-  });
+queue()
+    .defer(d3.csv, "data/nodes.csv")
+    .await(buildTractCheckboxes);
+
+function buildTractCheckboxes(error, data) {
+    if (error) throw error;
+
+	// Read only the tractID field from nodes.csv
+	tracts = data.map(function(a) {return a.tractID});
+	// Get only the unique entries from the tract list
+	tracts = [...new Set(tracts)];
+
+	// Also read the length of each line in the FA plots
+	// Determine length by filtering on the first subject and first tractID.
+	faPlotLength = data.filter(function(obj) {
+		return (obj.subjectID === data[0].subjectID && obj.tractID === data[0].tractID);
+	}).length;
+
+	//insert tractname checkboxes in the tractlist panel
+	var svg = d3.select('#tractlist').selectAll(".input").data(tracts).enter().append('div');
+	svg.append('input')
+		.attr("type", "checkbox")
+		.attr("class", "tracts")
+		.attr("id", function (d, i) { return "input" + (i + 1); })
+		.attr("name", function (d, i) { return i; })
+		// add label to the checkboxes
+		svg.append('label')
+		.text(function (d) { return d; })
+		.attr("for", function (d, i) { return "input" + (i + 1); })
+		.attr("id", function (d, i) { return "label" + i; });
+
+	//add event handler to the checkbox
+	d3.selectAll(".tracts")
+		.on("change", function () {
+			var state = this.checked
+			var name = this.name
+			//call tractdetails handler
+			showHideTractDetails(state, name)
+			highlightBundle(state, name)
+		});
 
 
-// all select/un-select all checkbox
-d3.selectAll("#selectAllTracts")
-  .on("change", function () {
-      var state = this.checked;
-      if (state) {
-          d3.selectAll(".tracts").each(function (d, i) {
-              this.checked = true;
-              showHideTractDetails(this.checked, this.name);
-              highlightBundle(this.checked, this.name);
-          });
-      } else {
-          d3.selectAll(".tracts").each(function (d, i) {
-              this.checked = false;
-              showHideTractDetails(this.checked, this.name);
-              highlightBundle(this.checked, this.name);
-          });
-      }
+	// all select/un-select all checkbox
+	d3.selectAll("#selectAllTracts")
+		.on("change", function () {
+			var state = this.checked;
+			if (state) {
+				d3.selectAll(".tracts").each(function (d, i) {
+					this.checked = true;
+					showHideTractDetails(this.checked, this.name);
+					highlightBundle(this.checked, this.name);
+				});
+			} else {
+				d3.selectAll(".tracts").each(function (d, i) {
+					this.checked = false;
+					showHideTractDetails(this.checked, this.name);
+					highlightBundle(this.checked, this.name);
+				});
+			}
 
-  });
+		});
 
-//function toggleState()
+}
 
 var x = d3.scale.linear()
     .range([m.left+20, w+m.left+20]);
@@ -157,9 +169,10 @@ queue()
 
 function ready(error, data) {
     if (error) throw error;
-    
+
     data.forEach(function (d) {
-        d.subjectID = "s" + d.subjectID.toString();
+      if (typeof d.subjectID === 'number'){
+        d.subjectID = "s" + d.subjectID.toString();}
     });
 
     data = data.filter(function (d) { return Boolean(d[plotsControlBox.plotKey]); });
@@ -199,7 +212,7 @@ function ready(error, data) {
            .attr("height", h + m.top + m.bottom + 15)
                  .attr("x", 0)
                  .attr("y", 0)
-                .style("stroke", function (d,i) { return d3colors[i]; }) 
+                .style("stroke", function (d,i) { return d3colors[i]; })
                 .style("fill", "none")
                 .style("stroke-width", 2);
 
@@ -354,7 +367,8 @@ function updatePlots(error, data) {
     if (error) throw error;
 
     data.forEach(function (d) {
-        d.subjectID = "s" + d.subjectID.toString();
+      if (typeof d.subjectID === 'number'){
+        d.subjectID = "s" + d.subjectID.toString();}
     });
 
     data = data.filter(function (d) { return Boolean(d[plotsControlBox.plotKey]); });
@@ -411,7 +425,7 @@ function updatePlots(error, data) {
 
     // Select the section we want to apply our changes to
     var svg = d3.select("#tractdetails").selectAll("svg").data(tractdata).transition();
-   
+
     /*svg.select(".x.axis") // change the x axis
         .duration(750)
         .call(xAxis);*/
@@ -446,7 +460,7 @@ function updatePlots(error, data) {
         d3.select("#tractdetails").selectAll("svg").selectAll("#Mean")
             .style("stroke", function (d, i) { return ramp(i); });
     };
-    
+
     d3.selectAll(".brush").data([]).exit().remove();
     // generate brush
     var brush = d3.svg.brush()
