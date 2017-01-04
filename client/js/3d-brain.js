@@ -54,8 +54,31 @@ var colorLineMaterial = new THREE.LineBasicMaterial({
 	depthWrite: false
 });
 
-init();
-animate();
+// init requires faPlotLength to be defined. faPlotLength is defined in
+// buildTractCheckboxes in tract-details.js but it is async, deferred until
+// d3 reads nodes.csv. So we have to wait until faPlotLength is defined
+// Define a function to wait until faPlotLength is defined.
+function waitForPlotLength(callback) {
+	if (faPlotLength == undefined) {
+		setTimeout(function() {
+			console.log("waiting for plot length");
+			waitForPlotLength(callback);
+		}, 250);
+	} else {
+		callback(null);
+	}
+}
+
+// Combine the init and animate function calls for use in d3.queue()
+function initAndAnimate(error) {
+	init();
+	animate();
+}
+
+// Use d3.queue() to wait for faPlotLength before calling init and animate
+var threeQ = d3_queue.queue();
+threeQ.defer(waitForPlotLength);
+threeQ.await(initAndAnimate);
 
 var mouseDown = 0;
 var mouseMove = false;
@@ -221,7 +244,7 @@ function init() {
 						++nFibers;
 						var oneFiber = oneBundle[subkey];
 						if (oneFiber.length !== faPlotLength) {
-							var errMessage = 'Streamlines have unexpected length';
+							var errMessage = 'Streamlines have unexpected length. faPlotLength = ' + faPlotLength + ", but oneFiber.length = " + oneFiber.length;
 							if (typeof Error !== 'undefined') {
 								throw new Error(errMessage);
 							}
