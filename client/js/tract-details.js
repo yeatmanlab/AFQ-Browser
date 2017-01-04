@@ -18,9 +18,15 @@ var t = d3.transition()
 var tracts;
 var faPlotLength;
 
-queue()
-    .defer(d3.csv, "data/nodes.csv")
-    .await(buildTractCheckboxes);
+var nodeQ = d3_queue.queue();
+nodeQ.defer(d3.csv, "data/nodes.csv");
+nodeQ.await(buildFromNodes);
+
+function buildFromNodes(error, data) {
+	buildTractCheckboxes(error, data);
+	buildPlotGui(error, data);
+	ready(error, data);
+}
 
 function buildTractCheckboxes(error, data) {
     if (error) throw error;
@@ -136,9 +142,9 @@ var plotsControlBox = new plotsGuiConfigObj();
 var plotsGuiContainer = document.getElementById('plots-gui-container');
 plotsGuiContainer.appendChild(plotsGui.domElement);
 
-queue()
-    .defer(d3.csv, "data/nodes.csv")
-    .await(buildPlotGui);
+// queue()
+//     .defer(d3.csv, "data/nodes.csv")
+//     .await(buildPlotGui);
 
 function buildPlotGui(error, data) {
     if (error) throw error;
@@ -162,10 +168,9 @@ function buildPlotGui(error, data) {
 }
 plotsGui.close();
 
-// FIGURE OUT QUEUE TO MAKE SURE METADATA TABLE LOADS FIRST
-queue()
-    .defer(d3.csv, "data/nodes.csv")
-    .await(ready);
+// queue()
+//     .defer(d3.csv, "data/nodes.csv")
+//     .await(ready);
 
 function ready(error, data) {
     if (error) throw error;
