@@ -17,9 +17,9 @@ var headerGrp;
 var rowsGrp;
 var tableControlBox;
 
-queue()
-	.defer(d3.json, "data/subjects.json")
-	.await(buildTable);
+var subjectQ = d3_queue.queue();
+subjectQ.defer(d3.json, "data/subjects.json");
+subjectQ.await(buildTable);
 
 function buildTable(error, data) {
 	data.forEach(function (d) {
@@ -49,11 +49,14 @@ function buildTable(error, data) {
 
 	tableControlBox = new tableGuiConfigObj();
 
-	// gui.domElement.id = 'gui';
-	var tableGuiContainer = $('.tableGUI').append($(tableGui.domElement));
+var tableGuiContainer = $('.tableGUI').append($(tableGui.domElement));
 
-	var groupCountController = tableGui.add(tableControlBox, 'groupCount')
-		.name('Number of Groups');
+var groupCountController = tableGui.add(tableControlBox, 'groupCount').min(2).step(1)
+    .name('Number of Groups')
+    .onChange(function () {
+        return refreshTable(sortOn);
+    });
+tableGui.close()
 
 	groupCountController.onChange(function () {
 		refreshTable(sortOn);
@@ -131,6 +134,7 @@ function refreshTable(sortOn){
         // update rows
         if(sortOn != previousSort){
             rows.sort(function(a,b){return sort(a[sortOn], b[sortOn]);});
+            sub_data.sort(function(a,b){return sort(a[sortOn], b[sortOn]);})
             previousSort = sortOn;
         }
         else{
@@ -141,47 +145,58 @@ function refreshTable(sortOn){
         // prepare to split on metadata
         var splitGroups = d3.nest()
             .key(function (d) { return d[sortOn]; })
+            //.sortKeys(d3.ascending) // Problem sorting floats... treats them like strings
             .entries(sub_data);
 
-        var numGroups = tableControlBox.groupCount;
-        var finalSplit = Math.min(numGroups, splitGroups.length)
+        var usrGroups = tableControlBox.groupCount;
+        var numGroups = Math.min(usrGroups, splitGroups.length)
+
 
         // push subject ids into respective groups
         subjectGroups = []
-        for (g = 0; g < finalSplit; g++) {
-            var group_arr = [];
-            var groupSize = Math.floor(sub_data.length / finalSplit);
-            var splitSize = Math.floor(splitGroups.length / finalSplit);
-            if (splitSize == 1) {
+        var groupSize = Math.round(sub_data.length / numGroups);
+        var splitSize = Math.round(splitGroups.length / numGroups);
+
+        if (splitSize == 1) { // corresponds to one group for each unique value in d[sortOn]
+            for (g = 0; g < numGroups; g++) {
+                var group_arr = [];
                 for (j = 0; j < splitGroups[g].values.length; j++) {
                     group_arr.push(splitGroups[g].values[j].subjectID);
                 }
-            } else { //if (splitSize = groupSize) {
+                subjectGroups.push(group_arr);
+            }
+        } else { // mixed continuous and repeat values (splitSize < groupSize) This part's still messed up!
+            for (g = 0; g < numGroups; g++) {
+                var group_arr = [];
                 var stopGroup = (g + 1) * groupSize;
                 for (k = g * groupSize; k < stopGroup; k++) {
-                    group_arr.push(splitGroups[k].values[0].subjectID);
+                    if (k<splitGroups.length){
+                      for (j = 0; j < splitGroups[k].values.length; j++) {
+                          group_arr.push(splitGroups[k].values[j].subjectID);
+                        }
+                    }
                 }
-            };
-            subjectGroups.push(group_arr);
-        }
+                subjectGroups.push(group_arr);
+            }
+        };
 
-        ramp = d3.scale.linear().domain([0, finalSplit-1]).range(["red", "blue"]); // color ramp for subject groups
+        ramp = d3.scale.linear().domain([0, numGroups-1]).range(["red", "blue"]); // color ramp for subject groups
 
         function IDcolor(element, index, array) {
             for (i = 0; i < element.length; i++) {
                 d3.selectAll('#' + element[i])
-                .transition()
-                .duration(500)
+                //.transition()
+                //.duration(500)
                 .style("stroke", ramp(index));
             }
         }
 
         subjectGroups.forEach(IDcolor); // color lines
 
-        d3.csv("data/nodes.csv", updatePlots); // call update
+        d3.csv("data/nodes.csv", updatePlots); // call update -> noticed there is a delay here. update plots may be the slow down
 
-        rows.transition() // sort row position
-           .duration(500)
+        rows//.transition() // sort row position
+           //.duration(500)
            .attr("transform", function (d, i) {
                return "translate(0," + (i + 1) * (fieldHeight + 1) + ")";
            });

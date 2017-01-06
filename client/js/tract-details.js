@@ -18,9 +18,15 @@ var t = d3.transition()
 var tracts;
 var faPlotLength;
 
-queue()
-    .defer(d3.csv, "data/nodes.csv")
-    .await(buildTractCheckboxes);
+var nodeQ = d3_queue.queue();
+nodeQ.defer(d3.csv, "data/nodes.csv");
+nodeQ.await(buildFromNodes);
+
+function buildFromNodes(error, data) {
+	buildTractCheckboxes(error, data);
+	buildPlotGui(error, data);
+	ready(error, data);
+}
 
 function buildTractCheckboxes(error, data) {
     if (error) throw error;
@@ -136,9 +142,9 @@ var plotsControlBox = new plotsGuiConfigObj();
 var plotsGuiContainer = document.getElementById('plots-gui-container');
 plotsGuiContainer.appendChild(plotsGui.domElement);
 
-queue()
-    .defer(d3.csv, "data/nodes.csv")
-    .await(buildPlotGui);
+// queue()
+//     .defer(d3.csv, "data/nodes.csv")
+//     .await(buildPlotGui);
 
 function buildPlotGui(error, data) {
     if (error) throw error;
@@ -162,10 +168,9 @@ function buildPlotGui(error, data) {
 }
 plotsGui.close();
 
-// FIGURE OUT QUEUE TO MAKE SURE METADATA TABLE LOADS FIRST
-queue()
-    .defer(d3.csv, "data/nodes.csv")
-    .await(ready);
+// queue()
+//     .defer(d3.csv, "data/nodes.csv")
+//     .await(ready);
 
 function ready(error, data) {
     if (error) throw error;
@@ -175,20 +180,12 @@ function ready(error, data) {
         d.subjectID = "s" + d.subjectID.toString();}
     });
 
+    data = data.filter(function (d) { return Boolean(d[plotsControlBox.plotKey]); });
+
     var tractdata = d3.nest()
      .key(function (d) { return d.tractID; })
      .key(function (d) { return d.subjectID; })
      .entries(data);
-
-    var tract_mean = d3.nest()
-      .key(function (d) { return d.tractID; })
-      .key(function (d) { return d.nodeID; })
-      .rollup(function (v) { return d3.mean(v, function (d) { return +d[plotsControlBox.plotKey]; }); })
-      .entries(data);
-
-    for (i = 0; i < tract_mean.length; i++) {
-        tractdata[i].values.push(tract_mean[i]);
-    }
 
     // set x and y domains for the tract plots
     y.domain(d3.extent(data, function (d) { return +d[plotsControlBox.plotKey]; }));
@@ -256,11 +253,7 @@ function ready(error, data) {
         .enter().append("g")
         .attr("class", "tracts")
         .attr("id", function (d, i) {
-            if (i >= sub_data.length) {
-                return "Mean";
-            } else {
                 return d.values[0].subjectID;
-            }
         })
         .style("opacity", 0.3)
         .style("stroke-width", "1px")
@@ -268,11 +261,29 @@ function ready(error, data) {
         .on("mouseout", mouseout)
         .on("click", onclick);
 
-    d3.selectAll("#Mean")
+    tractlines.append("path")
+        .attr("class", "line")
+        .attr("d", function (d) { return line(d.values); });
+
+    // draw mean line
+    var tract_mean = d3.nest()
+        .key(function (d) { return d.tractID; })
+        .key(function (d) { return d.nodeID; })
+        .rollup(function (v) { return d3.mean(v, function (d) { return +d[plotsControlBox.plotKey]; }); })
+        .entries(data);
+    for (i = 0; i < tract_mean.length; i++) {
+        tractdata[i].values.push(tract_mean[i]);
+    }
+
+    var meanStuff = d3.select("#tractdetails").selectAll("svg").data(tractdata).selectAll(".tracts")
+        .data(function (d) { return d.values; });
+
+    var newMeans = meanStuff.enter().append("g")
+        .attr("class", "tracts")
+        .attr("id", "Mean")
         .style("opacity", 0.99)
         .style("stroke-width", "3.5px")
-
-    tractlines.append("path")
+        .append("path")
         .attr("class", "line")
         .attr("d", function (d) { return line(d.values); });
 
@@ -365,10 +376,7 @@ function updatePlots(error, data) {
         d.subjectID = "s" + d.subjectID.toString();}
     });
 
-    tractdata = d3.nest()
-     .key(function (d) { return d.tractID; })
-     .key(function (d) { return d.subjectID; })
-     .entries(data);
+    data = data.filter(function (d) { return Boolean(d[plotsControlBox.plotKey]); });
 
     function setGroups(element, index, array) {
         for (i = 0; i < element.length; i++) {
@@ -381,7 +389,13 @@ function updatePlots(error, data) {
     }
 
     if (subjectGroups) {
-        subjectGroups.forEach(setGroups);
+        subjectGroups.forEach(setGroups); // Potentially really slow. wanna look for a way to speed this up
+
+        tractdata = d3.nest()
+        .key(function (d) { return d.tractID; })
+        .key(function (d) { return d.subjectID; })
+        .entries(data);
+
         tract_mean = d3.nest()
         .key(function (d) { return d.tractID; })
         .key(function (d) { return d.group; })
@@ -395,6 +409,11 @@ function updatePlots(error, data) {
             }
         }
     } else {
+        tractdata = d3.nest()
+        .key(function (d) { return d.tractID; })
+        .key(function (d) { return d.subjectID; })
+        .entries(data);
+
         tract_mean = d3.nest()
         .key(function (d) { return d.tractID; })
         .key(function (d) { return d.nodeID; })
