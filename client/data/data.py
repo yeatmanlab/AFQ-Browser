@@ -46,18 +46,30 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
         if 'sub_ids' in afq.dtype.names and len(afq['sub_ids'].item()):
             subject_ids = [str(x) for x in afq['sub_ids'].item()]
         else:
-            # XXX Make the number of zeros flexible and depend on n_subjects:
-            subject_ids = ['subject_%03d' % i for i in range(n_subjects)]
+            if n_subjects > 1000:
+                subject_ids = ['subject_%05d' % i for i in range(n_subjects)]
+            elif n_subjects > 100:
+                subject_ids = ['subject_%04d' % i for i in range(n_subjects)]
+            elif n_subjects > 10:
+                subject_ids = ['subject_%03d' % i for i in range(n_subjects)]
+            else:
+                subject_ids = ['subject_%02d' % i for i in range(n_subjects)]
+
     subject_ids = np.array(subject_ids)
 
     # Loop over subjects
     for subject in range(len(subject_ids)):
+        sid = subject_ids[subject]
+        # If the subject ID could be interperted as a number:
+        if isinstance(sid, int) or sid.isdigit():
+            # Prepend an "s" so that sorting works on the IDs in the browser:
+            sid = "s" + sid
         # Loop over tracts
         for tract in range(n_tracts):
             # Making a subject and tract specific dataframe
             subj_df = pd.DataFrame(
                     columns=['subjectID', 'tractID', 'nodeID'],
-                    data=np.array([[subject_ids[subject]] * nodes_per_tract,
+                    data=np.array([[sid] * nodes_per_tract,
                                    [tract_ids[tract]] * nodes_per_tract,
                                    np.arange(nodes_per_tract)]).T)
             # We're looping over the desired stats (eg fa, md) and adding them
