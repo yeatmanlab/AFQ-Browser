@@ -184,9 +184,10 @@ function refreshTable(sortOn){
 
         function IDcolor(element, index, array) {
             for (i = 0; i < element.length; i++) {
-                d3.selectAll('#' + element[i])
-                //.transition()
-                //.duration(500)
+                d3.selectAll('#' + element[i]).selectAll('.line')
+                .style("stroke", ramp(index));
+
+								d3.selectAll('#' + element[i]).selectAll('.cell').select('text')
                 .style("stroke", ramp(index));
             }
         }
@@ -229,14 +230,14 @@ function row_select() {                           //onclick function to toggle o
         d3.selectAll('#' + this.id)
             .transition()
             .duration(50)
-            .style("opacity", 1)
+            .style("opacity", 1).selectAll('.line')
             .style("stroke-width", "2.1px");
     } else {
 
         d3.selectAll('#' + this.id)
             .transition()
             .duration(50)
-            .style("opacity", 0.3)
+            .style("opacity", 0.3).selectAll('.line')
             .style("stroke-width", "1.1px");}
 }
 
@@ -257,14 +258,14 @@ function table_mouseDown() {
             d3.selectAll('#' + this.id)
                 .transition()
                 .duration(50)
-                .style("opacity", 1)
+                .style("opacity", 1).selectAll('.line')
                 .style("stroke-width", "2.1px");
         } else {
 
             d3.selectAll('#' + this.id)
                 .transition()
                 .duration(50)
-                .style("opacity", 0.3)
+                .style("opacity", 0.3).selectAll('.line')
                 .style("stroke-width", "1px");}
     }
 }
