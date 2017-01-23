@@ -91,11 +91,17 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
 
     # Create metadata
     metadata = afq['metadata'].item()
-    meta_df = pd.DataFrame(data=np.hstack([
-                                subject_ids.reshape((len(subject_ids), 1)),
-                                np.array(metadata.item()).T]),
-                           columns=["subjectID"] + list(metadata.dtype.names))
 
+    meta_df1 = pd.DataFrame({"subjectID": subject_ids},
+                            index=range(len(subject_ids)))
+    # Metadata has mixed types, and we want to preserve that
+    # going into the DataFrame. Hence, we go through a dict:
+    metadata_for_df = {k: v for k, v in
+                       zip(metadata.dtype.names, metadata.item())}
+
+    meta_df2 = pd.DataFrame(metadata_for_df)
+
+    meta_df = pd.concat([meta_df1, meta_df2], axis=1)
     meta_fname = op.join(out_path, 'subjects.json')
     meta_df.to_json(meta_fname, orient='records')
 
