@@ -129,6 +129,7 @@ var bundleBrush = {};
 var plotsGuiConfigObj = function () {
     this.brushTract = false;
     this.plotKey = null;
+    this.lineOpacity = 0.3;
 };
 
 var plotsGui = new dat.GUI({
@@ -142,10 +143,6 @@ var plotsControlBox = new plotsGuiConfigObj();
 var plotsGuiContainer = document.getElementById('plots-gui-container');
 plotsGuiContainer.appendChild(plotsGui.domElement);
 
-// queue()
-//     .defer(d3.csv, "data/nodes.csv")
-//     .await(buildPlotGui);
-
 function buildPlotGui(error, data) {
     if (error) throw error;
 
@@ -156,6 +153,17 @@ function buildPlotGui(error, data) {
         .name('Plot Type')
         .onChange(function () {
             d3.csv("data/nodes.csv", updatePlots);
+        });
+
+    var plotOpacityController = plotsGui.add(plotsControlBox, 'lineOpacity', 0,1)
+        .name('Line Opacity')
+        .onChange(function () {
+            d3.select("#tractdetails").selectAll("svg").selectAll(".tracts")
+              .filter(function(d,i) {
+                return (this.id !== 'Mean')
+              })
+              .select(".line")
+              .style("opacity", plotsControlBox.lineOpacity);
         });
 
     var brushController = plotsGui.add(plotsControlBox, 'brushTract')
@@ -255,15 +263,15 @@ function ready(error, data) {
         .attr("id", function (d, i) {
                 return d.values[0].subjectID;
         })
-        .style("opacity", 0.3)
-        .style("stroke-width", "1px")
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
         .on("click", onclick);
 
     tractlines.append("path")
         .attr("class", "line")
-        .attr("d", function (d) { return line(d.values); });
+        .attr("d", function (d) { return line(d.values); })
+        .style("opacity", plotsControlBox.lineOpacity)
+        .style("stroke-width", "1px");
 
     // draw mean line
     var tract_mean = d3.nest()
@@ -281,10 +289,10 @@ function ready(error, data) {
     var newMeans = meanStuff.enter().append("g")
         .attr("class", "tracts")
         .attr("id", "Mean")
-        .style("opacity", 0.99)
-        .style("stroke-width", "3.5px")
         .append("path")
         .attr("class", "line")
+        .style("opacity", 0.99)
+        .style("stroke-width", "3.5px")
         .attr("d", function (d) { return line(d.values); });
 
     // Populate budleBrush
@@ -298,32 +306,33 @@ function ready(error, data) {
 
     function mouseover() {
         if (!brushing) {
-            if ($(this).css("stroke-width") == "1px") {			//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
+            if ($("path",this).css("stroke-width") == "1px") {			//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
                 d3.selectAll('#' + this.id)
-                    //.transition()
-                    //.duration(50)
+                    .selectAll('path')
                     .style("opacity", 1)
                     .style("stroke-width", "1.1px");
             }
             if (isDown) {
-                if ($(this).css("stroke-width") == "2.1px") {				  //uses the opacity of the row for selection and deselection
+                if ($("path",this).css("stroke-width") == "2.1px") {				  //uses the opacity of the row for selection and deselection
                     d3.selectAll('#' + this.id)
-                        //.transition()
-                        //.duration(50)
-                        .style("opacity", 0.3)
+                        .selectAll('path')
+                        .style("opacity", plotsControlBox.lineOpacity)
                         .style("stroke-width", "1px");
-                } else if ($(this).css("stroke-width") == "1.1px") {
+
                     d3.selectAll('#' + this.id)
-                        //.transition()
-                        //.duration(50)
+                  			.selectAll('g')
+                				.style("opacity", 0.3);
+
+                } else {
+                    d3.selectAll('#' + this.id)
+                        .selectAll('path')
                         .style("opacity", 1)
                         .style("stroke-width", "2.1px");
-                } else if ($(this).css("stroke-width") == "1px") {
+
                     d3.selectAll('#' + this.id)
-                        //.transition()
-                        //.duration(50)
-                        .style("opacity", 1)
-                        .style("stroke-width", "2.1px");
+                        .selectAll('g')
+                        .style("opacity", 1);
+
                 }
             }
         }
@@ -331,36 +340,45 @@ function ready(error, data) {
 
     function onclick() {
         if (!brushing) {
-            if ($(this).css("stroke-width") == "2.1px") {				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
+            if ($("path",this).css("stroke-width") == "2.1px") {				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
 
+          					d3.selectAll('#' + this.id)
+          							.selectAll('path')
+          							.style("stroke-width", "1.1px");
+
+                    d3.selectAll('#' + this.id)
+              					.selectAll('g')
+            						.style("opacity", 0.3);
+
+            } else if ($("path",this).css("stroke-width") == "1.1px") {
+                    d3.selectAll('#' + this.id)
+                      .selectAll('path')
+                      .style("opacity", 1)
+                      .style("stroke-width", "2.1px");
+
+                    d3.selectAll('#' + this.id)
+                      .selectAll('g')
+                      .style("opacity", 1);
+
+            } else if ($("path",this).css("opacity") == plotsControlBox.lineOpacity) {
                 d3.selectAll('#' + this.id)
-                    //.transition()
-                    //.duration(50)
-                    .style("opacity", 0.3)
-                    .style("stroke-width", "1px");
-            } else if ($(this).css("stroke-width") == "1.1px") {
-                d3.selectAll('#' + this.id)
-                    //.transition()
-                    //.duration(50)
+                    .selectAll('path')
                     .style("opacity", 1)
                     .style("stroke-width", "2.1px");
-            } else if ($(this).css("opacity") == 0.3) {
-                d3.selectAll('#' + this.id)
-                    //.transition()
-                    //.duration(50)
-                    .style("opacity", 1)
-                    .style("stroke-width", "2.1px");
+
+                    d3.selectAll('#' + this.id)
+              					.selectAll('g')
+            						.style("opacity", 1);
             }
         }
     }
 
     function mouseout() {
         if (!brushing) {
-            if ($(this).css("stroke-width") == "1.1px") {				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
+            if ($("path",this).css("stroke-width") == "1.1px") {				//uses the stroke-width of the line clicked on to determine whether to turn the line on or off
                 d3.selectAll('#' + this.id)
-                    //.transition()
-                    //.duration(50)
-                    .style("opacity", 0.3)
+                    .selectAll('path')
+                    .style("opacity", plotsControlBox.lineOpacity)
                     .style("stroke-width", "1px");
             }
         }
@@ -454,10 +472,10 @@ function updatePlots(error, data) {
     var newMeans = meanStuff.enter().append("g")
         .attr("class", "tracts")
         .attr("id", "Mean")
-        .style("opacity", 0.99)
-        .style("stroke-width", "3.5px")
         .append("path")
         .attr("class", "line")
+        .style("opacity", 0.99)
+        .style("stroke-width", "3.5px")
         .attr("d", function (d) { return line(d.values); });
 
     // set mean colors
