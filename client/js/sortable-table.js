@@ -102,7 +102,6 @@ function refreshTable(sortOn){
     var rowsEnter = rows.enter().append("svg:g")
         .attr("class","row")
         .attr("id", function(d){ return d.subjectID; })
-        .attr("opacity",0.3)
         .attr("transform", function (d, i){
             return "translate(0," + (i+1) * (fieldHeight+rowPadding) + ")";
         })
@@ -115,6 +114,7 @@ function refreshTable(sortOn){
     // create cells
     var cellsEnter = cells.enter().append("svg:g")
         .attr("class", "cell")
+				.style("opacity",0.3)
         .attr("transform", function (d, i){
             return "translate(" + i * fieldWidth + ",0)";
         });
@@ -184,10 +184,11 @@ function refreshTable(sortOn){
 
         function IDcolor(element, index, array) {
             for (i = 0; i < element.length; i++) {
-                d3.selectAll('#' + element[i])
-                //.transition()
-                //.duration(500)
+                d3.selectAll('#' + element[i]).selectAll('.line')
                 .style("stroke", ramp(index));
+
+								d3.selectAll('#' + element[i]).selectAll('.cell').select('text')
+                .style("fill", ramp(index));
             }
         }
 
@@ -224,19 +225,26 @@ function sort(a,b){
 }
 
 function row_select() {                           //onclick function to toggle on and off rows
-    if($(this).css("opacity") == 0.3){				  //uses the opacity of the row for selection and deselection
+    if($('g',this).css("opacity") == 0.3){				  //uses the opacity of the row for selection and deselection
 
         d3.selectAll('#' + this.id)
-            .transition()
-            .duration(50)
+						.selectAll('g')
+            .style("opacity", 1);
+
+				d3.selectAll('#' + this.id)
+		        .selectAll('path')
             .style("opacity", 1)
             .style("stroke-width", "2.1px");
+
     } else {
 
+			d3.selectAll('#' + this.id)
+					.selectAll('g')
+					.style("opacity", 0.3);
+
         d3.selectAll('#' + this.id)
-            .transition()
-            .duration(50)
-            .style("opacity", 0.3)
+						.selectAll('path')
+            .style("opacity", plotsControlBox.lineOpacity)
             .style("stroke-width", "1.1px");}
 }
 
@@ -252,19 +260,27 @@ $(document).mousedown(function() {
 
 function table_mouseDown() {
     if(isDown) {
-        if($(this).css("opacity") == 0.3){				  //uses the opacity of the row for selection and deselection
+        if($('g',this).css("opacity") == 0.3){				  //uses the opacity of the row for selection and deselection
 
-            d3.selectAll('#' + this.id)
-                .transition()
-                .duration(50)
-                .style("opacity", 1)
-                .style("stroke-width", "2.1px");
+					d3.selectAll('#' + this.id)
+							.selectAll('g')
+							.style("opacity", 1);
+
+					d3.selectAll('#' + this.id)
+							.selectAll('path')
+							.style("opacity", 1)
+							.style("stroke-width", "2.1px");
+
         } else {
 
-            d3.selectAll('#' + this.id)
-                .transition()
-                .duration(50)
-                .style("opacity", 0.3)
-                .style("stroke-width", "1px");}
+					d3.selectAll('#' + this.id)
+							.selectAll('g')
+							.style("opacity", 0.3);
+
+						d3.selectAll('#' + this.id)
+								.selectAll('path')
+								.style("opacity", plotsControlBox.lineOpacity)
+								.style("stroke-width", "1.1px");
+							}
     }
 }
