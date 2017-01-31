@@ -410,16 +410,16 @@ function updatePlots(error, data) {
         subjectGroups.forEach(setGroups); // Potentially really slow. wanna look for a way to speed this up
 
         tractdata = d3.nest()
-        .key(function (d) { return d.tractID; })
-        .key(function (d) { return d.subjectID; })
-        .entries(data);
+			.key(function (d) { return d.tractID; })
+			.key(function (d) { return d.subjectID; })
+			.entries(data);
 
         tract_mean = d3.nest()
-        .key(function (d) { return d.tractID; })
-        .key(function (d) { return d.group; })
-        .key(function (d) { return d.nodeID; })
-        .rollup(function (v) { return d3.mean(v, function (d) { return +d[plotsControlBox.plotKey]; }); })
-        .entries(data);
+			.key(function (d) { return d.tractID; })
+			.key(function (d) { return d.group; })
+			.key(function (d) { return d.nodeID; })
+			.rollup(function (v) { return d3.mean(v, function (d) { return +d[plotsControlBox.plotKey]; }); })
+			.entries(data);
 
         for (i = 0; i < tract_mean.length; i++) {
             for (j = 0; j < tract_mean[i].values.length; j++) {
@@ -479,7 +479,7 @@ function updatePlots(error, data) {
         .attr("d", function (d) { return line(d.values); });
 
     // set mean colors
-    if (subjectGroups) {
+    if (splitGroups) {
         d3.select("#tractdetails").selectAll("svg").selectAll("#Mean")
             .style("stroke", function (d, i) { return ramp(i); });
     };
