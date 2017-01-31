@@ -131,9 +131,9 @@ function refreshTable(sortOn){
         .attr("dy", ".35em")
         .text(String);
 
-    //update if not in initialisation
+    // Update if not in initialisation
     if (sortOn !== null) {
-        // update rows
+        // Update row order
         if(sortOn != previousSort){
             rows.sort(function(a,b){return sort(a[sortOn], b[sortOn]);});
             sub_data.sort(function(a,b){return sort(a[sortOn], b[sortOn]);})
@@ -144,6 +144,7 @@ function refreshTable(sortOn){
             previousSort = null;
         }
 
+		// Get unique, non-null values from the column `sortOn`
 		function uniqueNotNull(value, index, self) { 
 			return (self.indexOf(value) === index) && (value !== null);
 		}
@@ -154,12 +155,16 @@ function refreshTable(sortOn){
 			})
 			.filter(uniqueNotNull);
 
+		// usrGroups is the user requested number of groups
+		// numGroups may be smaller if there are not enough unique values
         var usrGroups = tableControlBox.groupCount;
         var numGroups = Math.min(usrGroups, uniques.length);
 
-		// TODO: Use the datatype json instead of
-		// just testing the first element here
+		// Create binScale to map between the unique
+		// values and the discrete bin indices.
 		var binScale;
+		// TODO: Use the datatype json instead of
+		// just testing the first element of uniques
 		if (typeof uniques[0] === 'number') {
 			binScale = d3.scale.quantile()
 				.range(d3.range(numGroups));
@@ -175,6 +180,7 @@ function refreshTable(sortOn){
 		}
 		binScale.domain(uniques);
 
+		// Assign bin index to each element of sub_data
 		sub_data.map(function(element) {
 			if (element[sortOn] === null) {
 				return element["bin"] = null;
@@ -183,7 +189,7 @@ function refreshTable(sortOn){
 			}
 		});
 
-		// prepare to split on metadata
+		// Prepare to split on bin index
         splitGroups = d3.nest()
             .key(function (d) { return d["bin"]; })
             .entries(sub_data);
@@ -216,7 +222,7 @@ function refreshTable(sortOn){
             }
         };
 
-		// color ramp for subject groups
+		// Create color ramp for subject groups
         ramp = d3.scale.linear()
 			.domain([0, numGroups-1]).range(["red", "blue"]);
 
