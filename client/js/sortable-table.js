@@ -11,6 +11,7 @@ var format = d3.time.format("%m/%d/%Y");
 
 var subjectGroups = false;
 var sub_data = []
+var splitGroups = false;
 
 var ramp = null;
 var headerGrp;
@@ -28,11 +29,11 @@ function buildTable(error, data) {
 		sub_data.push(d);
 	});
 
+	ramp = null;
+
 	var table_svg = d3.select("#table").append("svg")
 		.attr("width", d3.keys(sub_data[0]).length * fieldWidth)
 		.attr("height", (sub_data.length + 1) * (fieldHeight + rowPadding));
-
-	ramp = null;
 
 	headerGrp = table_svg.append("g").attr("class", "headerGrp");
 	rowsGrp = table_svg.append("g").attr("class","rowsGrp");
@@ -49,14 +50,15 @@ function buildTable(error, data) {
 
 	tableControlBox = new tableGuiConfigObj();
 
-var tableGuiContainer = $('.tableGUI').append($(tableGui.domElement));
+	var tableGuiContainer = $('.tableGUI').append($(tableGui.domElement));
 
-var groupCountController = tableGui.add(tableControlBox, 'groupCount').min(2).step(1)
-    .name('Number of Groups')
-    .onChange(function () {
-        return refreshTable(sortOn);
-    });
-tableGui.close()
+	var groupCountController = tableGui.add(tableControlBox, 'groupCount')
+		.min(2).step(1)
+		.name('Number of Groups')
+		.onChange(function () {
+			return refreshTable(sortOn);
+		});
+	tableGui.close()
 
 	groupCountController.onChange(function () {
 		refreshTable(sortOn);
@@ -142,15 +144,49 @@ function refreshTable(sortOn){
             previousSort = null;
         }
 
-        // prepare to split on metadata
-        var splitGroups = d3.nest()
-            .key(function (d) { return d[sortOn]; })
-            //.sortKeys(d3.ascending) // Problem sorting floats... treats them like strings
-            .entries(sub_data);
+		function uniqueNotNull(value, index, self) { 
+			return (self.indexOf(value) === index) && (value !== null);
+		}
+
+		var uniques = sub_data
+			.map(function(element) {
+				return element[sortOn];
+			})
+			.filter(uniqueNotNull);
 
         var usrGroups = tableControlBox.groupCount;
-        var numGroups = Math.min(usrGroups, splitGroups.length)
+        var numGroups = Math.min(usrGroups, uniques.length);
 
+		// TODO: Use the datatype json instead of
+		// just testing the first element here
+		var binScale;
+		if (typeof uniques[0] === 'number') {
+			binScale = d3.scale.quantile()
+				.range(d3.range(numGroups));
+		} else {
+			var rangeOrdinal = Array(uniques.length);
+			for (i = 0; i < numGroups; i++) {
+				rangeOrdinal.fill(i,
+						i * uniques.length / numGroups,
+						(i + 1) * uniques.length / numGroups);
+			}
+			binScale = d3.scale.ordinal()
+				.range(rangeOrdinal);
+		}
+		binScale.domain(uniques);
+
+		sub_data.map(function(element) {
+			if (element[sortOn] === null) {
+				return element["bin"] = null;
+			} else {
+				return element["bin"] = binScale(element[sortOn]);
+			}
+		});
+
+		// prepare to split on metadata
+        splitGroups = d3.nest()
+            .key(function (d) { return d["bin"]; })
+            .entries(sub_data);
 
         // push subject ids into respective groups
         subjectGroups = []
@@ -180,19 +216,23 @@ function refreshTable(sortOn){
             }
         };
 
-        ramp = d3.scale.linear().domain([0, numGroups-1]).range(["red", "blue"]); // color ramp for subject groups
+		// color ramp for subject groups
+        ramp = d3.scale.linear()
+			.domain([0, numGroups-1]).range(["red", "blue"]);
 
-        function IDcolor(element, index, array) {
-            for (i = 0; i < element.length; i++) {
-                d3.selectAll('#' + element[i]).selectAll('.line')
-                .style("stroke", ramp(index));
+        function IDcolor(element) {
+			d3.selectAll('#' + element["subjectID"])
+				.selectAll('.line')
+				.style("stroke",
+						element["bin"] === null ? "black" : ramp(element["bin"]));
 
-								d3.selectAll('#' + element[i]).selectAll('.cell').select('text')
-                .style("fill", ramp(index));
-            }
+			d3.selectAll('#' + element["subjectID"])
+				.selectAll('.cell').select('text')
+				.style("fill",
+						element["bin"] === null ? "black" : ramp(element["bin"]));
         }
 
-        subjectGroups.forEach(IDcolor); // color lines
+        sub_data.forEach(IDcolor); // color lines
 
         d3.csv("data/nodes.csv", updatePlots); // call update -> noticed there is a delay here. update plots may be the slow down
 
