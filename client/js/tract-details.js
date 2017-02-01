@@ -6,9 +6,9 @@ h = 350 - m.top - m.bottom;
 var axisOffset = {bottom: 40};
 
 // init variable to hold data later
-var tractdata = d3.map();
+var tractData = d3.map();
 var brushing = false;
-var trpanels = null;
+var trPanels = null;
 
 // transition variable for consistency
 var t = d3.transition()
@@ -193,10 +193,10 @@ function ready(error, data) {
 		return Boolean(d[plotsControlBox.plotKey]);
 	});
 
-    var tractdata = d3.nest()
-     .key(function (d) { return d.tractID; })
-     .key(function (d) { return d.subjectID; })
-     .entries(data);
+	tractData = d3.nest()
+		.key(function (d) { return d.tractID; })
+		.key(function (d) { return d.subjectID; })
+		.entries(data);
 
     // set x and y domains for the tract plots
     y.domain(d3.extent(data, function (d) {
@@ -205,8 +205,8 @@ function ready(error, data) {
     x.domain([0, 100]).nice();
 
     //initialize panels for each tract - and attach tract data with them
-    trpanels = d3.select("#tractdetails").selectAll("svg").data(tractdata);
-    trpanels.enter().append("svg")
+    trPanels = d3.select("#tractdetails").selectAll("svg").data(tractData);
+    trPanels.enter().append("svg")
 		//d.values[0].values[0].tractID; })
         .attr("id", function (d,i) { return "tract"+ i })
         .attr("width", w + m.left + m.right + 40)
@@ -221,12 +221,12 @@ function ready(error, data) {
         .call(yAxis);
 
 	//x-axis
-	trpanels.select("g").append("g")
+	trPanels.select("g").append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(-20," + (h - axisOffset.bottom) + ")")
         .call(xAxis);
 
-	trpanels.append("rect")
+	trPanels.append("rect")
 		.attr("class", "plot")
 		.attr("width", w + m.left + m.right + 20)
 		.attr("height", h + m.top + m.bottom + 15)
@@ -236,7 +236,7 @@ function ready(error, data) {
 		.style("fill", "none")
 		.style("stroke-width", 2);
 
-    /*trpanels.append("text")
+    /*trPanels.append("text")
        	.attr("transform", "rotate(-90)")
        	.attr("x", -h/2)
        	.attr("y",0)
@@ -245,7 +245,7 @@ function ready(error, data) {
        	.style("text-anchor", "middle")
        	.text("Fractional Anisotropy");*/
 
-    trpanels.append("text")
+    trPanels.append("text")
 		.attr("x", 350)
 		.attr("y", h + 25)
 		.attr("class", "plot_text")
@@ -253,7 +253,7 @@ function ready(error, data) {
 		.style("stroke", "#888888;")
 		.text("% Distance Along Fiber Bundle");
 
-	trpanels.append("text")
+	trPanels.append("text")
 		.attr("x", w + 40)
 		.attr("y", h - 280)
 		.attr("class", "plot_text")
@@ -263,7 +263,7 @@ function ready(error, data) {
 		.text(function(d) { return tracts[d.name-1]; });
 
 	// associate tractsline with each subject
-    var  tractlines = trpanels.selectAll(".tracts")
+    var  tractLines = trPanels.selectAll(".tracts")
         .data(function(d){ return d.values; })
         .enter().append("g")
         .attr("class", "tracts")
@@ -274,7 +274,7 @@ function ready(error, data) {
         .on("mouseout", mouseout)
         .on("click", onclick);
 
-    tractlines.append("path")
+    tractLines.append("path")
         .attr("class", "line")
         .attr("d", function (d) { return line(d.values); })
         .style("opacity", plotsControlBox.lineOpacity)
@@ -292,11 +292,11 @@ function ready(error, data) {
         .entries(data);
 
     for (i = 0; i < tractMean.length; i++) {
-        tractdata[i].values.push(tractMean[i]);
+        tractData[i].values.push(tractMean[i]);
     }
 
     var meanStuff = d3.select("#tractdetails").selectAll("svg")
-		.data(tractdata).selectAll(".tracts")
+		.data(tractData).selectAll(".tracts")
         .data(function (d) { return d.values; });
 
     var newMeans = meanStuff.enter().append("g")
@@ -428,7 +428,7 @@ function updatePlots(error, data) {
 		// Potentially really slow. wanna look for a way to speed this up
         subjectGroups.forEach(setGroups);
 
-        tractdata = d3.nest()
+        tractData = d3.nest()
 			.key(function (d) { return d.tractID; })
 			.key(function (d) { return d.subjectID; })
 			.entries(data);
@@ -446,11 +446,11 @@ function updatePlots(error, data) {
 
         for (i = 0; i < tractMean.length; i++) {
             for (j = 0; j < tractMean[i].values.length; j++) {
-                tractdata[i].values.push(tractMean[i].values[j]);
+                tractData[i].values.push(tractMean[i].values[j]);
             }
         }
     } else {
-        tractdata = d3.nest()
+        tractData = d3.nest()
 			.key(function (d) { return d.tractID; })
 			.key(function (d) { return d.subjectID; })
 			.entries(data);
@@ -466,7 +466,7 @@ function updatePlots(error, data) {
 			.entries(data);
 
         for (i = 0; i < tractMean.length; i++) {
-            tractdata[i].values.push(tractMean[i]);
+            tractData[i].values.push(tractMean[i]);
         }
     }
 
@@ -478,7 +478,7 @@ function updatePlots(error, data) {
 
     // Select the section we want to apply our changes to
     var svg = d3.select("#tractdetails").selectAll("svg")
-		.data(tractdata).transition();
+		.data(tractData).transition();
 
     /*svg.select(".x.axis") // change the x axis
         .duration(750)
@@ -488,17 +488,17 @@ function updatePlots(error, data) {
         .call(yAxis);
 
     // JOIN new data with old elements.
-    var trlines = d3.select("#tractdetails").selectAll("svg")
-		.data(tractdata).selectAll(".tracts")
+    var trLines = d3.select("#tractdetails").selectAll("svg")
+		.data(tractData).selectAll(".tracts")
         .data(function (d) { return d.values; }).transition();
 		//.select("#path").attr("d", function (d) { return d.values; });
 
-    trlines.select("path")
+    trLines.select("path")
         .duration(1000)
         .attr("d", function (d) { return line(d.values); });
 
     var meanStuff = d3.select("#tractdetails").selectAll("svg")
-		.data(tractdata).selectAll(".tracts")
+		.data(tractData).selectAll(".tracts")
         .data(function (d) { return d.values; });
 
     meanStuff.exit().remove();
@@ -554,8 +554,6 @@ function updatePlots(error, data) {
     function brushEnd() {
         brushing = false;
     }
-
-
 }
 
 function showHideTractDetails(state, name)

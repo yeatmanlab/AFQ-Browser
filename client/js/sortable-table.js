@@ -231,7 +231,7 @@ function refreshTable(sortOn){
         ramp = d3.scale.linear()
 			.domain([0, numGroups-1]).range(["red", "blue"]);
 
-        function IDcolor(element) {
+        function idColor(element) {
 			d3.selectAll('#' + element["subjectID"])
 				.selectAll('.line')
 				.style("stroke",
@@ -243,7 +243,7 @@ function refreshTable(sortOn){
 						element["bin"] === null ? "black" : ramp(element["bin"]));
         }
 
-        subData.forEach(IDcolor); // color lines
+        subData.forEach(idColor); // color lines
 
 		// call update -> noticed there is a delay here.
 		// update plots may be the slow down
