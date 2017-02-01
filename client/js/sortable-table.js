@@ -83,7 +83,8 @@ function refreshTable(sortOn){
         .on("mouseover", function (d,i) {
             d3.select(this).style("cursor", "n-resize");
         })
-        .on("click", function (d) { return refreshTable(d); }); // this is where the magic happens... (d) is the column being sorted
+		// this is where the magic happens...(d) is the column being sorted
+        .on("click", function (d) { return refreshTable(d); });
 
     header.append("rect")
         .attr("width", fieldWidth-1)
@@ -111,7 +112,8 @@ function refreshTable(sortOn){
         .on('mouseover', tableMouseDown )
         .on('mousedown', rowSelect );
     // select cells
-    var cells = rows.selectAll("g.cell").data(function(d){return d3.values(d);});
+    var cells = rows.selectAll("g.cell")
+		.data(function(d){return d3.values(d);});
 
     // create cells
     var cellsEnter = cells.enter().append("svg:g")
@@ -199,7 +201,8 @@ function refreshTable(sortOn){
         var groupSize = Math.round(subData.length / numGroups);
         var splitSize = Math.round(splitGroups.length / numGroups);
 
-        if (splitSize == 1) { // corresponds to one group for each unique value in d[sortOn]
+        if (splitSize == 1) {
+			// corresponds to one group for each unique value in d[sortOn]
             for (g = 0; g < numGroups; g++) {
                 var groupArr = [];
                 for (j = 0; j < splitGroups[g].values.length; j++) {
@@ -207,7 +210,9 @@ function refreshTable(sortOn){
                 }
                 subjectGroups.push(groupArr);
             }
-        } else { // mixed continuous and repeat values (splitSize < groupSize) This part's still messed up!
+        } else {
+			// mixed continuous and repeat values (splitSize < groupSize)
+			// This part's still messed up!
             for (g = 0; g < numGroups; g++) {
                 var groupArr = [];
                 var stopGroup = (g + 1) * groupSize;
@@ -240,7 +245,9 @@ function refreshTable(sortOn){
 
         subData.forEach(IDcolor); // color lines
 
-        d3.csv("data/nodes.csv", updatePlots); // call update -> noticed there is a delay here. update plots may be the slow down
+		// call update -> noticed there is a delay here.
+		// update plots may be the slow down
+        d3.csv("data/nodes.csv", updatePlots);
 
         rows//.transition() // sort row position
            //.duration(500)
@@ -270,63 +277,63 @@ function sort(a,b){
     }
 }
 
-function rowSelect() {                           //onclick function to toggle on and off rows
-    if($('g',this).css("opacity") == 0.3){				  //uses the opacity of the row for selection and deselection
-
+// onclick function to toggle on and off rows
+function rowSelect() {
+    if($('g',this).css("opacity") == 0.3) {
+		//uses the opacity of the row for selection and deselection
         d3.selectAll('#' + this.id)
-						.selectAll('g')
+			.selectAll('g')
             .style("opacity", 1);
 
-				d3.selectAll('#' + this.id)
-		        .selectAll('path')
+		d3.selectAll('#' + this.id)
+			.selectAll('path')
             .style("opacity", 1)
             .style("stroke-width", "2.1px");
-
     } else {
-
-			d3.selectAll('#' + this.id)
-					.selectAll('g')
-					.style("opacity", 0.3);
+		d3.selectAll('#' + this.id)
+			.selectAll('g')
+			.style("opacity", 0.3);
 
         d3.selectAll('#' + this.id)
-						.selectAll('path')
+			.selectAll('path')
             .style("opacity", plotsControlBox.lineOpacity)
-            .style("stroke-width", "1.1px");}
+            .style("stroke-width", "1.1px");
+	}
 }
 
 var isDown = false;   // Tracks status of mouse button
 
 $(document).mousedown(function() {
-    isDown = true;      // When mouse goes down, set isDown to true
-})
+		// When mouse goes down, set isDown to true
+		isDown = true;
+	})
     .mouseup(function() {
-        isDown = false;    // When mouse goes up, set isDown to false
+		// When mouse goes up, set isDown to false
+        isDown = false;
     });
 
 
 function tableMouseDown() {
-    if(isDown) {
-        if($('g',this).css("opacity") == 0.3){				  //uses the opacity of the row for selection and deselection
+	if(isDown) {
+		if($('g',this).css("opacity") == 0.3) {
+			//uses the opacity of the row for selection and deselection
+			d3.selectAll('#' + this.id)
+				.selectAll('g')
+				.style("opacity", 1);
 
-					d3.selectAll('#' + this.id)
-							.selectAll('g')
-							.style("opacity", 1);
+			d3.selectAll('#' + this.id)
+				.selectAll('path')
+				.style("opacity", 1)
+				.style("stroke-width", "2.1px");
+		} else {
+			d3.selectAll('#' + this.id)
+				.selectAll('g')
+				.style("opacity", 0.3);
 
-					d3.selectAll('#' + this.id)
-							.selectAll('path')
-							.style("opacity", 1)
-							.style("stroke-width", "2.1px");
-
-        } else {
-
-					d3.selectAll('#' + this.id)
-							.selectAll('g')
-							.style("opacity", 0.3);
-
-						d3.selectAll('#' + this.id)
-								.selectAll('path')
-								.style("opacity", plotsControlBox.lineOpacity)
-								.style("stroke-width", "1.1px");
-							}
-    }
+			d3.selectAll('#' + this.id)
+				.selectAll('path')
+				.style("opacity", plotsControlBox.lineOpacity)
+				.style("stroke-width", "1.1px");
+		}
+	}
 }
