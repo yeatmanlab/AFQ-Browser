@@ -281,7 +281,7 @@ function ready(error, data) {
         .style("stroke-width", "1px");
 
     // draw mean line
-    var tract_mean = d3.nest()
+    var tractMean = d3.nest()
         .key(function (d) { return d.tractID; })
         .key(function (d) { return d.nodeID; })
         .rollup(function (v) {
@@ -291,8 +291,8 @@ function ready(error, data) {
 		})
         .entries(data);
 
-    for (i = 0; i < tract_mean.length; i++) {
-        tractdata[i].values.push(tract_mean[i]);
+    for (i = 0; i < tractMean.length; i++) {
+        tractdata[i].values.push(tractMean[i]);
     }
 
     var meanStuff = d3.select("#tractdetails").selectAll("svg")
@@ -433,7 +433,7 @@ function updatePlots(error, data) {
 			.key(function (d) { return d.subjectID; })
 			.entries(data);
 
-        tract_mean = d3.nest()
+        tractMean = d3.nest()
 			.key(function (d) { return d.tractID; })
 			.key(function (d) { return d.group; })
 			.key(function (d) { return d.nodeID; })
@@ -444,9 +444,9 @@ function updatePlots(error, data) {
 			})
 			.entries(data);
 
-        for (i = 0; i < tract_mean.length; i++) {
-            for (j = 0; j < tract_mean[i].values.length; j++) {
-                tractdata[i].values.push(tract_mean[i].values[j]);
+        for (i = 0; i < tractMean.length; i++) {
+            for (j = 0; j < tractMean[i].values.length; j++) {
+                tractdata[i].values.push(tractMean[i].values[j]);
             }
         }
     } else {
@@ -455,7 +455,7 @@ function updatePlots(error, data) {
 			.key(function (d) { return d.subjectID; })
 			.entries(data);
 
-        tract_mean = d3.nest()
+        tractMean = d3.nest()
 			.key(function (d) { return d.tractID; })
 			.key(function (d) { return d.nodeID; })
 			.rollup(function (v) {
@@ -465,8 +465,8 @@ function updatePlots(error, data) {
 			})
 			.entries(data);
 
-        for (i = 0; i < tract_mean.length; i++) {
-            tractdata[i].values.push(tract_mean[i]);
+        for (i = 0; i < tractMean.length; i++) {
+            tractdata[i].values.push(tractMean[i]);
         }
     }
 
