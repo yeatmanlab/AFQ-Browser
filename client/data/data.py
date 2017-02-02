@@ -104,5 +104,6 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
     meta_df = pd.concat([meta_df1, meta_df2], axis=1)
     meta_fname = op.join(out_path, 'subjects.json')
     meta_df.to_json(meta_fname, orient='records')
+    meta_df.dtypes.to_json("subjects_dtypes.json")
 
     return nodes_fname, meta_fname
