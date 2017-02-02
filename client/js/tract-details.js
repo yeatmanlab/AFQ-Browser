@@ -263,7 +263,7 @@ function ready(error, data) {
 		.text(function(d) { return tracts[d.name-1]; });
 
 	// associate tractsline with each subject
-    var  tractLines = trPanels.selectAll(".tracts")
+    var tractLines = trPanels.selectAll(".tracts")
         .data(function(d){ return d.values; })
         .enter().append("g")
         .attr("class", "tracts")
@@ -414,28 +414,15 @@ function updatePlots(error, data) {
 		return Boolean(d[plotsControlBox.plotKey]);
 	});
 
-    function setGroups(element, index, array) {
-        for (i = 0; i < element.length; i++) {
-            for (z = 0; z < data.length; z++) {
-                if (data[z].subjectID == element[i]) {
-                    data[z].group = index
-                }
-            }
-        }
-    }
-
-    if (subjectGroups) {
-		// Potentially really slow. wanna look for a way to speed this up
-        subjectGroups.forEach(setGroups);
-
+    if (splitGroups) {
         tractData = d3.nest()
 			.key(function (d) { return d.tractID; })
 			.key(function (d) { return d.subjectID; })
 			.entries(data);
 
-        tractMean = d3.nest()
+        var tractMean = d3.nest()
 			.key(function (d) { return d.tractID; })
-			.key(function (d) { return d.group; })
+			.key(function (d) { return subGroups[d.subjectID]; })
 			.key(function (d) { return d.nodeID; })
 			.rollup(function (v) {
 				return d3.mean(v, function (d) {

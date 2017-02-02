@@ -10,7 +10,8 @@ var format = d3.time.format("%m/%d/%Y");
 
 
 var subjectGroups = false;
-var subData = []
+var subData = [];
+var subGroups = {};
 var splitGroups = false;
 
 var ramp = null;
@@ -162,13 +163,13 @@ function refreshTable(sortOn){
         var usrGroups = tableControlBox.groupCount;
         var numGroups = Math.min(usrGroups, uniques.length);
 
-		// Create binScale to map between the unique
-		// values and the discrete bin indices.
-		var binScale;
+		// Create groupScale to map between the unique
+		// values and the discrete group indices.
+		var groupScale;
 		// TODO: Use the datatype json instead of
 		// just testing the first element of uniques
 		if (typeof uniques[0] === 'number') {
-			binScale = d3.scale.quantile()
+			groupScale = d3.scale.quantile()
 				.range(d3.range(numGroups));
 		} else {
 			var rangeOrdinal = Array(uniques.length);
@@ -177,55 +178,26 @@ function refreshTable(sortOn){
 						i * uniques.length / numGroups,
 						(i + 1) * uniques.length / numGroups);
 			}
-			binScale = d3.scale.ordinal()
+			groupScale = d3.scale.ordinal()
 				.range(rangeOrdinal);
 		}
-		binScale.domain(uniques);
+		groupScale.domain(uniques);
 
-		// Assign bin index to each element of subData
-		subData.map(function(element) {
+		// Assign group index to each element of subData
+		subData.forEach(function(element) {
 			if (element[sortOn] === null) {
-				return element["bin"] = null;
+				element["group"] = null;
+				subGroups[element.subjectID] = null;
 			} else {
-				return element["bin"] = binScale(element[sortOn]);
+				element["group"] = groupScale(element[sortOn]);
+				subGroups[element.subjectID] = groupScale(element[sortOn]);
 			}
 		});
 
-		// Prepare to split on bin index
+		// Prepare to split on group index
         splitGroups = d3.nest()
-            .key(function (d) { return d["bin"]; })
+            .key(function (d) { return d["group"]; })
             .entries(subData);
-
-        // push subject ids into respective groups
-        subjectGroups = []
-        var groupSize = Math.round(subData.length / numGroups);
-        var splitSize = Math.round(splitGroups.length / numGroups);
-
-        if (splitSize == 1) {
-			// corresponds to one group for each unique value in d[sortOn]
-            for (g = 0; g < numGroups; g++) {
-                var groupArr = [];
-                for (j = 0; j < splitGroups[g].values.length; j++) {
-                    groupArr.push(splitGroups[g].values[j].subjectID);
-                }
-                subjectGroups.push(groupArr);
-            }
-        } else {
-			// mixed continuous and repeat values (splitSize < groupSize)
-			// This part's still messed up!
-            for (g = 0; g < numGroups; g++) {
-                var groupArr = [];
-                var stopGroup = (g + 1) * groupSize;
-                for (k = g * groupSize; k < stopGroup; k++) {
-                    if (k<splitGroups.length){
-                      for (j = 0; j < splitGroups[k].values.length; j++) {
-                          groupArr.push(splitGroups[k].values[j].subjectID);
-                        }
-                    }
-                }
-                subjectGroups.push(groupArr);
-            }
-        };
 
 		// Create color ramp for subject groups
         ramp = d3.scale.linear()
@@ -235,12 +207,12 @@ function refreshTable(sortOn){
 			d3.selectAll('#' + element["subjectID"])
 				.selectAll('.line')
 				.style("stroke",
-						element["bin"] === null ? "black" : ramp(element["bin"]));
+						element["group"] === null ? "black" : ramp(element["group"]));
 
 			d3.selectAll('#' + element["subjectID"])
 				.selectAll('.cell').select('text')
 				.style("fill",
-						element["bin"] === null ? "black" : ramp(element["bin"]));
+						element["group"] === null ? "black" : ramp(element["group"]));
         }
 
         subData.forEach(idColor); // color lines
@@ -311,7 +283,6 @@ $(document).mousedown(function() {
 		// When mouse goes up, set isDown to false
         isDown = false;
     });
-
 
 function tableMouseDown() {
 	if(isDown) {
