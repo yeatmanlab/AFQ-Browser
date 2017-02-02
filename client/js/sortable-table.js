@@ -10,7 +10,9 @@ var format = d3.time.format("%m/%d/%Y");
 
 
 var subjectGroups = false;
-var sub_data = []
+var subData = [];
+var subGroups = {};
+var splitGroups = false;
 
 var ramp = null;
 var headerGrp;
@@ -25,17 +27,17 @@ function buildTable(error, data) {
 	data.forEach(function (d) {
         if (typeof d.subjectID === 'number'){
           d.subjectID = "s" + d.subjectID.toString();}
-		sub_data.push(d);
+		subData.push(d);
 	});
-
-	var table_svg = d3.select("#table").append("svg")
-		.attr("width", d3.keys(sub_data[0]).length * fieldWidth)
-		.attr("height", (sub_data.length + 1) * (fieldHeight + rowPadding));
 
 	ramp = null;
 
-	headerGrp = table_svg.append("g").attr("class", "headerGrp");
-	rowsGrp = table_svg.append("g").attr("class","rowsGrp");
+	var tableSvg = d3.select("#table").append("svg")
+		.attr("width", d3.keys(subData[0]).length * fieldWidth)
+		.attr("height", (subData.length + 1) * (fieldHeight + rowPadding));
+
+	headerGrp = tableSvg.append("g").attr("class", "headerGrp");
+	rowsGrp = tableSvg.append("g").attr("class","rowsGrp");
 
 	var tableGuiConfigObj = function () {
 		this.groupCount = 2;
@@ -49,14 +51,15 @@ function buildTable(error, data) {
 
 	tableControlBox = new tableGuiConfigObj();
 
-var tableGuiContainer = $('.tableGUI').append($(tableGui.domElement));
+	var tableGuiContainer = $('.tableGUI').append($(tableGui.domElement));
 
-var groupCountController = tableGui.add(tableControlBox, 'groupCount').min(2).step(1)
-    .name('Number of Groups')
-    .onChange(function () {
-        return refreshTable(sortOn);
-    });
-tableGui.close()
+	var groupCountController = tableGui.add(tableControlBox, 'groupCount')
+		.min(2).step(1)
+		.name('Number of Groups')
+		.onChange(function () {
+			return refreshTable(sortOn);
+		});
+	tableGui.close()
 
 	groupCountController.onChange(function () {
 		refreshTable(sortOn);
@@ -72,7 +75,7 @@ function refreshTable(sortOn){
 
     // create the table header
     var header = headerGrp.selectAll("g")
-        .data(d3.keys(sub_data[0]))
+        .data(d3.keys(subData[0]))
         .enter().append("g")
         .attr("class", "t_header")
         .attr("transform", function (d, i){
@@ -81,7 +84,8 @@ function refreshTable(sortOn){
         .on("mouseover", function (d,i) {
             d3.select(this).style("cursor", "n-resize");
         })
-        .on("click", function (d) { return refreshTable(d); }); // this is where the magic happens... (d) is the column being sorted
+		// this is where the magic happens...(d) is the column being sorted
+        .on("click", function (d) { return refreshTable(d); });
 
     header.append("rect")
         .attr("width", fieldWidth-1)
@@ -95,7 +99,7 @@ function refreshTable(sortOn){
 
     // fill the table
     // select rows
-    var rows = rowsGrp.selectAll("g.row").data(sub_data,
+    var rows = rowsGrp.selectAll("g.row").data(subData,
         function(d){ return d.subjectID; });
 
     // create rows
@@ -105,11 +109,12 @@ function refreshTable(sortOn){
         .attr("transform", function (d, i){
             return "translate(0," + (i+1) * (fieldHeight+rowPadding) + ")";
         })
-        //.on('click', row_select )
-        .on('mouseover', table_mouseDown )
-        .on('mousedown', row_select );
+        //.on('click', rowSelect )
+        .on('mouseover', tableMouseDown )
+        .on('mousedown', rowSelect );
     // select cells
-    var cells = rows.selectAll("g.cell").data(function(d){return d3.values(d);});
+    var cells = rows.selectAll("g.cell")
+		.data(function(d){return d3.values(d);});
 
     // create cells
     var cellsEnter = cells.enter().append("svg:g")
@@ -129,12 +134,12 @@ function refreshTable(sortOn){
         .attr("dy", ".35em")
         .text(String);
 
-    //update if not in initialisation
+    // Update if not in initialisation
     if (sortOn !== null) {
-        // update rows
+        // Update row order
         if(sortOn != previousSort){
             rows.sort(function(a,b){return sort(a[sortOn], b[sortOn]);});
-            sub_data.sort(function(a,b){return sort(a[sortOn], b[sortOn]);})
+            subData.sort(function(a,b){return sort(a[sortOn], b[sortOn]);})
             previousSort = sortOn;
         }
         else{
@@ -142,59 +147,79 @@ function refreshTable(sortOn){
             previousSort = null;
         }
 
-        // prepare to split on metadata
-        var splitGroups = d3.nest()
-            .key(function (d) { return d[sortOn]; })
-            //.sortKeys(d3.ascending) // Problem sorting floats... treats them like strings
-            .entries(sub_data);
+		// Get unique, non-null values from the column `sortOn`
+		function uniqueNotNull(value, index, self) { 
+			return (self.indexOf(value) === index) && (value !== null);
+		}
 
+		var uniques = subData
+			.map(function(element) {
+				return element[sortOn];
+			})
+			.filter(uniqueNotNull);
+
+		// usrGroups is the user requested number of groups
+		// numGroups may be smaller if there are not enough unique values
         var usrGroups = tableControlBox.groupCount;
-        var numGroups = Math.min(usrGroups, splitGroups.length)
+        var numGroups = Math.min(usrGroups, uniques.length);
 
+		// Create groupScale to map between the unique
+		// values and the discrete group indices.
+		var groupScale;
+		// TODO: Use the datatype json instead of
+		// just testing the first element of uniques
+		if (typeof uniques[0] === 'number') {
+			groupScale = d3.scale.quantile()
+				.range(d3.range(numGroups));
+		} else {
+			var rangeOrdinal = Array(uniques.length);
+			for (i = 0; i < numGroups; i++) {
+				rangeOrdinal.fill(i,
+						i * uniques.length / numGroups,
+						(i + 1) * uniques.length / numGroups);
+			}
+			groupScale = d3.scale.ordinal()
+				.range(rangeOrdinal);
+		}
+		groupScale.domain(uniques);
 
-        // push subject ids into respective groups
-        subjectGroups = []
-        var groupSize = Math.round(sub_data.length / numGroups);
-        var splitSize = Math.round(splitGroups.length / numGroups);
+		// Assign group index to each element of subData
+		subData.forEach(function(element) {
+			if (element[sortOn] === null) {
+				element["group"] = null;
+				subGroups[element.subjectID] = null;
+			} else {
+				element["group"] = groupScale(element[sortOn]);
+				subGroups[element.subjectID] = groupScale(element[sortOn]);
+			}
+		});
 
-        if (splitSize == 1) { // corresponds to one group for each unique value in d[sortOn]
-            for (g = 0; g < numGroups; g++) {
-                var group_arr = [];
-                for (j = 0; j < splitGroups[g].values.length; j++) {
-                    group_arr.push(splitGroups[g].values[j].subjectID);
-                }
-                subjectGroups.push(group_arr);
-            }
-        } else { // mixed continuous and repeat values (splitSize < groupSize) This part's still messed up!
-            for (g = 0; g < numGroups; g++) {
-                var group_arr = [];
-                var stopGroup = (g + 1) * groupSize;
-                for (k = g * groupSize; k < stopGroup; k++) {
-                    if (k<splitGroups.length){
-                      for (j = 0; j < splitGroups[k].values.length; j++) {
-                          group_arr.push(splitGroups[k].values[j].subjectID);
-                        }
-                    }
-                }
-                subjectGroups.push(group_arr);
-            }
-        };
+		// Prepare to split on group index
+        splitGroups = d3.nest()
+            .key(function (d) { return d["group"]; })
+            .entries(subData);
 
-        ramp = d3.scale.linear().domain([0, numGroups-1]).range(["red", "blue"]); // color ramp for subject groups
+		// Create color ramp for subject groups
+        ramp = d3.scale.linear()
+			.domain([0, numGroups-1]).range(["red", "blue"]);
 
-        function IDcolor(element, index, array) {
-            for (i = 0; i < element.length; i++) {
-                d3.selectAll('#' + element[i]).selectAll('.line')
-                .style("stroke", ramp(index));
+        function idColor(element) {
+			d3.selectAll('#' + element["subjectID"])
+				.selectAll('.line')
+				.style("stroke",
+						element["group"] === null ? "black" : ramp(element["group"]));
 
-								d3.selectAll('#' + element[i]).selectAll('.cell').select('text')
-                .style("fill", ramp(index));
-            }
+			d3.selectAll('#' + element["subjectID"])
+				.selectAll('.cell').select('text')
+				.style("fill",
+						element["group"] === null ? "black" : ramp(element["group"]));
         }
 
-        subjectGroups.forEach(IDcolor); // color lines
+        subData.forEach(idColor); // color lines
 
-        d3.csv("data/nodes.csv", updatePlots); // call update -> noticed there is a delay here. update plots may be the slow down
+		// call update -> noticed there is a delay here.
+		// update plots may be the slow down
+        d3.csv("data/nodes.csv", updatePlots);
 
         rows//.transition() // sort row position
            //.duration(500)
@@ -224,63 +249,62 @@ function sort(a,b){
     }
 }
 
-function row_select() {                           //onclick function to toggle on and off rows
-    if($('g',this).css("opacity") == 0.3){				  //uses the opacity of the row for selection and deselection
-
+// onclick function to toggle on and off rows
+function rowSelect() {
+    if($('g',this).css("opacity") == 0.3) {
+		//uses the opacity of the row for selection and deselection
         d3.selectAll('#' + this.id)
-						.selectAll('g')
+			.selectAll('g')
             .style("opacity", 1);
 
-				d3.selectAll('#' + this.id)
-		        .selectAll('path')
+		d3.selectAll('#' + this.id)
+			.selectAll('path')
             .style("opacity", 1)
             .style("stroke-width", "2.1px");
-
     } else {
-
-			d3.selectAll('#' + this.id)
-					.selectAll('g')
-					.style("opacity", 0.3);
+		d3.selectAll('#' + this.id)
+			.selectAll('g')
+			.style("opacity", 0.3);
 
         d3.selectAll('#' + this.id)
-						.selectAll('path')
+			.selectAll('path')
             .style("opacity", plotsControlBox.lineOpacity)
-            .style("stroke-width", "1.1px");}
+            .style("stroke-width", "1.1px");
+	}
 }
 
 var isDown = false;   // Tracks status of mouse button
 
 $(document).mousedown(function() {
-    isDown = true;      // When mouse goes down, set isDown to true
-})
+		// When mouse goes down, set isDown to true
+		isDown = true;
+	})
     .mouseup(function() {
-        isDown = false;    // When mouse goes up, set isDown to false
+		// When mouse goes up, set isDown to false
+        isDown = false;
     });
 
+function tableMouseDown() {
+	if(isDown) {
+		if($('g',this).css("opacity") == 0.3) {
+			//uses the opacity of the row for selection and deselection
+			d3.selectAll('#' + this.id)
+				.selectAll('g')
+				.style("opacity", 1);
 
-function table_mouseDown() {
-    if(isDown) {
-        if($('g',this).css("opacity") == 0.3){				  //uses the opacity of the row for selection and deselection
+			d3.selectAll('#' + this.id)
+				.selectAll('path')
+				.style("opacity", 1)
+				.style("stroke-width", "2.1px");
+		} else {
+			d3.selectAll('#' + this.id)
+				.selectAll('g')
+				.style("opacity", 0.3);
 
-					d3.selectAll('#' + this.id)
-							.selectAll('g')
-							.style("opacity", 1);
-
-					d3.selectAll('#' + this.id)
-							.selectAll('path')
-							.style("opacity", 1)
-							.style("stroke-width", "2.1px");
-
-        } else {
-
-					d3.selectAll('#' + this.id)
-							.selectAll('g')
-							.style("opacity", 0.3);
-
-						d3.selectAll('#' + this.id)
-								.selectAll('path')
-								.style("opacity", plotsControlBox.lineOpacity)
-								.style("stroke-width", "1.1px");
-							}
-    }
+			d3.selectAll('#' + this.id)
+				.selectAll('path')
+				.style("opacity", plotsControlBox.lineOpacity)
+				.style("stroke-width", "1.1px");
+		}
+	}
 }
