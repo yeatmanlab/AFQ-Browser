@@ -409,7 +409,7 @@ function ready(error, data) {
 function updatePlots(error, data) {
     if (error) throw error;
 
-	var updateAll = (lastPlotKey === plotsControlBox.plotKey);
+	var updateAll = (lastPlotKey !== plotsControlBox.plotKey);
 	console.log(updateAll);
 
     data.forEach(function (d) {
@@ -438,9 +438,12 @@ function updatePlots(error, data) {
 			})
 			.entries(data);
 
-        for (i = 0; i < tractMean.length; i++) {
-            for (j = 0; j < tractMean[i].values.length; j++) {
-                tractData[i].values.push(tractMean[i].values[j]);
+        for (iTract = 0; iTract < tractMean.length; iTract++) {
+            for (jGroup = 0; jGroup < tractMean[iTract].values.length; jGroup++) {
+				if (tractMean[iTract].values[jGroup].key !== "null") {
+					tractData[iTract].values
+						.push(tractMean[iTract].values[jGroup]);
+				}
             }
         }
     } else {
@@ -459,8 +462,8 @@ function updatePlots(error, data) {
 			})
 			.entries(data);
 
-        for (i = 0; i < tractMean.length; i++) {
-            tractData[i].values.push(tractMean[i]);
+        for (iTract = 0; iTract < tractMean.length; iTract++) {
+            tractData[iTract].values.push(tractMean[iTract]);
         }
     }
 
