@@ -7,8 +7,10 @@ var axisOffset = {bottom: 40};
 
 // init variable to hold data later
 var tractData = d3.map();
+var tractMean = d3.nest();
 var brushing = false;
 var trPanels = null;
+var lastPlotKey = null;
 
 // transition variable for consistency
 var t = d3.transition()
@@ -193,6 +195,8 @@ function ready(error, data) {
 		return Boolean(d[plotsControlBox.plotKey]);
 	});
 
+	lastPlotKey = plotsControlBox.plotKey;
+
 	tractData = d3.nest()
 		.key(function (d) { return d.tractID; })
 		.key(function (d) { return d.subjectID; })
@@ -281,7 +285,7 @@ function ready(error, data) {
         .style("stroke-width", "1px");
 
     // draw mean line
-    var tractMean = d3.nest()
+    tractMean = d3.nest()
         .key(function (d) { return d.tractID; })
         .key(function (d) { return d.nodeID; })
         .rollup(function (v) {
@@ -405,6 +409,9 @@ function ready(error, data) {
 function updatePlots(error, data) {
     if (error) throw error;
 
+	var updateAll = (lastPlotKey === plotsControlBox.plotKey);
+	console.log(updateAll);
+
     data.forEach(function (d) {
       if (typeof d.subjectID === 'number'){
         d.subjectID = "s" + d.subjectID.toString();}
@@ -420,7 +427,7 @@ function updatePlots(error, data) {
 			.key(function (d) { return d.subjectID; })
 			.entries(data);
 
-        var tractMean = d3.nest()
+        tractMean = d3.nest()
 			.key(function (d) { return d.tractID; })
 			.key(function (d) { return subGroups[d.subjectID]; })
 			.key(function (d) { return d.nodeID; })
