@@ -134,3 +134,6 @@ def spin_up(source, target=None):
     nodes_fname, meta_fname = mat2tables(
                                 source,
                                 out_path=op.join(site_dir, 'client', 'data'))
+
+    os.chdir(site_dir)
+    os.system('npm start')

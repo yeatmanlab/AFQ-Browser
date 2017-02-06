@@ -51,5 +51,7 @@ MICRO = _version_micro
 VERSION = __version__
 PACKAGE_DATA = {'afqbrowser': [pjoin('site', '*'),
                                pjoin('site', 'client', '*'),
-                               pjoin('site', 'client', 'data', '*')]}
+                               pjoin('site', 'client', 'data', '*'),
+                               pjoin('site', 'client', 'css', '*'),
+                               pjoin('site', 'client', 'js', '*')]}
 REQUIRES = ["numpy", "pandas", "scipy"]
