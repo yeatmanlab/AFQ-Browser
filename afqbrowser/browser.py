@@ -1,3 +1,4 @@
+import os
 import os.path as op
 import scipy.io as sio
 import pandas as pd
@@ -106,3 +107,22 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
     meta_df.to_json(meta_fname, orient='records')
 
     return nodes_fname, meta_fname
+
+
+def spin_up(source, target=None):
+    """
+    Spin up an instance of the AFQ-Browser with data provided as a mat file
+
+    Parameters
+    ----------
+    source : str
+        Path to a mat-file containing the AFQ data structure.
+
+    target : str
+        Path to a file-system location to create this instance of the
+        browser in
+    """
+    # Take in a mat-file as input and create the file
+    nodes_fname, meta_fname = mat2tables(source,
+                                         out_path=target)
+    
