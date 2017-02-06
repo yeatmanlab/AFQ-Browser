@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function
+import os.path as op
 from os.path import join as pjoin
+import glob
 
 # Format expected by setup.py and doc/source/conf.py: string of form "X.Y.Z"
 _version_major = 0
@@ -55,3 +57,4 @@ PACKAGE_DATA = {'afqbrowser': [pjoin('site', '*'),
                                pjoin('site', 'client', 'css', '*'),
                                pjoin('site', 'client', 'js', '*')]}
 REQUIRES = ["numpy", "pandas", "scipy"]
+SCRIPTS = [op.join('bin', op.split(f)[-1]) for f in glob.glob('bin/*')]

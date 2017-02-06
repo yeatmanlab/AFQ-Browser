@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+from optparse import OptionParser
+import afqbrowser as afqb
+
+usage = """afqbrowser-assemble [options]"""
+parser = OptionParser(usage)
+
+parser.add_option("-t", "--target", type="string", help="Target", default=None)
+
+opts, args = parser.parse_args()
+
+afqb.run(opts.target)
