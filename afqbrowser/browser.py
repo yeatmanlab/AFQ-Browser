@@ -1,8 +1,10 @@
 import os
 import os.path as op
+import shutil
 import scipy.io as sio
 import pandas as pd
 import numpy as np
+import afqbrowser as afqb
 
 
 def mat2tables(mat_file_name, subject_ids=None, stats=None,
@@ -122,7 +124,13 @@ def spin_up(source, target=None):
         Path to a file-system location to create this instance of the
         browser in
     """
+    if target is None:
+        target = '.'
+    site_dir = op.join(target, 'AFQ-browser')
+    # This is where the template is stored:
+    data_path = op.join(afqb.__path__[0], 'site')
+    shutil.copytree(data_path, site_dir)
     # Take in a mat-file as input and create the file
-    nodes_fname, meta_fname = mat2tables(source,
-                                         out_path=target)
-    
+    nodes_fname, meta_fname = mat2tables(
+                                source,
+                                out_path=op.join(site_dir, 'client', 'data'))
