@@ -111,7 +111,7 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
     return nodes_fname, meta_fname
 
 
-def spin_up(source, target=None):
+def assemble(source, target=None):
     """
     Spin up an instance of the AFQ-Browser with data provided as a mat file
 
@@ -135,5 +135,10 @@ def spin_up(source, target=None):
                                 source,
                                 out_path=op.join(site_dir, 'client', 'data'))
 
+
+def run(target=None):
+    if target is None:
+        target = '.'
+    site_dir = op.join(target, 'AFQ-browser')
     os.chdir(site_dir)
     os.system('npm start')
