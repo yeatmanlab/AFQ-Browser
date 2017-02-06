@@ -71,10 +71,10 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
         for tract in range(n_tracts):
             # Making a subject and tract specific dataframe
             subj_df = pd.DataFrame(
-                    columns=['subjectID', 'tractID', 'nodeID'],
-                    data=np.array([[sid] * nodes_per_tract,
-                                   [tract_ids[tract]] * nodes_per_tract,
-                                   np.arange(nodes_per_tract)]).T)
+                columns=['subjectID', 'tractID', 'nodeID'],
+                data=np.array([[sid] * nodes_per_tract,
+                              [tract_ids[tract]] * nodes_per_tract,
+                              np.arange(nodes_per_tract)]).T)
             # We're looping over the desired stats (eg fa, md) and adding them
             # to the subjects dataframe
             for stat in stats:
@@ -132,8 +132,8 @@ def assemble(source, target=None):
     shutil.copytree(data_path, site_dir)
     # Take in a mat-file as input and create the file
     nodes_fname, meta_fname = mat2tables(
-                                source,
-                                out_path=op.join(site_dir, 'client', 'data'))
+        source,
+        out_path=op.join(site_dir, 'client', 'data'))
 
 
 def run(target=None):

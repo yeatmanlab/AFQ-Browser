@@ -1,1 +1,1 @@
-from .browser import *  #noqa
+from .browser import *  # noqa
