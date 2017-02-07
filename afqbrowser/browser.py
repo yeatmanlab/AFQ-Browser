@@ -5,8 +5,14 @@ import scipy.io as sio
 import pandas as pd
 import numpy as np
 import afqbrowser as afqb
-import http.server
-import socketserver
+
+# Shim for Python2/Python3:
+try:
+    from http.server import SimpleHTTPRequestHandler
+    import socketserver
+except ImportError:
+    from SimpleHTTPRequestHandler import SimpleHTTPServer
+    import SocketServer as socketserver
 
 
 def mat2tables(mat_file_name, subject_ids=None, stats=None,
@@ -143,7 +149,7 @@ def run(target=None, port=8888):
         target = '.'
     site_dir = op.join(target, 'AFQ-browser', 'client')
     os.chdir(site_dir)
-    Handler = http.server.SimpleHTTPRequestHandler
+    Handler = SimpleHTTPRequestHandler
     success = False
     while not success:
         try:
