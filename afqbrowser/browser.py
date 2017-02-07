@@ -11,7 +11,7 @@ try:
     from http.server import SimpleHTTPRequestHandler
     import socketserver
 except ImportError:
-    from SimpleHTTPRequestHandler import SimpleHTTPServer
+    from SimpleHTTPServerSimple import HTTPRequestHandler
     import SocketServer as socketserver
 
 
