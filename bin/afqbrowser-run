@@ -3,11 +3,13 @@
 from optparse import OptionParser
 import afqbrowser as afqb
 
-usage = """afqbrowser-assemble [options]"""
+usage = """afqbrowser-run [options]"""
 parser = OptionParser(usage)
 
 parser.add_option("-t", "--target", type="string", help="Target", default=None)
+parser.add_option("-p", "--port", type="int", help="Port", default=8080)
+
 
 opts, args = parser.parse_args()
 
-afqb.run(opts.target)
+afqb.run(opts.target, opts.port)
