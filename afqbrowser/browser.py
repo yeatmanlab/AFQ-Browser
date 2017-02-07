@@ -1,7 +1,18 @@
+import os
 import os.path as op
+import shutil
 import scipy.io as sio
 import pandas as pd
 import numpy as np
+import afqbrowser as afqb
+
+# Shim for Python2/Python3:
+try:
+    from http.server import SimpleHTTPRequestHandler
+    import socketserver
+except ImportError:
+    from SimpleHTTPServer import SimpleHTTPRequestHandler
+    import SocketServer as socketserver
 
 
 def mat2tables(mat_file_name, subject_ids=None, stats=None,
@@ -68,10 +79,10 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
         for tract in range(n_tracts):
             # Making a subject and tract specific dataframe
             subj_df = pd.DataFrame(
-                    columns=['subjectID', 'tractID', 'nodeID'],
-                    data=np.array([[sid] * nodes_per_tract,
-                                   [tract_ids[tract]] * nodes_per_tract,
-                                   np.arange(nodes_per_tract)]).T)
+                columns=['subjectID', 'tractID', 'nodeID'],
+                data=np.array([[sid] * nodes_per_tract,
+                              [tract_ids[tract]] * nodes_per_tract,
+                              np.arange(nodes_per_tract)]).T)
             # We're looping over the desired stats (eg fa, md) and adding them
             # to the subjects dataframe
             for stat in stats:
@@ -106,3 +117,49 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
     meta_df.to_json(meta_fname, orient='records')
 
     return nodes_fname, meta_fname
+
+
+def assemble(source, target=None):
+    """
+    Spin up an instance of the AFQ-Browser with data provided as a mat file
+
+    Parameters
+    ----------
+    source : str
+        Path to a mat-file containing the AFQ data structure.
+
+    target : str
+        Path to a file-system location to create this instance of the
+        browser in
+    """
+    if target is None:
+        target = '.'
+    site_dir = op.join(target, 'AFQ-browser')
+    # This is where the template is stored:
+    data_path = op.join(afqb.__path__[0], 'site')
+    shutil.copytree(data_path, site_dir)
+    # Take in a mat-file as input and create the file
+    nodes_fname, meta_fname = mat2tables(
+        source,
+        out_path=op.join(site_dir, 'client', 'data'))
+
+
+def run(target=None, port=8888):
+    if target is None:
+        target = '.'
+    site_dir = op.join(target, 'AFQ-browser', 'client')
+    os.chdir(site_dir)
+    Handler = SimpleHTTPRequestHandler
+    success = False
+    while not success:
+        try:
+            httpd = socketserver.TCPServer(("", port), Handler)
+            success = True
+        except OSError:
+            port = port + 1
+    print("Serving AFQ-browser on port", port)
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    httpd.server_close()
