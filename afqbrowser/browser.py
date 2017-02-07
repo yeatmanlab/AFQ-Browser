@@ -5,6 +5,8 @@ import scipy.io as sio
 import pandas as pd
 import numpy as np
 import afqbrowser as afqb
+import http.server
+import socketserver
 
 
 def mat2tables(mat_file_name, subject_ids=None, stats=None,
@@ -136,9 +138,22 @@ def assemble(source, target=None):
         out_path=op.join(site_dir, 'client', 'data'))
 
 
-def run(target=None):
+def run(target=None, port=8888):
     if target is None:
         target = '.'
-    site_dir = op.join(target, 'AFQ-browser')
+    site_dir = op.join(target, 'AFQ-browser', 'client')
     os.chdir(site_dir)
-    os.system('npm start')
+    Handler = http.server.SimpleHTTPRequestHandler
+    success = False
+    while not success:
+        try:
+            httpd = socketserver.TCPServer(("", port), Handler)
+            success = True
+        except OSError:
+            port = port + 1
+    print("Serving AFQ-browser on port", port)
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    httpd.server_close()
