@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 import afqbrowser as afqb
 
-usage = """afqbrowser-run [options]"""
-parser = OptionParser(usage)
+description = """Serve the AFQ-Browser locally given a file structure location
+        and a specified port."""
+parser = ArgumentParser(description=description)
 
-parser.add_option("-t", "--target", type="string", help="Target", default=None)
-parser.add_option("-p", "--port", type="int", help="Port", default=8080)
+parser.add_argument("-t", "--target", metavar="target",
+        help="path to location containing the browser instance", default=None)
+parser.add_argument("-p", "--port", type=int, metavar="port",
+        help="port number", default=8888)
 
+args = parser.parse_args()
 
-opts, args = parser.parse_args()
-
-afqb.run(opts.target, opts.port)
+afqb.run(args.target, args.port)
