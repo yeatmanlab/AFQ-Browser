@@ -144,7 +144,7 @@ def assemble(source, target=None):
         out_path=op.join(site_dir, 'client', 'data'))
 
 
-def run(target=None, port=8888):
+def run(target=None, port=8080):
     if target is None:
         target = '.'
     site_dir = op.join(target, 'AFQ-browser', 'client')
