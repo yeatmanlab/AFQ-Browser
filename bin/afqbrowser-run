@@ -10,7 +10,7 @@ parser = ArgumentParser(description=description)
 parser.add_argument("-t", "--target", metavar="target",
         help="path to location containing the browser instance", default=None)
 parser.add_argument("-p", "--port", type=int, metavar="port",
-        help="port number", default=8888)
+        help="port number", default=8080)
 
 args = parser.parse_args()
 
