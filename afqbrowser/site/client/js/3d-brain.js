@@ -379,6 +379,7 @@ function init() {
     window.addEventListener('resize', onWindowResize, false);
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.addEventListener('change', lightUpdate);
+    controls.enableKeys = false;
 }
 
 // Resize the three.js window on full window resize.
