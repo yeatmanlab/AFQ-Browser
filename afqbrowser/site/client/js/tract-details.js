@@ -171,11 +171,7 @@ function buildPlotGui(error, data) {
 
     var brushController = plotsGui.add(plotsControlBox, 'brushTract')
         .name('Brushable Tracts')
-        .onChange(function () {
-            d3.selectAll(".brush").data([]).exit().remove();
-
-            d3.csv("data/nodes.csv", updatePlots);
-        });
+        .onChange(updateBrush);
 }
 plotsGui.close();
 
@@ -409,7 +405,6 @@ function updatePlots(error, data) {
     if (error) throw error;
 
 	var updateAll = (lastPlotKey !== plotsControlBox.plotKey);
-	console.log(updateAll);
 
     data.forEach(function (d) {
       if (typeof d.subjectID === 'number'){
@@ -531,17 +526,17 @@ function updatePlots(error, data) {
         d3.select("#tractdetails").selectAll("svg").selectAll(".means")
             .style("stroke", function (d, i) { return ramp(i); });
     };
+}
 
-    d3.selectAll(".brush").data([]).exit().remove();
-    // generate brush
-    var brush = d3.svg.brush()
-        .x(x)
-        .on("brush", brushed)
-        .on("brushstart", brushStart)
-        .on("brushend", brushEnd);
-
-    // brush
+function updateBrush() {
     if (plotsControlBox.brushTract) {
+		// generate brush
+		var brush = d3.svg.brush()
+			.x(x)
+			.on("brush", brushed)
+			.on("brushstart", brushStart)
+			.on("brushend", brushEnd);
+
         var brushg = d3.select("#tractdetails").selectAll("svg")
         .append("g")
         .attr("class", "brush")
@@ -550,24 +545,26 @@ function updatePlots(error, data) {
         brushg.selectAll("rect")
             .attr("y", m.top)
             .attr("height", h - axisOffset.bottom);
-    }
 
-    function brushed() {
-        bundleBrush[this.parentElement.id].brushOn = !brush.empty();
-        if (brush.empty()) {
-            bundleBrush[this.parentElement.id].brushExtent = [0, 100];
-        } else {
-            bundleBrush[this.parentElement.id].brushExtent = brush.extent();
-        }
-    }
+		function brushed() {
+			bundleBrush[this.parentElement.id].brushOn = !brush.empty();
+			if (brush.empty()) {
+				bundleBrush[this.parentElement.id].brushExtent = [0, 100];
+			} else {
+				bundleBrush[this.parentElement.id].brushExtent = brush.extent();
+			}
+		}
 
-    function brushStart() {
-        brushing = true;
-    }
+		function brushStart() {
+			brushing = true;
+		}
 
-    function brushEnd() {
-        brushing = false;
-    }
+		function brushEnd() {
+			brushing = false;
+		}
+	} else {
+		d3.selectAll(".brush").data([]).exit().remove();
+	}
 }
 
 function showHideTractDetails(state, name)
