@@ -119,6 +119,12 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
     return nodes_fname, meta_fname
 
 
+def copy_and_overwrite(from_path, to_path):
+    if op.exists(to_path):
+        shutil.rmtree(to_path)
+    shutil.copytree(from_path, to_path)
+
+
 def assemble(source, target=None):
     """
     Spin up an instance of the AFQ-Browser with data provided as a mat file
@@ -137,7 +143,7 @@ def assemble(source, target=None):
     site_dir = op.join(target, 'AFQ-browser')
     # This is where the template is stored:
     data_path = op.join(afqb.__path__[0], 'site')
-    shutil.copytree(data_path, site_dir)
+    copy_and_overwrite(data_path, site_dir)
     # Take in a mat-file as input and create the file
     nodes_fname, meta_fname = mat2tables(
         source,
