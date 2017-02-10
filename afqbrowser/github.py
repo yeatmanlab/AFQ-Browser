@@ -39,7 +39,7 @@ def upload(target, repo_name, uname=None, upass=None):
     u = g.get_user()
     remote = u.create_repo(repo_name)
     # Create the local repo
-
+    r = git.Repo.init(target)
     # Add all of the files to the repo's gh-pages branch
     r.index.add(file_list)
     r.index.commit("Commit everything")
