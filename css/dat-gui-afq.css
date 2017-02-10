@@ -1,0 +1,12 @@
+.dg input[type=checkbox] {
+  display: block;
+}
+
+.dg {
+  font: 13px;
+  font-family: "Arial", "Helvetica", sans-serif;
+} 
+
+.dg.main.a {
+  margin-bottom: 20px;
+}
