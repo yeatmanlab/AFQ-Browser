@@ -4,7 +4,10 @@ var fieldHeight = 30;
 var rowPadding = 1;
 var fieldWidth = 140;
 
-var previousSort = null;
+var previousSort = {
+	key: null,
+	order: "ascending"
+};
 var format = d3.time.format("%m/%d/%Y");
 //var dateFn = function(date) { return format.parse(d.created_at) };
 
@@ -137,14 +140,27 @@ function refreshTable(sortOn){
     // Update if not in initialisation
     if (sortOn !== null) {
         // Update row order
-        if(sortOn != previousSort){
-            rows.sort(function(a,b){return sort(a[sortOn], b[sortOn]);});
-            subData.sort(function(a,b){return sort(a[sortOn], b[sortOn]);})
-            previousSort = sortOn;
-        }
-        else{
-            rows.sort(function(a,b){return sort(b[sortOn], a[sortOn]);});
-            previousSort = null;
+        if(sortOn === previousSort.key){
+			if (previousSort.order === "ascending") {
+				rows.sort(function(a,b){
+					return descendingWithNull(a[sortOn], b[sortOn]);
+				});
+				previousSort.order = "descending";
+			} else {
+				rows.sort(function(a,b){
+					return ascendingWithNull(a[sortOn], b[sortOn]);
+				});
+				previousSort.order = "ascending";
+			}
+        } else {
+			rows.sort(function(a,b){
+				return ascendingWithNull(a[sortOn], b[sortOn]);
+			});
+            subData.sort(function(a,b){
+				return ascendingWithNull(a[sortOn], b[sortOn]);
+			});
+			previousSort.key = sortOn;
+			previousSort.order = "ascending";
         }
 
 		// Get unique, non-null values from the column `sortOn`
@@ -230,23 +246,18 @@ function refreshTable(sortOn){
     }
 }
 
-function sort(a,b){
-    if(typeof a == "string"){
-        var parseA = format.parse(a);
-        if(parseA){
-            var timeA = parseA.getTime();
-            var timeB = format.parse(b).getTime();
-            return timeA > timeB ? 1 : timeA == timeB ? 0 : -1;
-        }
-        else
-            return a.localeCompare(b);
-    }
-    else if(typeof a == "number"){
-        return a > b ? 1 : a == b ? 0 : -1;
-    }
-    else if(typeof a == "boolean"){
-        return b ? 1 : a ? -1 : 0;
-    }
+function ascendingWithNull(a, b) {
+	// d3.ascending ignores null and undefined values
+	// Return the same as d3.ascending but keep all null and
+	// undefined values at the bottom of the list
+	return b == null ? -1 : a == null ? 1 : d3.ascending(a, b);
+}
+
+function descendingWithNull(a, b) {
+	// d3.descending ignores null and undefined values
+	// Return the same as d3.descending but keep all null and
+	// undefined values at the bottom of the list
+	return b == null ? -1 : a == null ? 1 : d3.descending(a, b);
 }
 
 // onclick function to toggle on and off rows
