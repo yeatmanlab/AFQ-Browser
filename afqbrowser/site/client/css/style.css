@@ -1,0 +1,347 @@
+* {
+    box-sizing: border-box;
+    font-family: "Helvetica Neue";
+    margin: 0;
+    padding: 0;
+    /*border: 0;*/
+}
+
+.w3-container {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+#body {
+  font-family: "Arial", "Helvetica", sans-serif;
+  color: #404040;
+  background: #d9d9d9;
+  /* Get rid of accidental text selection on drag */
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none;   /* Chrome/Safari/Opera */
+    -khtml-user-select: none;    /* Konqueror */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* Internet Explorer/Edge */
+}
+
+h1 {
+  text-align: center;
+}
+
+h2 {
+  text-align: center;
+}
+
+.title{
+  /* height: 40px; */
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+}
+
+#statcontent{
+  float: left;
+  position: fixed;
+  top: 15;
+}
+
+#statcontent.sticky {
+  top: 15;
+}
+
+.focus text{
+  font-size:11px;
+}
+
+.page-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#header {
+  flex: 0 0 auto;
+  height: 60px;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #404040;
+  margin-bottom: 10px;
+}
+
+.app-container {
+  flex: 1 1 auto;
+
+  display: flex;
+  align-items: stretch;
+
+  width: 100%;
+}
+
+.panel-container {
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  
+  width: 100%;
+}
+
+.panel-left {
+  flex: 0 0 auto;
+  /* only manually resize */
+}
+
+.panel-right {
+  flex: 1 1 auto;
+  /* resizable */
+  width: 100%;
+}
+
+/* vertical panel */
+.panel-container-vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-top {
+  flex: 0 0 auto;
+  /* only manually resize */
+}
+
+.panel-bottom {
+  flex: 1 1 auto;
+  /* resizable */
+}
+
+.title-and-content {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+
+.content {
+  flex-grow: 1;
+  border-radius: 10px;
+  padding: 15px;
+  background: #ffffff;
+  margin-bottom: 10px;
+}
+
+.scrollable {
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.ew-resize {
+  border-right: dashed;
+}
+
+.ns-resize {
+  border-bottom: dashed;
+}
+
+.ns-resize, .ew-resize {
+  border-width: 1px;
+  border-color: #404040;
+}
+
+#container-list-3d-table {
+  width: 750px;
+}
+
+#tractlist-with-title {width: 240px;}
+
+#threejsbrain-with-title {
+  flex: 1 1 auto;
+  /* There was an issue where this div would not shrink when the user
+   * shortened the main left panel. This next line fixes that issue. It 
+   * makes absolutely no sense to me why this works. But it works.      
+   * I hereby bequeash this bug, this comment, and this hacky fix to    
+   * the flexbox ninja brave enough to give it a legitimate solution. */
+  width: 30%;
+}
+
+#three-and-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+#threejsbrain {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
+
+  flex-grow: 1;
+  flex-shrink: 1;
+
+  width: 100%;
+  min-width: 200px;
+  min-height: 200px;
+  cursor: pointer;
+}
+
+#threejsbrain > canvas {
+  flex-grow: 1;
+  flex-shrink: 1;
+  align-self: stretch;
+  min-width: 200px;
+  min-height: 200px;
+}
+
+.gui-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+#container-plots {
+  width: 400px;
+  flex: 1 1 auto;
+}
+
+#plots-and-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+#tractlist {
+  /* Set a height restriction for the tract list. We can use a
+   * ridiculously small number here because flexbox will grow
+   * this item to match the height of the 3D window. We only
+   * need the height to be less than that of the 3D window. */
+  height: 1px;
+  text-align: left;
+}
+
+#tractdetails {
+  height: 1px;
+  text-align: center;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+#table {
+  height: 300px;
+  align: center;
+}
+
+/*----------------------------*/
+/* Begin tractlist formatting */
+/*----------------------------*/
+#selectAllBox {
+  font-weight: bold;
+  cursor:pointer;
+}
+
+/*change label hover effect for checkbox*/
+input[type=checkbox] {
+    display:none;
+}
+
+input[type=checkbox]+label{
+  line-height: 30px;
+  cursor:pointer;
+}
+
+input[type=checkbox]:hover {
+    -webkit-box-shadow: inset 0 0 2px 2px rgba(82,168,236,.6);
+}
+
+label, input[type=checkbox] {
+    -moz-transition: all .2s ease-in;
+    -o-transition: all .2s ease-in;
+    -webkit-transition: all .2s ease-in;
+    transition: all .2s ease-in;
+}
+
+label:hover, label:active, input:hover+label, input:active+label {
+    background:#ffffcc;
+}
+
+.row::after {
+  content: "";
+  clear: both;
+  display: block;
+}
+
+.line {
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap:round;
+}
+
+.tracts {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+.plot
+{
+  fill:#eeeeee;
+  border-spacing: 10px;
+}
+.plot_text{
+}
+
+.row
+{
+    float: left;
+    clear: none;
+    display: table;
+    width: 100%; /*Optional*/
+    table-layout: fixed; /*Optional*/
+    border-spacing: 10px; /*Optional*/
+}
+
+/*------------------------*/
+/* Begin table formatting */
+/*------------------------*/
+.t_header rect {
+fill: #404040;
+}
+
+.t_header text {
+    font: 13px;
+    fill: #eeeeee;
+    font-weight: bold;
+    text-anchor: middle;
+}
+
+.cell rect {
+ fill: #dddddd;
+}
+
+.cell text {
+  font: 13px ;
+  text-anchor: middle;
+}
+
+/*------------------------*/
+/* Begin graph formatting */
+/*------------------------*/
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #AFBABF;
+    shape-rendering: crispEdges;
+}
+.axis text {
+    font-size: 14px;
+}
+
+.x.axis path {
+    display: none;
+}
+.y.axis path {
+    display: none;
+}
+
+.brush .extent {
+  stroke: #f09f8c;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
