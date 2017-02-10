@@ -161,88 +161,87 @@ function refreshTable(sortOn){
 			});
 			previousSort.key = sortOn;
 			previousSort.order = "ascending";
-        }
 
-		// Get unique, non-null values from the column `sortOn`
-		function uniqueNotNull(value, index, self) { 
-			return (self.indexOf(value) === index) && (value !== null);
-		}
+			// Get unique, non-null values from the column `sortOn`
+			function uniqueNotNull(value, index, self) { 
+				return (self.indexOf(value) === index) && (value !== null);
+			}
 
-		var uniques = subData
-			.map(function(element) {
-				return element[sortOn];
-			})
+			var uniques = subData
+				.map(function(element) {
+					return element[sortOn];
+				})
 			.filter(uniqueNotNull);
 
-		// usrGroups is the user requested number of groups
-		// numGroups may be smaller if there are not enough unique values
-        var usrGroups = tableControlBox.groupCount;
-        var numGroups = Math.min(usrGroups, uniques.length);
+			// usrGroups is the user requested number of groups
+			// numGroups may be smaller if there are not enough unique values
+			var usrGroups = tableControlBox.groupCount;
+			var numGroups = Math.min(usrGroups, uniques.length);
 
-		// Create groupScale to map between the unique
-		// values and the discrete group indices.
-		var groupScale;
-		// TODO: Use the datatype json instead of
-		// just testing the first element of uniques
-		if (typeof uniques[0] === 'number') {
-			groupScale = d3.scale.quantile()
-				.range(d3.range(numGroups));
-		} else {
-			var rangeOrdinal = Array(uniques.length);
-			for (i = 0; i < numGroups; i++) {
-				rangeOrdinal.fill(i,
-						i * uniques.length / numGroups,
-						(i + 1) * uniques.length / numGroups);
-			}
-			groupScale = d3.scale.ordinal()
-				.range(rangeOrdinal);
-		}
-		groupScale.domain(uniques);
-
-		// Assign group index to each element of subData
-		subData.forEach(function(element) {
-			if (element[sortOn] === null) {
-				element["group"] = null;
-				subGroups[element.subjectID] = null;
+			// Create groupScale to map between the unique
+			// values and the discrete group indices.
+			var groupScale;
+			// TODO: Use the datatype json instead of
+			// just testing the first element of uniques
+			if (typeof uniques[0] === 'number') {
+				groupScale = d3.scale.quantile()
+					.range(d3.range(numGroups));
 			} else {
-				element["group"] = groupScale(element[sortOn]);
-				subGroups[element.subjectID] = groupScale(element[sortOn]);
+				var rangeOrdinal = Array(uniques.length);
+				for (i = 0; i < numGroups; i++) {
+					rangeOrdinal.fill(i,
+							i * uniques.length / numGroups,
+							(i + 1) * uniques.length / numGroups);
+				}
+				groupScale = d3.scale.ordinal()
+					.range(rangeOrdinal);
 			}
-		});
+			groupScale.domain(uniques);
 
-		// Prepare to split on group index
-        splitGroups = d3.nest()
-            .key(function (d) { return d["group"]; })
-            .entries(subData);
+			// Assign group index to each element of subData
+			subData.forEach(function(element) {
+				if (element[sortOn] === null) {
+					element["group"] = null;
+					subGroups[element.subjectID] = null;
+				} else {
+					element["group"] = groupScale(element[sortOn]);
+					subGroups[element.subjectID] = groupScale(element[sortOn]);
+				}
+			});
 
-		// Create color ramp for subject groups
-        ramp = d3.scale.linear()
-			.domain([0, numGroups-1]).range(["red", "blue"]);
+			// Prepare to split on group index
+			splitGroups = d3.nest()
+				.key(function (d) { return d["group"]; })
+				.entries(subData);
 
-        function idColor(element) {
-			d3.selectAll('#' + element["subjectID"])
-				.selectAll('.line')
-				.style("stroke",
-						element["group"] === null ? "black" : ramp(element["group"]));
+			// Create color ramp for subject groups
+			ramp = d3.scale.linear()
+				.domain([0, numGroups-1]).range(["red", "blue"]);
 
-			d3.selectAll('#' + element["subjectID"])
-				.selectAll('.cell').select('text')
-				.style("fill",
-						element["group"] === null ? "black" : ramp(element["group"]));
-        }
+			function idColor(element) {
+				d3.selectAll('#' + element["subjectID"])
+					.selectAll('.line')
+					.style("stroke",
+							element["group"] === null ? "black" : ramp(element["group"]));
 
-        subData.forEach(idColor); // color lines
+				d3.selectAll('#' + element["subjectID"])
+					.selectAll('.cell').select('text')
+					.style("fill",
+							element["group"] === null ? "black" : ramp(element["group"]));
+			}
 
-		// call update -> noticed there is a delay here.
-		// update plots may be the slow down
-        d3.csv("data/nodes.csv", updatePlots);
+			subData.forEach(idColor); // color lines
+
+			// call update -> noticed there is a delay here.
+			// update plots may be the slow down
+			d3.csv("data/nodes.csv", updatePlots);
+		}
 
         rows//.transition() // sort row position
            //.duration(500)
            .attr("transform", function (d, i) {
                return "translate(0," + (i + 1) * (fieldHeight + 1) + ")";
            });
-
     }
 }
 
