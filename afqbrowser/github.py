@@ -45,6 +45,7 @@ def upload(target, repo_name, uname=None, upass=None):
     r.index.commit("Commit everything")
     # Add a .nojekyll file
     f = open(op.join(target, '.nojekyll'))
+    f.close()
     r.index.add([os.path.abspath(op.join(path, f))])
     r.index.commit("Add nojekyll file")
     # Push to Github
