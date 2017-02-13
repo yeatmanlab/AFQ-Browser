@@ -403,6 +403,7 @@ function updatePlots(error, data) {
     if (error) throw error;
 
 	var updateAll = (afqb.plots.lastPlotKey !== afqb.controls.plotsControlBox.plotKey);
+  afqb.plots.lastPlotKey = afqb.controls.plotsControlBox.plotKey;
 
     data.forEach(function (d) {
       if (typeof d.subjectID === 'number'){
