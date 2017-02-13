@@ -498,8 +498,8 @@ function updatePlots(error, data) {
 
 	// Remove old meanlines
 	d3.select("#tractdetails").selectAll("svg").selectAll(".means").remove();
-
-	// Join new afqb.plots.tractMean data with old meanLines elements
+	if (afqb.table.splitGroups) {
+		// Join new afqb.plots.tractMean data with old meanLines elements
     var meanLines = d3.select("#tractdetails").selectAll("svg")
 		.selectAll(".means")
 		.data(function (d) {
@@ -507,24 +507,37 @@ function updatePlots(error, data) {
 				return element.key === d.key;
 			})[0].values;
 		});
+		// Enter and update. Merge entered elements and apply operations
+		meanLines.enter().append("g")
+			.attr("class", "tracts means")
+			.attr("id", function(d) {return "mean" + d.key;});
 
-	// Enter and update. Merge entered elements and apply operations
-	meanLines.enter().append("g")
-		.attr("class", "tracts means")
-		.attr("id", function(d) {return "mean" + d.key;});
-
-	meanLines.append("path")
-		.attr("class", "line")
-		.attr("d", function(d) {return afqb.plots.line(d.values); })
-		.style("opacity", 0.99)
-		.style("stroke-width", "3.5px");
-
-
+		meanLines.append("path")
+			.attr("class", "line")
+			.attr("d", function(d) {return afqb.plots.line(d.values); })
+			.style("opacity", 0.99)
+			.style("stroke-width", "3.5px");
     // set mean colors
-    if (afqb.table.splitGroups) {
-        d3.select("#tractdetails").selectAll("svg").selectAll(".means")
-            .style("stroke", function (d, i) { return afqb.table.ramp(i); });
-    };
+    d3.select("#tractdetails").selectAll("svg").selectAll(".means")
+      .style("stroke", function (d, i) { return afqb.table.ramp(i); });
+  } else{
+		// Gray meanLines for unsorted 'Plot Type' change
+		var meanLines = d3.select("#tractdetails").selectAll("svg")
+			.append("g")
+			.datum(function (d) {
+				return afqb.plots.tractMean.filter(function(element) {
+					return element.key === d.key;
+				})[0].values;
+			})
+			.attr("class", "tracts means")
+			.attr("id", "mean0");
+
+		meanLines.append("path")
+			.attr("class", "line")
+			.attr("d", function(d) {return afqb.plots.line(d); })
+			.style("opacity", 0.99)
+			.style("stroke-width", "3.5px");
+	};
 }
 
 function updateBrush() {
