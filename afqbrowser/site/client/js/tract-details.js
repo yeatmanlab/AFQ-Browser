@@ -405,6 +405,7 @@ function updatePlots(error, data) {
     if (error) throw error;
 
 	var updateAll = (lastPlotKey !== plotsControlBox.plotKey);
+  lastPlotKey = plotsControlBox.plotKey;
 
     data.forEach(function (d) {
       if (typeof d.subjectID === 'number'){
