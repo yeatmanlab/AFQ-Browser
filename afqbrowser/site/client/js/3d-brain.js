@@ -1,65 +1,45 @@
 // =========== three js part
 
-var camera, scene, renderer;
-var directionalLight;
+afqb.three = {};
 
-var brain;
-var lh, rh;
-
-var colorGroups = new THREE.Object3D();
-var greyGroups = new THREE.Object3D();
+afqb.three.colorGroups = new THREE.Object3D();
+afqb.three.greyGroups = new THREE.Object3D();
 
 // Set initial opacitites here
-var initLHOpacity = 0.01;
-var initRHOpacity = 0.70;
-var initFiberOpacity = 0.25;
-var initColorOpacity = 0.75;
-var initHighlightOpacity = 0.75;
+afqb.three.initLHOpacity = 0.01;
+afqb.three.initRHOpacity = 0.70;
+afqb.three.initFiberOpacity = 0.25;
+afqb.three.initColorOpacity = 0.75;
+afqb.three.initHighlightOpacity = 0.75;
 
 // Set initial line widths here
-var initFiberLineWidth = 1.0;
-var initColorLineWidth = 2.0;
-var initHighlightLineWidth = 2.5;
+afqb.three.initFiberLineWidth = 1.0;
+afqb.three.initColorLineWidth = 2.0;
+afqb.three.initHighlightLineWidth = 2.5;
 
-// var mouseoverHighlight = true
-
-var guiConfigObj = function () {
-	this.lhOpacity = initLHOpacity;
-	this.rhOpacity = initRHOpacity;
-	this.fiberOpacity = initFiberOpacity;
-	this.highlight = true;
-};
-
-var gui = new dat.GUI({
-	autoplace: false,
-	width: 250,
-	scrollable: false
-});
-
-var controlBox = new guiConfigObj();
-
-var greyLineMaterial = new THREE.LineBasicMaterial({
-	opacity: initFiberOpacity,
-	linewidth: initFiberLineWidth,
+afqb.three.greyLineMaterial = new THREE.LineBasicMaterial({
+	opacity: afqb.three.initFiberOpacity,
+	linewidth: afqb.three.initFiberLineWidth,
 	transparent: true,
 	depthWrite: true
 });
 
-greyLineMaterial.color.setHex( 0x444444 );
+afqb.three.greyLineMaterial.color.setHex( 0x444444 );
 
-var colorLineMaterial = new THREE.LineBasicMaterial({
+afqb.three.colorLineMaterial = new THREE.LineBasicMaterial({
 	opacity: 0.0,
 	linewidth: 0.000000000001,
     transparent: true,
 	depthWrite: false
 });
 
-// init requires faPlotLength to be defined. faPlotLength is defined in
-// buildTractCheckboxes in tract-details.js but it is async, deferred until
-// d3 reads nodes.csv. So we have to wait until faPlotLength is defined
-// Define a function to wait until faPlotLength is defined.
+// init requires afqb.plots.faPlotLength to be defined.
+// afqb.plots.faPlotLength is defined in buildTractCheckboxes in
+// tract-details.js but it is async, deferred until d3 reads nodes.csv.
+// So we have to wait until afqb.plots.faPlotLength is defined
+// Define a function to wait until afqb.plots.faPlotLength is defined.
 function waitForPlotLength(callback) {
-	if (faPlotLength == undefined) {
+	if (afqb.plots.faPlotLength == undefined) {
 		setTimeout(function() {
 			console.log("waiting for plot length");
 			waitForPlotLength(callback);
@@ -75,53 +55,42 @@ function initAndAnimate(error) {
 	animate();
 }
 
-// Use d3.queue() to wait for faPlotLength before calling init and animate
-var threeQ = d3_queue.queue();
-threeQ.defer(waitForPlotLength);
-threeQ.await(initAndAnimate);
+// Use d3.queue() to wait for afqb.plots.faPlotLength before calling init and animate
+afqb.queues.threeQ = d3_queue.queue();
+afqb.queues.threeQ.defer(waitForPlotLength);
+afqb.queues.threeQ.await(initAndAnimate);
 
-var mouseDown = 0;
-var mouseMove = false;
-document.body.onmousedown = function() {
-  ++mouseDown;
-}
-document.body.onmouseup = function() {
-  --mouseDown;
-}
+afqb.three.showStats = false;
+afqb.three.stats;
 
-var showStats = false;
-var stats;
-
-// We put the renderer inside a div with id #threejsbrain
-var container;
-
-if (showStats) {
-	stats = new Stats();
-	container.appendChild( stats.dom );
+if (afqb.three.showStats) {
+	afqb.three.stats = new Stats();
+	afqb.three.container.appendChild( afqb.three.stats.dom );
 }
 
 function init() {
-	container = document.getElementById("threejsbrain");
+	// We put the renderer inside a div with id #threejsbrain
+	afqb.three.container = document.getElementById("threejsbrain");
 
-    var width = container.clientWidth;
-	var height = container.clientHeight;
+    var width = afqb.three.container.clientWidth;
+	var height = afqb.three.container.clientHeight;
 
-    camera = new THREE.PerspectiveCamera( 45, width / height, 1, 2000 );
-    camera.position.x = -15;
-	camera.up.set(0, 0, 1);
+    afqb.three.camera = new THREE.PerspectiveCamera( 45, width / height, 1, 2000 );
+    afqb.three.camera.position.x = -15;
+	afqb.three.camera.up.set(0, 0, 1);
 
     // scene
-    scene = new THREE.Scene();
+    afqb.three.scene = new THREE.Scene();
 
     var ambient = new THREE.AmbientLight(0x111111);
-    scene.add(ambient);
+    afqb.three.scene.add(ambient);
 
-    directionalLight = new THREE.DirectionalLight(0xffeedd, 1);
-    directionalLight.position.set(
-			camera.position.x,
-			camera.position.y,
-			camera.position.z);
-    scene.add(directionalLight);
+    afqb.three.directionalLight = new THREE.DirectionalLight(0xffeedd, 1);
+    afqb.three.directionalLight.position.set(
+			afqb.three.camera.position.x,
+			afqb.three.camera.position.y,
+			afqb.three.camera.position.z);
+    afqb.three.scene.add(afqb.three.directionalLight);
 
     var manager = new THREE.LoadingManager();
     manager.onProgress = function (item, loaded, total) {
@@ -129,13 +98,13 @@ function init() {
     };
 
     // renderer
-    renderer = new THREE.WebGLRenderer({ alpha: true });
+    afqb.three.renderer = new THREE.WebGLRenderer({ alpha: true });
 
-    renderer.setSize(width, height);
-    container.appendChild(renderer.domElement);
+    afqb.three.renderer.setSize(width, height);
+    afqb.three.container.appendChild(afqb.three.renderer.domElement);
 
     // dom event
-    domEvents = new THREEx.DomEvents(camera, renderer.domElement);
+    domEvents = new THREEx.DomEvents(afqb.three.camera, afqb.three.renderer.domElement);
 
     // model
     // Load our brain
@@ -144,9 +113,9 @@ function init() {
     // load brain surface
     var loader = new THREE.OBJLoader(manager);
     loader.load('data/freesurf.OBJ', function (object) {
-        brain = object;
-        rh = object.getObjectByName('rh.pial.asc');
-        lh = object.getObjectByName('lh.pial.asc');
+        afqb.three.brain = object;
+        afqb.three.rh = object.getObjectByName('rh.pial.asc');
+        afqb.three.lh = object.getObjectByName('lh.pial.asc');
 
         object.traverse(function (child) {
             if (child instanceof THREE.Mesh) {
@@ -158,45 +127,60 @@ function init() {
 				child.renderOrder = 3;
             }
         });
-		lh.translateX(-0.05);
-		rh.translateX( 0.05);
+		afqb.three.lh.translateX(-0.05);
+		afqb.three.rh.translateX( 0.05);
 
-        lh.material.opacity = initLHOpacity;
-        rh.material.opacity = initRHOpacity;
+        afqb.three.lh.material.opacity = afqb.three.initLHOpacity;
+        afqb.three.rh.material.opacity = afqb.three.initRHOpacity;
 
-		lh.material.color.setHex( 0xe8e3d3 );
-		rh.material.color.setHex( 0xe8e3d3 );
+		afqb.three.lh.material.color.setHex( 0xe8e3d3 );
+		afqb.three.rh.material.color.setHex( 0xe8e3d3 );
 
-        scene.add(object);
+        afqb.three.scene.add(object);
     });
 
-	var lhOpacityController = gui.add(controlBox, 'lhOpacity')
+	var threeGuiConfigObj = function () {
+		this.lhOpacity = afqb.three.initLHOpacity;
+		this.rhOpacity = afqb.three.initRHOpacity;
+		this.fiberOpacity = afqb.three.initFiberOpacity;
+		this.highlight = true;
+	};
+
+	var threeGui = new dat.GUI({
+		autoplace: false,
+		width: 250,
+		scrollable: false
+	});
+
+	afqb.controls.threeControlBox = new threeGuiConfigObj();
+
+	var lhOpacityController = threeGui.add(afqb.controls.threeControlBox, 'lhOpacity')
 		.min(0).max(1).step(0.01).name('Left Hemi Opacity');
 
 	lhOpacityController.onChange( function(value) {
-		lh.traverse(function (child) {
+		afqb.three.lh.traverse(function (child) {
 			if (child instanceof THREE.Mesh) {
 				child.material.opacity = value;
 			}
 		})
 	});
 
-	var rhOpacityController = gui.add(controlBox, 'rhOpacity')
+	var rhOpacityController = threeGui.add(afqb.controls.threeControlBox, 'rhOpacity')
 		.min(0).max(1).step(0.01).name('Right Hemi Opacity');
 
 	rhOpacityController.onChange( function(value) {
-		rh.traverse(function (child) {
+		afqb.three.rh.traverse(function (child) {
 			if (child instanceof THREE.Mesh) {
 				child.material.opacity = value;
 			}
 		})
 	});
 
-	var fiberOpacityController = gui.add(controlBox, 'fiberOpacity')
+	var fiberOpacityController = threeGui.add(afqb.controls.threeControlBox, 'fiberOpacity')
 		.min(0).max(1).name('Fiber Opacity');
 
 	fiberOpacityController.onChange( function(value) {
-        greyGroups.traverse(function (child) {
+        afqb.three.greyGroups.traverse(function (child) {
 			if (child instanceof THREE.LineSegments) {
                 child.material.opacity = value;
 				if (value === 0) {
@@ -208,16 +192,12 @@ function init() {
 		})
 	});
 
-	var highlightController = gui.add(controlBox, 'highlight')
+	var highlightController = threeGui.add(afqb.controls.threeControlBox, 'highlight')
 		.name('Mouseover Highlight');
 
-	highlightController.onChange( function(value) {
-		console.log(value);
-	});
-
 	var guiContainer = document.getElementById('three-gui-container');
-	guiContainer.appendChild(gui.domElement);
-	gui.close();
+	guiContainer.appendChild(threeGui.domElement);
+	threeGui.close();
 
     // contain all bundles in this Group object
     // each bundle is represented by an Object3D
@@ -243,8 +223,8 @@ function init() {
                     if (oneBundle.hasOwnProperty(subkey)) {
 						++nFibers;
 						var oneFiber = oneBundle[subkey];
-						if (oneFiber.length !== faPlotLength) {
-							var errMessage = 'Streamlines have unexpected length. faPlotLength = ' + faPlotLength + ", but oneFiber.length = " + oneFiber.length;
+						if (oneFiber.length !== afqb.plots.faPlotLength) {
+							var errMessage = 'Streamlines have unexpected length. faPlotLength = ' + afqb.plots.faPlotLength + ", but oneFiber.length = " + oneFiber.length;
 							if (typeof Error !== 'undefined') {
 								throw new Error(errMessage);
 							}
@@ -255,14 +235,14 @@ function init() {
 
 				// Positions will hold x,y,z vertices for each fiber
 				var positions = new Float32Array(
-						nFibers * (faPlotLength - 1) * 3 * 2);
+						nFibers * (afqb.plots.faPlotLength - 1) * 3 * 2);
 
 				// Outer loop is along the length of each fiber.
 				// Inner loop cycles through each fiber group.
 				// This is counterintuitive but we want spatial locality to
 				// be preserved in index locality. This will make brushing
 				// much easier in the end.
-                for (var i = 0; i < faPlotLength - 1; i++) {
+                for (var i = 0; i < afqb.plots.faPlotLength - 1; i++) {
 					var iFiber = 0;
 					for (var subkey in oneBundle) {
 						if (oneBundle.hasOwnProperty(subkey)) {
@@ -307,7 +287,7 @@ function init() {
 						.fromBufferGeometry(bundleGeometry));
 
 				var colorBundleLine = new THREE.LineSegments(bundleGeometry,
-						colorLineMaterial);
+						afqb.three.colorLineMaterial);
 
 				// Set scale to match the brain surface,
 				// (determined by trial and error)
@@ -315,97 +295,97 @@ function init() {
                 colorBundleLine.position.set(0, 0.8, -0.5);
 
 				// Record some useful info for later
-				colorBundleLine.name = tracts[ bundleIdx ];
+				colorBundleLine.name = afqb.plots.tracts[ bundleIdx ];
 				colorBundleLine.nFibers = nFibers;
 				colorBundleLine.idx = bundleIdx;
 
 				++bundleIdx;
 
-                colorGroups.add(colorBundleLine);
+                afqb.three.colorGroups.add(colorBundleLine);
             }
         }
 
 		// Set material properties for each fiber bundle
 		// And add event listeners for mouseover, etc.
-        colorGroups.traverse(function (child) {
+        afqb.three.colorGroups.traverse(function (child) {
 			if (child instanceof THREE.LineSegments) {
                 domEvents.addEventListener(child, 'mouseover', function(event) {
-        					if(!mouseDown) {
+        					if(!afqb.mouse.isDown) {
 								mouseoverBundle(child.idx);
-        						return renderer.render(scene, camera);
+        						return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
         					}
                 });
                 domEvents.addEventListener(child, 'mousemove', function(event) {
-        					mouseMove = true;
+        					afqb.mouse.mouseMove = true;
         				});
                 domEvents.addEventListener(child, 'mousedown', function(event) {
-        					mouseMove = false;
+        					afqb.mouse.mouseMove = false;
         				});
 				domEvents.addEventListener(child, 'mouseup', function(event) {
-							if(!mouseMove) {
+							if(!afqb.mouse.mouseMove) {
 								var myBundle = d3.selectAll("input.tracts")[0][child.idx];
 								myBundle.checked = !myBundle.checked;
 								showHideTractDetails(myBundle.checked, myBundle.name)
 								highlightBundle(myBundle.checked, myBundle.name)
-								return renderer.render(scene, camera);
+								return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 							} else {
-								mouseMove = false;
+								afqb.mouse.mouseMove = false;
 							}
 						});
                 domEvents.addEventListener(child, 'mouseout', function(event) {
         					var myBundle = d3.selectAll("input.tracts")[0][child.idx];
         					showHideTractDetails(myBundle.checked, myBundle.name)
         					highlightBundle(myBundle.checked, myBundle.name)
-        					return renderer.render(scene, camera);
+        					return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
                 });
             }
         });
 
 		var greyBundleLine = new THREE.LineSegments(
-				greyGeometry, greyLineMaterial);
+				greyGeometry, afqb.three.greyLineMaterial);
 		greyBundleLine.scale.set(0.05,0.05,0.05);
         greyBundleLine.position.set(0, 0.8, -0.5);
 
-		greyGroups.add(greyBundleLine);
+		afqb.three.greyGroups.add(greyBundleLine);
 
-		greyGroups.renderOrder = 1;
-		colorGroups.renderOrder = 2;
+		afqb.three.greyGroups.renderOrder = 1;
+		afqb.three.colorGroups.renderOrder = 2;
 
-		// Finally add fiber bundle group to the scene.
-  		scene.add(colorGroups);
-		scene.add(greyGroups);
+		// Finally add fiber bundle group to the afqb.three.scene.
+  		afqb.three.scene.add(afqb.three.colorGroups);
+		afqb.three.scene.add(afqb.three.greyGroups);
     });
 
     window.addEventListener('resize', onWindowResize, false);
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls = new THREE.OrbitControls(afqb.three.camera, afqb.three.renderer.domElement);
     controls.addEventListener('change', lightUpdate);
     controls.enableKeys = false;
 }
 
 // Resize the three.js window on full window resize.
 function onWindowResize() {
-    var width = container.clientWidth;
-	var height = container.clientHeight;
+    var width = afqb.three.container.clientWidth;
+	var height = afqb.three.container.clientHeight;
 
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
+    afqb.three.camera.aspect = width / height;
+    afqb.three.camera.updateProjectionMatrix();
 
-    renderer.setSize(width, height);
+    afqb.three.renderer.setSize(width, height);
 }
 
 function animate() {
     requestAnimationFrame(animate);
-    renderer.render(scene, camera);
+    afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
     controls.update();
-	if (showStats)
-		stats.update();
+	if (afqb.three.showStats)
+		afqb.three.stats.update();
 
 	// For each fiber bundle update the length of fiber to be plotted
 	// based on the d3 brushes in the FA plots
-	for (var i = 0; i < colorGroups.children.length; i++) {
+	for (var i = 0; i < afqb.three.colorGroups.children.length; i++) {
 		var tract = 'tract' + i;
-		var lo = Math.floor(bundleBrush[tract].brushExtent[0]);
-		var hi = Math.ceil(bundleBrush[tract].brushExtent[1]) - 1;
+		var lo = Math.floor(afqb.plots.bundleBrush[tract].brushExtent[0]);
+		var hi = Math.ceil(afqb.plots.bundleBrush[tract].brushExtent[1]) - 1;
 
 		// loIdx is the low index and count is the number of indices
 		// This is a little sloppy and sometimes the count will be too high
@@ -413,16 +393,16 @@ function animate() {
 		// TODO: Positions come in pairs, with all vertices except the first
 		// and last being repeated. Take this into account to make loIdx and
 		// count correct (not just good enough).
-		var loIdx = lo * colorGroups.children[i].nFibers * 2;
-		var count = (hi - lo) * colorGroups.children[i].nFibers * 2;
+		var loIdx = lo * afqb.three.colorGroups.children[i].nFibers * 2;
+		var count = (hi - lo) * afqb.three.colorGroups.children[i].nFibers * 2;
 
 		// Set the drawing range based on the brush extent.
-		colorGroups.children[i].geometry.setDrawRange(loIdx, count);
+		afqb.three.colorGroups.children[i].geometry.setDrawRange(loIdx, count);
 	}
 }
 
 function lightUpdate() {
-    directionalLight.position.copy(camera.position);
+    afqb.three.directionalLight.position.copy(afqb.three.camera.position);
 }
 
 // Highlight specified bundle based on left panel checkboxes
@@ -430,46 +410,46 @@ function highlightBundle(state, name) {
 
 	// Temporary line material for highlighted bundles
 	var tmpLineMaterial = new THREE.LineBasicMaterial({
-		opacity: initColorOpacity,
-		linewidth: initColorLineWidth,
+		opacity: afqb.three.initColorOpacity,
+		linewidth: afqb.three.initColorLineWidth,
 		transparent: true,
 		depthWrite: true
 	});
 
-	bundle = colorGroups.children[name];
+	var bundle = afqb.three.colorGroups.children[name];
 
 	if (bundle !== undefined) {
 		if (state === true) {
-			tmpLineMaterial.color.setHex( colors[name] );
+			tmpLineMaterial.color.setHex( afqb.colors[name] );
 			bundle.material = tmpLineMaterial;
-			return renderer.render(scene, camera);
+			return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 
 		} else {
-			bundle.material = colorLineMaterial;
-			return renderer.render(scene, camera);
+			bundle.material = afqb.three.colorLineMaterial;
+			return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 		}
 	}
 }
 
 // Highlight specified bundle based on mouseover
 function mouseoverBundle(name) {
-	if (controlBox.highlight) {
+	if (afqb.controls.threeControlBox.highlight) {
 		// Temporary line material for moused-over bundles
 		var tmpLineMaterial = new THREE.LineBasicMaterial({
-			opacity: initHighlightOpacity,
-			linewidth: initHighlightLineWidth,
+			opacity: afqb.three.initHighlightOpacity,
+			linewidth: afqb.three.initHighlightLineWidth,
 			transparent: true
 		});
 
-		bundle = colorGroups.children[name];
+		var bundle = afqb.three.colorGroups.children[name];
 
 		if (bundle !== undefined) {
-			tmpLineMaterial.color.setHex( highlightColors[name] );
-			if (bundleBrush['tract' + name].brushOn) {
+			tmpLineMaterial.color.setHex( afqb.highlightColors[name] );
+			if (afqb.plots.bundleBrush['tract' + name].brushOn) {
 				tmpLineMaterial.color.setHex( 0x000000 );
 			}
 			bundle.material = tmpLineMaterial;
-			return renderer.render(scene, camera);
+			return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 		}
 	}
 }

@@ -1,46 +1,46 @@
 // ========== Adding Table code ============
 
-var fieldHeight = 30;
-var rowPadding = 1;
-var fieldWidth = 140;
+afqb.table = {
+	fieldHeight: 30,
+   	rowPadding: 1,
+   	fieldWidth: 140
+};
 
-var previousSort = {
+afqb.table.previousSort = {
 	key: null,
 	order: "ascending"
 };
-var format = d3.time.format("%m/%d/%Y");
+
+afqb.table.format = d3.time.format("%m/%d/%Y");
 //var dateFn = function(date) { return format.parse(d.created_at) };
 
+afqb.table.subData = [];
+afqb.table.subGroups = {};
+afqb.table.splitGroups = false;
 
-var subjectGroups = false;
-var subData = [];
-var subGroups = {};
-var splitGroups = false;
+afqb.table.ramp = null;
+afqb.table.headerGrp;
+afqb.table.rowsGrp;
 
-var ramp = null;
-var headerGrp;
-var rowsGrp;
-var tableControlBox;
-
-var subjectQ = d3_queue.queue();
-subjectQ.defer(d3.json, "data/subjects.json");
-subjectQ.await(buildTable);
+afqb.queues.subjectQ = d3_queue.queue();
+afqb.queues.subjectQ.defer(d3.json, "data/subjects.json");
+afqb.queues.subjectQ.await(buildTable);
 
 function buildTable(error, data) {
 	data.forEach(function (d) {
         if (typeof d.subjectID === 'number'){
           d.subjectID = "s" + d.subjectID.toString();}
-		subData.push(d);
+		afqb.table.subData.push(d);
 	});
 
-	ramp = null;
+	afqb.table.ramp = null;
 
 	var tableSvg = d3.select("#table").append("svg")
-		.attr("width", d3.keys(subData[0]).length * fieldWidth)
-		.attr("height", (subData.length + 1) * (fieldHeight + rowPadding));
+		.attr("width", d3.keys(afqb.table.subData[0]).length * afqb.table.fieldWidth)
+		.attr("height", (afqb.table.subData.length + 1) * (afqb.table.fieldHeight + afqb.table.rowPadding));
 
-	headerGrp = tableSvg.append("g").attr("class", "headerGrp");
-	rowsGrp = tableSvg.append("g").attr("class","rowsGrp");
+	afqb.table.headerGrp = tableSvg.append("g").attr("class", "headerGrp");
+	afqb.table.rowsGrp = tableSvg.append("g").attr("class","rowsGrp");
 
 	var tableGuiConfigObj = function () {
 		this.groupCount = 2;
@@ -52,11 +52,11 @@ function buildTable(error, data) {
 		scrollable: false
 	});
 
-	tableControlBox = new tableGuiConfigObj();
+	afqb.controls.tableControlBox = new tableGuiConfigObj();
 
 	var tableGuiContainer = $('.tableGUI').append($(tableGui.domElement));
 
-	var groupCountController = tableGui.add(tableControlBox, 'groupCount')
+	var groupCountController = tableGui.add(afqb.controls.tableControlBox, 'groupCount')
 		.min(2).step(1)
 		.name('Number of Groups')
 		.onChange(function () {
@@ -77,12 +77,12 @@ function buildTable(error, data) {
 function refreshTable(sortOn){
 
     // create the table header
-    var header = headerGrp.selectAll("g")
-        .data(d3.keys(subData[0]))
+    var header = afqb.table.headerGrp.selectAll("g")
+        .data(d3.keys(afqb.table.subData[0]))
         .enter().append("g")
         .attr("class", "t_header")
         .attr("transform", function (d, i){
-            return "translate(" + i * fieldWidth + ",0)";
+            return "translate(" + i * afqb.table.fieldWidth + ",0)";
         })
         .on("mouseover", function (d,i) {
             d3.select(this).style("cursor", "n-resize");
@@ -91,18 +91,18 @@ function refreshTable(sortOn){
         .on("click", function (d) { return refreshTable(d); });
 
     header.append("rect")
-        .attr("width", fieldWidth-1)
-        .attr("height", fieldHeight);
+        .attr("width", afqb.table.fieldWidth-1)
+        .attr("height", afqb.table.fieldHeight);
 
     header.append("text")
-        .attr("x", fieldWidth / 2)
-        .attr("y", fieldHeight / 2)
+        .attr("x", afqb.table.fieldWidth / 2)
+        .attr("y", afqb.table.fieldHeight / 2)
         .attr("dy", ".35em")
         .text(String);
 
     // fill the table
     // select rows
-    var rows = rowsGrp.selectAll("g.row").data(subData,
+    var rows = afqb.table.rowsGrp.selectAll("g.row").data(afqb.table.subData,
         function(d){ return d.subjectID; });
 
     // create rows
@@ -110,7 +110,7 @@ function refreshTable(sortOn){
         .attr("class","row")
         .attr("id", function(d){ return d.subjectID; })
         .attr("transform", function (d, i){
-            return "translate(0," + (i+1) * (fieldHeight+rowPadding) + ")";
+            return "translate(0," + (i+1) * (afqb.table.fieldHeight+afqb.table.rowPadding) + ")";
         })
         //.on('click', rowSelect )
         .on('mouseover', tableMouseDown )
@@ -124,50 +124,50 @@ function refreshTable(sortOn){
         .attr("class", "cell")
 				.style("opacity",0.3)
         .attr("transform", function (d, i){
-            return "translate(" + i * fieldWidth + ",0)";
+            return "translate(" + i * afqb.table.fieldWidth + ",0)";
         });
 
     cellsEnter.append("rect")
-        .attr("width", fieldWidth-1)
-        .attr("height", fieldHeight);
+        .attr("width", afqb.table.fieldWidth-1)
+        .attr("height", afqb.table.fieldHeight);
 
     cellsEnter.append("text")
-        .attr("x", fieldWidth / 2)
-        .attr("y", fieldHeight / 2)
+        .attr("x", afqb.table.fieldWidth / 2)
+        .attr("y", afqb.table.fieldHeight / 2)
         .attr("dy", ".35em")
         .text(String);
 
     // Update if not in initialisation
     if (sortOn !== null) {
         // Update row order
-        if(sortOn === previousSort.key){
-			if (previousSort.order === "ascending") {
+        if(sortOn === afqb.table.previousSort.key){
+			if (afqb.table.previousSort.order === "ascending") {
 				rows.sort(function(a,b){
 					return descendingWithNull(a[sortOn], b[sortOn]);
 				});
-				previousSort.order = "descending";
+				afqb.table.previousSort.order = "descending";
 			} else {
 				rows.sort(function(a,b){
 					return ascendingWithNull(a[sortOn], b[sortOn]);
 				});
-				previousSort.order = "ascending";
+				afqb.table.previousSort.order = "ascending";
 			}
         } else {
 			rows.sort(function(a,b){
 				return ascendingWithNull(a[sortOn], b[sortOn]);
 			});
-            subData.sort(function(a,b){
+            afqb.table.subData.sort(function(a,b){
 				return ascendingWithNull(a[sortOn], b[sortOn]);
 			});
-			previousSort.key = sortOn;
-			previousSort.order = "ascending";
+			afqb.table.previousSort.key = sortOn;
+			afqb.table.previousSort.order = "ascending";
 
 			// Get unique, non-null values from the column `sortOn`
 			function uniqueNotNull(value, index, self) { 
 				return (self.indexOf(value) === index) && (value !== null);
 			}
 
-			var uniques = subData
+			var uniques = afqb.table.subData
 				.map(function(element) {
 					return element[sortOn];
 				})
@@ -175,7 +175,7 @@ function refreshTable(sortOn){
 
 			// usrGroups is the user requested number of groups
 			// numGroups may be smaller if there are not enough unique values
-			var usrGroups = tableControlBox.groupCount;
+			var usrGroups = afqb.controls.tableControlBox.groupCount;
 			var numGroups = Math.min(usrGroups, uniques.length);
 
 			// Create groupScale to map between the unique
@@ -198,39 +198,39 @@ function refreshTable(sortOn){
 			}
 			groupScale.domain(uniques);
 
-			// Assign group index to each element of subData
-			subData.forEach(function(element) {
+			// Assign group index to each element of afqb.table.subData
+			afqb.table.subData.forEach(function(element) {
 				if (element[sortOn] === null) {
 					element["group"] = null;
-					subGroups[element.subjectID] = null;
+					afqb.table.subGroups[element.subjectID] = null;
 				} else {
 					element["group"] = groupScale(element[sortOn]);
-					subGroups[element.subjectID] = groupScale(element[sortOn]);
+					afqb.table.subGroups[element.subjectID] = groupScale(element[sortOn]);
 				}
 			});
 
 			// Prepare to split on group index
-			splitGroups = d3.nest()
+			afqb.table.splitGroups = d3.nest()
 				.key(function (d) { return d["group"]; })
-				.entries(subData);
+				.entries(afqb.table.subData);
 
 			// Create color ramp for subject groups
-			ramp = d3.scale.linear()
+			afqb.table.ramp = d3.scale.linear()
 				.domain([0, numGroups-1]).range(["red", "blue"]);
 
 			function idColor(element) {
 				d3.selectAll('#' + element["subjectID"])
 					.selectAll('.line')
 					.style("stroke",
-							element["group"] === null ? "black" : ramp(element["group"]));
+							element["group"] === null ? "black" : afqb.table.ramp(element["group"]));
 
 				d3.selectAll('#' + element["subjectID"])
 					.selectAll('.cell').select('text')
 					.style("fill",
-							element["group"] === null ? "black" : ramp(element["group"]));
+							element["group"] === null ? "black" : afqb.table.ramp(element["group"]));
 			}
 
-			subData.forEach(idColor); // color lines
+			afqb.table.subData.forEach(idColor); // color lines
 
 			// call update -> noticed there is a delay here.
 			// update plots may be the slow down
@@ -240,7 +240,7 @@ function refreshTable(sortOn){
         rows//.transition() // sort row position
            //.duration(500)
            .attr("transform", function (d, i) {
-               return "translate(0," + (i + 1) * (fieldHeight + 1) + ")";
+               return "translate(0," + (i + 1) * (afqb.table.fieldHeight + 1) + ")";
            });
     }
 }
@@ -278,24 +278,24 @@ function rowSelect() {
 
         d3.selectAll('#' + this.id)
 			.selectAll('path')
-            .style("opacity", plotsControlBox.lineOpacity)
+            .style("opacity", afqb.controls.plotsControlBox.lineOpacity)
             .style("stroke-width", "1.1px");
 	}
 }
 
-var isDown = false;   // Tracks status of mouse button
+afqb.mouse.isDown = false;   // Tracks status of mouse button
 
 $(document).mousedown(function() {
 		// When mouse goes down, set isDown to true
-		isDown = true;
+		afqb.mouse.isDown = true;
 	})
     .mouseup(function() {
 		// When mouse goes up, set isDown to false
-        isDown = false;
+        afqb.mouse.isDown = false;
     });
 
 function tableMouseDown() {
-	if(isDown) {
+	if(afqb.mouse.isDown) {
 		if($('g',this).css("opacity") == 0.3) {
 			//uses the opacity of the row for selection and deselection
 			d3.selectAll('#' + this.id)
@@ -313,7 +313,7 @@ function tableMouseDown() {
 
 			d3.selectAll('#' + this.id)
 				.selectAll('path')
-				.style("opacity", plotsControlBox.lineOpacity)
+				.style("opacity", afqb.controls.plotsControlBox.lineOpacity)
 				.style("stroke-width", "1.1px");
 		}
 	}
