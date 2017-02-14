@@ -33,4 +33,7 @@ and run:
     afqbrowser-run
 
 Open a browser pointing to http://localhost:8080, to view the visualization of
-these data and to interact with it.
+these data and to interact with it. The variables in the metadata table are
+created based on the variables that are stored in the [metadata field]
+(https://github.com/yeatmanlab/AFQ/wiki#including-subject-metadata-in-the-afq-structure)
+of the afq.mat file.
