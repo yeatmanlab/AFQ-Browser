@@ -148,7 +148,6 @@ function buildPlotGui(error, data) {
 	afqb.controls.plotsControlBox = new plotsGuiConfigObj();
 
     var nodeKeys = Object.keys(data[0]).slice(3);
-		console.log(nodeKeys);
     afqb.controls.plotsControlBox.plotKey = nodeKeys[0];
 
     var keyController = plotsGui
