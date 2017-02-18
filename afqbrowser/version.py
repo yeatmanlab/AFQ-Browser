@@ -6,7 +6,7 @@ import glob
 # Format expected by setup.py and doc/source/conf.py: string of form "X.Y.Z"
 _version_major = 0
 _version_minor = 1
-_version_micro = 1  # use '' for first of series, number for 1 and above
+_version_micro = 2  # use '' for first of series, number for 1 and above
 # _version_extra = 'dev'
 _version_extra = ''  # Uncomment this for full releases
 
@@ -32,7 +32,8 @@ description = "AFQ-Browser"
 # Long description will go up on the pypi page
 long_description = """
 
-Please refer to our `Github repo <https://github.com/yeatmanlab/AFQ-Browser>`_ repo for details
+Please refer to our
+`Github repo <https://github.com/yeatmanlab/AFQ-Browser>`_ repo for details
 
 """
 
