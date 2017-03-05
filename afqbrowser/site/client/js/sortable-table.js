@@ -23,7 +23,7 @@ afqb.table.headerGrp;
 afqb.table.rowsGrp;
 
 afqb.queues.subjectQ = d3_queue.queue();
-afqb.queues.subjectQ.defer(d3.json, "data/subjects.json");
+afqb.queues.subjectQ.defer(d3.json, DATA_URL + "/subjects.json");
 afqb.queues.subjectQ.await(buildTable);
 
 function buildTable(error, data) {
@@ -163,7 +163,7 @@ function refreshTable(sortOn){
 			afqb.table.previousSort.order = "ascending";
 
 			// Get unique, non-null values from the column `sortOn`
-			function uniqueNotNull(value, index, self) { 
+			function uniqueNotNull(value, index, self) {
 				return (self.indexOf(value) === index) && (value !== null);
 			}
 
@@ -234,7 +234,7 @@ function refreshTable(sortOn){
 
 			// call update -> noticed there is a delay here.
 			// update plots may be the slow down
-			d3.csv("data/nodes.csv", updatePlots);
+			d3.csv(DATA_URL + "/nodes.csv", updatePlots);
 		}
 
         rows//.transition() // sort row position
