@@ -144,8 +144,8 @@ def assemble(source, target=None, id=None):
     nodes_fname, meta_fname = mat2tables(source, out_path=data_path())
 
 
-def run(target=None, port=8080, name=__name__, debug=False):
-    target = op.abspath(target or op.join(afqb.__path__[0], '..', 'data'))
+def run(target=None, port=8080, name=__name__, debug=False, title="AFQ Browser"):
+    target = target or op.abspath(op.join(afqb.__path__[0], '..', 'data'))
     site_dir = op.join(afqb.__path__[0], 'site', 'client')
 
     app = Flask(name, template_folder=site_dir, static_path=site_dir)
@@ -153,7 +153,10 @@ def run(target=None, port=8080, name=__name__, debug=False):
     @app.route("/")
     @app.route("/index.html")
     def index():
-        return render_template('index.html')
+        return render_template('index.html', **{
+            'title': 'AFQ Browser',
+            'DATA_URL': 'data'
+        })
 
     @app.route("/data/<path:path>")
     def data_files(path):
