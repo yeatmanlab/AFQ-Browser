@@ -13,7 +13,8 @@ def upload(target, repo_name, uname=None, upass=None):
     Parameters
     ----------
     target : str
-        Local path to the file-system location where
+        Local path to the file-system location where the AFQ-Browser files are
+        (need to run `assemble` before running this function)
     repo_name : str
         The website will be at https://<username>.github.io/<repo_name>
     uname : str, optional
@@ -39,12 +40,12 @@ def upload(target, repo_name, uname=None, upass=None):
     u = g.get_user()
     remote = u.create_repo(repo_name)
     # Create the local repo
-    r = git.Repo.init(target)
+    r = git.Repo.init(client_folder)
     # Add all of the files to the repo's gh-pages branch
     r.index.add(file_list)
     r.index.commit("Commit everything")
     # Add a .nojekyll file
-    f = open(op.join(target, '.nojekyll'), 'w')
+    f = open(op.join(client_folder, '.nojekyll'), 'w')
     f.close()
     r.index.add([os.path.abspath(f.name)])
     r.index.commit("Add nojekyll file")
@@ -54,3 +55,4 @@ def upload(target, repo_name, uname=None, upass=None):
     r.create_remote("origin", remote.clone_url)
     o = r.remote("origin")
     o.push("gh-pages")
+    return "https://" + uname + ".github.io/" + repo_name

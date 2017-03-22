@@ -32,8 +32,17 @@ description = "AFQ-Browser"
 # Long description will go up on the pypi page
 long_description = """
 
-Please refer to our
-`Github repo <https://github.com/yeatmanlab/AFQ-Browser>`_ repo for details
+AFQ-browser is a software library for visualization of results from
+automated fiber quantification of human brain tractography.
+
+The software takes as input the results of analysis from the <> software
+and produces a browser-based visualization of the data. Command-line tools
+allow users to create these visualizations from their data and upload them to
+share with others as a website.
+
+For instructions on installation and use, visit the documentation_.
+
+.. _README: https://yeatmanlab.github.io/AFQ-Brower
 
 """
 
@@ -42,7 +51,7 @@ MAINTAINER = "Ariel Rokem"
 MAINTAINER_EMAIL = "arokem@gmail.com"
 DESCRIPTION = description
 LONG_DESCRIPTION = long_description
-URL = "http://github.com/yeatmanlab"
+URL = "http://github.com/yeatmanlab/AFQ-Browser"
 DOWNLOAD_URL = ""
 LICENSE = "MIT"
 AUTHOR = "Ariel Rokem"
