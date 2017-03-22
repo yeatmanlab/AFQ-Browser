@@ -4,7 +4,6 @@ node_modules/
 
 # Typical outputs
 AFQ-browser
-*.mat
 *.pyc
 
 # Elastic Beanstalk Files

@@ -144,7 +144,8 @@ def assemble(source, target=None, id=None):
     nodes_fname, meta_fname = mat2tables(source, out_path=data_path())
 
 
-def run(target=None, port=8080, name=__name__, debug=False, title="AFQ Browser"):
+def run(target=None, port=8080, name=__name__, debug=False,
+        title="AFQ Browser"):
     target = target or op.abspath(op.join(afqb.__path__[0], '..', 'data'))
     site_dir = op.join(afqb.__path__[0], 'site', 'client')
 
@@ -160,7 +161,7 @@ def run(target=None, port=8080, name=__name__, debug=False, title="AFQ Browser")
 
     @app.route("/data/<path:path>")
     def data_files(path):
-        print data_path()
+        print(data_path())
         return send_from_directory(data_path(), path)
 
     @app.route("/<path:path>")
