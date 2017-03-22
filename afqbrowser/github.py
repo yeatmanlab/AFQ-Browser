@@ -24,15 +24,15 @@ def upload(target, repo_name, uname=None, upass=None):
     """
     # Get all the files that will be committed/pushed
     file_list = []
-    target = op.join(target, 'AFQ-browser', 'client')
-    for path, dirs, files in os.walk(target):
+    client_folder = op.join(target, 'AFQ-browser', 'client')
+    for path, dirs, files in os.walk(client_folder):
         for f in files:
             file_list.append(os.path.abspath(op.join(path, f)))
     # Get credentials from the user
     if uname is None:
-        getpass.getpass("Github user-name?")
+        uname = getpass.getpass("Github user-name?")
     if upass is None:
-        getpass.gepass("Github password?")
+        upass = getpass.getpass("Github password?")
 
     # Create the remote repo on Github (use PyGithub)
     g = Github(uname, upass)
@@ -44,8 +44,13 @@ def upload(target, repo_name, uname=None, upass=None):
     r.index.add(file_list)
     r.index.commit("Commit everything")
     # Add a .nojekyll file
-    f = open(op.join(target, '.nojekyll'))
+    f = open(op.join(target, '.nojekyll'), 'w')
     f.close()
-    r.index.add([os.path.abspath(op.join(path, f))])
+    r.index.add([os.path.abspath(f.name)])
     r.index.commit("Add nojekyll file")
     # Push to Github
+    branch = r.create_head("gh-pages")
+    branch.checkout()
+    r.create_remote("origin", remote.clone_url)
+    o = r.remote("origin")
+    o.push("gh-pages")
