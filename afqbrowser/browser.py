@@ -167,4 +167,9 @@ def run(target=None, port=8080, name=__name__, debug=False,
     @app.route("/<path:path>")
     def static_files(path):
         return send_from_directory(site_dir, path)
+
+    @app.route('/index.html')
+    def static_page(page_name):
+        return render_template('%s.html' % page_name)
+
     app.run(debug=True, port=port)
