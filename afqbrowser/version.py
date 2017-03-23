@@ -42,7 +42,7 @@ share with others as a website.
 
 For instructions on installation and use, visit the documentation_.
 
-.. _README: https://yeatmanlab.github.io/AFQ-Brower
+.. _README: https://yeatmanlab.github.io/AFQ-Browser
 
 """
 
