@@ -2,7 +2,7 @@ import os
 import os.path as op
 import getpass
 
-from github import Github
+import github as gh
 import git
 
 
@@ -36,7 +36,7 @@ def upload(target, repo_name, uname=None, upass=None):
         upass = getpass.getpass("Github password?")
 
     # Create the remote repo on Github (use PyGithub)
-    g = Github(uname, upass)
+    g = gh.Github(uname, upass)
     u = g.get_user()
     remote = u.create_repo(repo_name)
     # Create the local repo
