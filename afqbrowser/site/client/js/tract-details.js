@@ -108,6 +108,11 @@ afqb.plots.xAxis = d3.svg.axis()
         .tickPadding(8)
         .ticks(5);
 
+afqb.plots.zoomable = true;
+afqb.plots.yzoom = d3.behavior.zoom()
+				.y(afqb.plots.y)
+				.on("zoom", afqb.plots.zoomable?draw:null);
+
 afqb.plots.line = d3.svg.line()
     .interpolate("basis")
     .x(function (d) {
@@ -217,6 +222,15 @@ function ready(error, data) {
         .attr("class", "y axis")
         .attr("transform", "translate(" + afqb.plots.m.left + ",0)")
         .call(afqb.plots.yAxis);
+
+		trPanels.append("svg:rect")
+        .attr("class", "zoom y box")
+        .attr("width", afqb.plots.m.left)
+        .attr("height", afqb.plots.h - afqb.plots.m.top - afqb.plots.m.bottom)
+        .attr("transform", "translate(" + afqb.plots.m.left + ",0)")
+        .style("visibility", "hidden")
+        .attr("pointer-events", "all")
+        .call(afqb.plots.yzoom);
 
 	//x-axis
 	trPanels.select("g").append("g")
@@ -539,6 +553,21 @@ function updatePlots(error, data) {
 			.style("stroke-width", "3.5px");
 	};
 }
+
+function updateZoom() {
+      afqb.plots.yzoom = d3.behavior.zoom()
+        .y(afqb.plots.y)
+        .on("zoom", afqb.plots.zoomable ? draw : null);
+
+      d3.selectAll('rect.zoom.y.box').call(afqb.plots.yzoom);
+    }
+
+function draw() {
+		  d3.selectAll('g.y.axis').call(afqb.plots.yAxis);
+
+      d3.csv("data/nodes.csv", updatePlots);
+		  updateZoom();
+};
 
 function updateBrush() {
     if (afqb.controls.plotsControlBox.brushTract) {
