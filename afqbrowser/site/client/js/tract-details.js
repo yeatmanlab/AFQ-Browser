@@ -225,7 +225,7 @@ function ready(error, data) {
 
 		trPanels.append("svg:rect")
         .attr("class", "zoom y box")
-        .attr("width", afqb.plots.m.left)
+        .attr("width", afqb.plots.m.left+10)
         .attr("height", afqb.plots.h - afqb.plots.m.top - afqb.plots.m.bottom)
         .attr("transform", "translate(" + afqb.plots.m.left + ",0)")
         .style("visibility", "hidden")
@@ -482,6 +482,7 @@ function updatePlots(error, data) {
     }
 
 	if (updateAll) {
+		d3.select("#tractdetails").selectAll("svg").selectAll(".tracts").remove();
 		// update axes based on selected data
 		afqb.plots.y.domain(d3.extent(data, function (d) {
 			return +d[afqb.controls.plotsControlBox.plotKey];
@@ -492,22 +493,33 @@ function updatePlots(error, data) {
 		var svg = d3.select("#tractdetails").selectAll("svg")
 			.data(afqb.plots.tractData).transition();
 
-		/*svg.select(".x.axis") // change the x axis
-		  .duration(750)
-		  .call(afqb.plots.xAxis);*/
 		svg.select(".y.axis") // change the y axis
-			.duration(750)
+			//.duration(750)
 			.call(afqb.plots.yAxis);
 
 		// JOIN new data with old elements.
 		var trLines = d3.select("#tractdetails").selectAll("svg")
 			.data(afqb.plots.tractData).selectAll(".tracts")
-			.data(function (d) { return d.values; }).transition();
-		//.select("#path").attr("d", function (d) { return d.values; });
+			.data(function (d) { return d.values; })
+	        .enter().append("g")
+	        .attr("class", "tracts")
+	        .attr("id", function (d, i) {
+	                return d.values[0].subjectID;
+	        })
+	        //.on("mouseover", mouseover)
+	        //.on("mouseout", mouseout)
+	        //.on("click", onclick);
 
-		trLines.select("path")
-			.duration(1000)
-			.attr("d", function (d) { return afqb.plots.line(d.values); });
+	    trLines.append("path")
+	        .attr("class", "line")
+	        .attr("d", function (d) { return afqb.plots.line(d.values); })
+	        .style("opacity", afqb.controls.plotsControlBox.lineOpacity)
+	        .style("stroke-width", "1px");
+
+		//trLines.select("path")
+			//.duration(1000)
+			//.attr("d", function (d) { return afqb.plots.line(d.values); });
+
 	}
 
 	// Remove old meanlines
@@ -554,19 +566,67 @@ function updatePlots(error, data) {
 	};
 }
 
-function updateZoom() {
-      afqb.plots.yzoom = d3.behavior.zoom()
-        .y(afqb.plots.y)
-        .on("zoom", afqb.plots.zoomable ? draw : null);
-
-      d3.selectAll('rect.zoom.y.box').call(afqb.plots.yzoom);
-    }
-
 function draw() {
 		  d3.selectAll('g.y.axis').call(afqb.plots.yAxis);
+			d3.select("#tractdetails").selectAll("svg").selectAll(".tracts").remove();
+			// JOIN new data with old elements.
+			var trLines = d3.select("#tractdetails").selectAll("svg")
+				.data(afqb.plots.tractData).selectAll(".tracts")
+				.data(function (d) { return d.values; })
+						.enter().append("g")
+						.attr("class", "tracts")
+						.attr("id", function (d, i) {
+										return d.values[0].subjectID;
+						})
 
-      d3.csv("data/nodes.csv", updatePlots);
-		  updateZoom();
+				trLines.append("path")
+						.attr("class", "line")
+						.attr("d", function (d) { return afqb.plots.line(d.values); })
+						.style("opacity", afqb.controls.plotsControlBox.lineOpacity)
+						.style("stroke-width", "1px");
+
+						// Remove old meanlines
+				d3.select("#tractdetails").selectAll("svg").selectAll(".means").remove();
+				if (afqb.table.splitGroups) {
+					 // Join new afqb.plots.tractMean data with old meanLines elements
+					 var meanLines = d3.select("#tractdetails").selectAll("svg")
+							.selectAll(".means")
+							.data(function (d) {
+								return afqb.plots.tractMean.filter(function(element) {
+									return element.key === d.key;
+								})[0].values;
+							});
+					// Enter and update. Merge entered elements and apply operations
+					meanLines.enter().append("g")
+						.attr("class", "tracts means")
+						.attr("id", function(d) {return "mean" + d.key;});
+
+					meanLines.append("path")
+						.attr("class", "line")
+						.attr("d", function(d) {return afqb.plots.line(d.values); })
+						.style("opacity", 0.99)
+						.style("stroke-width", "3.5px");
+					// set mean colors
+					 d3.select("#tractdetails").selectAll("svg").selectAll(".means")
+					   .style("stroke", function (d, i) { return afqb.table.ramp(i); });
+					  } else{
+							// Gray meanLines for unsorted 'Plot Type' change
+							var meanLines = d3.select("#tractdetails").selectAll("svg")
+								.append("g")
+								.datum(function (d) {
+									return afqb.plots.tractMean.filter(function(element) {
+										return element.key === d.key;
+									})[0].values;
+								})
+								.attr("class", "tracts means")
+								.attr("id", "mean0");
+
+							meanLines.append("path")
+								.attr("class", "line")
+								.attr("d", function(d) {return afqb.plots.line(d); })
+								.style("opacity", 0.99)
+								.style("stroke-width", "3.5px");
+						};
 };
 
 function updateBrush() {
