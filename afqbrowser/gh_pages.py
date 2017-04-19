@@ -25,7 +25,7 @@ def upload(target, repo_name, uname=None, upass=None):
     """
     # Get all the files that will be committed/pushed
     file_list = []
-    client_folder = op.join(target, 'AFQ-browser', 'client')
+    client_folder = op.join(target, 'client')
     for path, dirs, files in os.walk(client_folder):
         for f in files:
             file_list.append(os.path.abspath(op.join(path, f)))
