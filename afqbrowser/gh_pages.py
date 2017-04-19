@@ -38,9 +38,14 @@ def upload(target, repo_name, uname=None, upass=None):
     # Create the remote repo on Github (use PyGithub)
     g = gh.Github(uname, upass)
     u = g.get_user()
-    remote = u.create_repo(repo_name)
+    try:
+        remote = u.create_repo(repo_name)
+    except GithubException:
+        remote = u.get_repo(repo_name)
     # Create the local repo
     r = git.Repo.init(client_folder)
+    branch = r.create_head("gh-pages")
+    branch.checkout()
     # Add all of the files to the repo's gh-pages branch
     r.index.add(file_list)
     r.index.commit("Commit everything")
@@ -50,9 +55,8 @@ def upload(target, repo_name, uname=None, upass=None):
     r.index.add([os.path.abspath(f.name)])
     r.index.commit("Add nojekyll file")
     # Push to Github
-    branch = r.create_head("gh-pages")
-    branch.checkout()
     r.create_remote("origin", remote.clone_url)
     o = r.remote("origin")
     o.push("gh-pages")
-    return "https://" + uname + ".github.io/" + repo_name
+    # Strangely, that last slash is crucial:
+    return "https://" + uname + ".github.io/" + repo_name + "/"
