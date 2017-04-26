@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+
+from argparse import ArgumentParser
+import afqbrowser.gh_pages as gh
+
+description = """Serve the AFQ-Browser locally given a file structure location
+        and a specified port."""
+parser = ArgumentParser(description=description)
+
+parser.add_argument("-t", "--target", metavar="target",
+                    help="path to location containing the browser instance",
+                    default=None)
+parser.add_argument("-r", "--reponame", type=str, metavar="reponame",
+                    help="The name of the Github repo for the website")
+
+args = parser.parse_args()
+
+url = gh.upload(args.target, args.reponame)
+print("Website available on: %s" % url)

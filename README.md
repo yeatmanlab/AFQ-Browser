@@ -35,5 +35,17 @@ and run:
 Open a browser pointing to http://localhost:8080, to view the visualization of
 these data and to interact with it. The variables in the metadata table are
 created based on the variables that are stored in the [metadata field]
-(https://github.com/yeatmanlab/AFQ/wiki#including-subject-metadata-in-the-afq-structure)
-of the afq.mat file.
+(https://github.com/yeatmanlab/AFQ/wiki#including-subject-metadata-in-the-afq-structure) of the afq.mat file.
+
+## Publishing your website
+
+There is a command line function that allows you to publish your website to
+Github. If you don't already have one, start by [creating a Github account](https://github.com/join). Then run the following sequence:
+
+    afqbrowser-assemble   # Run this if you haven't before
+    afqbrowser-publish -t ./AFQ-Browser -r myresults
+
+Where `./AFQ-Browser` is the folder that was created by `afqbrowser-assemble`,
+and the URL of the website is: `https://username.github.io/myresults` (with
+`username` replaced with your Github username, and `myresults` replaced with the
+input to the `-r` flag).
