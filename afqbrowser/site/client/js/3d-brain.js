@@ -1,25 +1,23 @@
 // =========== three js part
 
-afqb.three = {};
-
 afqb.three.colorGroups = new THREE.Object3D();
 afqb.three.greyGroups = new THREE.Object3D();
 
 // Set initial opacitites here
-afqb.three.initLHOpacity = 0.01;
-afqb.three.initRHOpacity = 0.70;
-afqb.three.initFiberOpacity = 0.25;
-afqb.three.initColorOpacity = 0.75;
-afqb.three.initHighlightOpacity = 0.75;
+afqb.three.settings.initLHOpacity = 0.01;
+afqb.three.settings.initRHOpacity = 0.70;
+afqb.three.settings.initFiberOpacity = 0.25;
+afqb.three.settings.initColorOpacity = 0.75;
+afqb.three.settings.initHighlightOpacity = 0.75;
 
 // Set initial line widths here
-afqb.three.initFiberLineWidth = 1.0;
-afqb.three.initColorLineWidth = 2.0;
-afqb.three.initHighlightLineWidth = 2.5;
+afqb.three.settings.initFiberLineWidth = 1.0;
+afqb.three.settings.initColorLineWidth = 2.0;
+afqb.three.settings.initHighlightLineWidth = 2.5;
 
 afqb.three.greyLineMaterial = new THREE.LineBasicMaterial({
-	opacity: afqb.three.initFiberOpacity,
-	linewidth: afqb.three.initFiberLineWidth,
+	opacity: afqb.three.settings.initFiberOpacity,
+	linewidth: afqb.three.settings.initFiberLineWidth,
 	transparent: true,
 	depthWrite: true
 });
@@ -38,11 +36,11 @@ afqb.three.colorLineMaterial = new THREE.LineBasicMaterial({
 // tract-details.js but it is async, deferred until d3 reads nodes.csv.
 // So we have to wait until afqb.plots.faPlotLength is defined
 // Define a function to wait until afqb.plots.faPlotLength is defined.
-function waitForPlotLength(callback) {
+function afqb.three.waitForPlotLength(callback) {
 	if (afqb.plots.faPlotLength == undefined) {
 		setTimeout(function() {
 			console.log("waiting for plot length");
-			waitForPlotLength(callback);
+			afqb.three.waitForPlotLength(callback);
 		}, 250);
 	} else {
 		callback(null);
@@ -50,25 +48,29 @@ function waitForPlotLength(callback) {
 }
 
 // Combine the init and animate function calls for use in d3.queue()
-function initAndAnimate(error) {
-	init();
-	animate();
+function afqb.three.initAndAnimate(error) {
+	afqb.three.init();
+	afqb.three.animate();
 }
 
 // Use d3.queue() to wait for afqb.plots.faPlotLength before calling init and animate
-afqb.queues.threeQ = d3_queue.queue();
-afqb.queues.threeQ.defer(waitForPlotLength);
-afqb.queues.threeQ.await(initAndAnimate);
+afqb.global.queues.threeQ = d3_queue.queue();
+afqb.global.queues.threeQ.defer(afqb.three.waitForPlotLength);
+afqb.global.queues.threeQ.await(afqb.three.initAndAnimate);
 
-afqb.three.showStats = false;
-afqb.three.stats;
+afqb.three.settings.showStats = false;
+afqb.three.stats = {};
 
-if (afqb.three.showStats) {
+if (afqb.three.settings.showStats) {
 	afqb.three.stats = new Stats();
 	afqb.three.container.appendChild( afqb.three.stats.dom );
 }
 
-function init() {
+afqb.three.settings.cameraPosition.x = -15;
+afqb.three.settings.cameraPosition.y = 0;
+afqb.three.settings.cameraPosition.z = 0;
+
+function afqb.three.init() {
 	// We put the renderer inside a div with id #threejsbrain
 	afqb.three.container = document.getElementById("threejsbrain");
 
@@ -76,7 +78,7 @@ function init() {
 	var height = afqb.three.container.clientHeight;
 
     afqb.three.camera = new THREE.PerspectiveCamera( 45, width / height, 1, 2000 );
-    afqb.three.camera.position.x = -15;
+    afqb.three.camera.position.x = afqb.three.settings.cameraPosition.x;
 	afqb.three.camera.up.set(0, 0, 1);
 
     // scene
@@ -130,8 +132,8 @@ function init() {
 		afqb.three.lh.translateX(-0.05);
 		afqb.three.rh.translateX( 0.05);
 
-        afqb.three.lh.material.opacity = afqb.three.initLHOpacity;
-        afqb.three.rh.material.opacity = afqb.three.initRHOpacity;
+        afqb.three.lh.material.opacity = afqb.three.settings.initLHOpacity;
+        afqb.three.rh.material.opacity = afqb.three.settings.initRHOpacity;
 
 		afqb.three.lh.material.color.setHex( 0xe8e3d3 );
 		afqb.three.rh.material.color.setHex( 0xe8e3d3 );
@@ -140,9 +142,9 @@ function init() {
     });
 
 	var threeGuiConfigObj = function () {
-		this.lhOpacity = afqb.three.initLHOpacity;
-		this.rhOpacity = afqb.three.initRHOpacity;
-		this.fiberOpacity = afqb.three.initFiberOpacity;
+		this.lhOpacity = afqb.three.settings.initLHOpacity;
+		this.rhOpacity = afqb.three.settings.initRHOpacity;
+		this.fiberOpacity = afqb.three.settings.initFiberOpacity;
 		this.highlight = true;
 	};
 
@@ -152,9 +154,9 @@ function init() {
 		scrollable: false
 	});
 
-	afqb.controls.threeControlBox = new threeGuiConfigObj();
+	afqb.global.controls.threeControlBox = new threeGuiConfigObj();
 
-	var lhOpacityController = threeGui.add(afqb.controls.threeControlBox, 'lhOpacity')
+	var lhOpacityController = threeGui.add(afqb.global.controls.threeControlBox, 'lhOpacity')
 		.min(0).max(1).step(0.01).name('Left Hemi Opacity');
 
 	lhOpacityController.onChange( function(value) {
@@ -165,7 +167,7 @@ function init() {
 		})
 	});
 
-	var rhOpacityController = threeGui.add(afqb.controls.threeControlBox, 'rhOpacity')
+	var rhOpacityController = threeGui.add(afqb.global.controls.threeControlBox, 'rhOpacity')
 		.min(0).max(1).step(0.01).name('Right Hemi Opacity');
 
 	rhOpacityController.onChange( function(value) {
@@ -176,7 +178,7 @@ function init() {
 		})
 	});
 
-	var fiberOpacityController = threeGui.add(afqb.controls.threeControlBox, 'fiberOpacity')
+	var fiberOpacityController = threeGui.add(afqb.global.controls.threeControlBox, 'fiberOpacity')
 		.min(0).max(1).name('Fiber Opacity');
 
 	fiberOpacityController.onChange( function(value) {
@@ -311,7 +313,7 @@ function init() {
 			if (child instanceof THREE.LineSegments) {
                 domEvents.addEventListener(child, 'mouseover', function(event) {
         					if(!afqb.mouse.isDown) {
-								mouseoverBundle(child.idx);
+								afqb.three.mouseoverBundle(child.idx);
         						return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
         					}
                 });
@@ -326,7 +328,7 @@ function init() {
 								var myBundle = d3.selectAll("input.tracts")[0][child.idx];
 								myBundle.checked = !myBundle.checked;
 								showHideTractDetails(myBundle.checked, myBundle.name)
-								highlightBundle(myBundle.checked, myBundle.name)
+								afqb.three.highlightBundle(myBundle.checked, myBundle.name)
 								return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 							} else {
 								afqb.mouse.mouseMove = false;
@@ -335,7 +337,7 @@ function init() {
                 domEvents.addEventListener(child, 'mouseout', function(event) {
         					var myBundle = d3.selectAll("input.tracts")[0][child.idx];
         					showHideTractDetails(myBundle.checked, myBundle.name)
-        					highlightBundle(myBundle.checked, myBundle.name)
+        					afqb.three.highlightBundle(myBundle.checked, myBundle.name)
         					return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
                 });
             }
@@ -357,13 +359,13 @@ function init() {
     });
 
     window.addEventListener('resize', onWindowResize, false);
-    controls = new THREE.OrbitControls(afqb.three.camera, afqb.three.renderer.domElement);
-    controls.addEventListener('change', lightUpdate);
-    controls.enableKeys = false;
+    afqb.three.orbitControls = new THREE.OrbitControls(afqb.three.camera, afqb.three.renderer.domElement);
+    afqb.three.orbitControls.addEventListener('change', afqb.three.lightUpdate);
+    afqb.three.orbitControls.enableKeys = false;
 }
 
 // Resize the three.js window on full window resize.
-function onWindowResize() {
+function afqb.threeonWindowResize() {
     var width = afqb.three.container.clientWidth;
 	var height = afqb.three.container.clientHeight;
 
@@ -373,11 +375,11 @@ function onWindowResize() {
     afqb.three.renderer.setSize(width, height);
 }
 
-function animate() {
-    requestAnimationFrame(animate);
+function afqb.three.animate() {
+    requestAnimationFrame(afqb.three.animate);
     afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
-    controls.update();
-	if (afqb.three.showStats)
+    afqb.three.orbitControls.update();
+	if (afqb.three.settings.showStats)
 		afqb.three.stats.update();
 
 	// For each fiber bundle update the length of fiber to be plotted
@@ -401,17 +403,17 @@ function animate() {
 	}
 }
 
-function lightUpdate() {
+function afqb.three.lightUpdate() {
     afqb.three.directionalLight.position.copy(afqb.three.camera.position);
 }
 
 // Highlight specified bundle based on left panel checkboxes
-function highlightBundle(state, name) {
+function afqb.three.highlightBundle(state, name) {
 
 	// Temporary line material for highlighted bundles
 	var tmpLineMaterial = new THREE.LineBasicMaterial({
-		opacity: afqb.three.initColorOpacity,
-		linewidth: afqb.three.initColorLineWidth,
+		opacity: afqb.three.settings.initColorOpacity,
+		linewidth: afqb.three.settings.initColorLineWidth,
 		transparent: true,
 		depthWrite: true
 	});
@@ -432,19 +434,19 @@ function highlightBundle(state, name) {
 }
 
 // Highlight specified bundle based on mouseover
-function mouseoverBundle(name) {
-	if (afqb.controls.threeControlBox.highlight) {
+function afqb.three.mouseoverBundle(name) {
+	if (afqb.global.controls.threeControlBox.highlight) {
 		// Temporary line material for moused-over bundles
 		var tmpLineMaterial = new THREE.LineBasicMaterial({
-			opacity: afqb.three.initHighlightOpacity,
-			linewidth: afqb.three.initHighlightLineWidth,
+			opacity: afqb.three.settings.initHighlightOpacity,
+			linewidth: afqb.three.settings.initHighlightLineWidth,
 			transparent: true
 		});
 
 		var bundle = afqb.three.colorGroups.children[name];
 
 		if (bundle !== undefined) {
-			tmpLineMaterial.color.setHex( afqb.highlightColors[name] );
+			tmpLineMaterial.color.setHex( afqb.global.highlightColors[name] );
 			if (afqb.plots.bundleBrush['tract' + name].brushOn) {
 				tmpLineMaterial.color.setHex( 0x000000 );
 			}
