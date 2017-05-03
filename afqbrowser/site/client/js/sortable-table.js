@@ -22,11 +22,7 @@ afqb.table.ramp = null;
 afqb.table.headerGrp;
 afqb.table.rowsGrp;
 
-afqb.global.queues.subjectQ = d3_queue.queue();
-afqb.global.queues.subjectQ.defer(d3.json, "data/subjects.json");
-afqb.global.queues.subjectQ.await(afqb.table.buildTable);
-
-function afqb.table.buildTable(error, data) {
+afqb.table.buildTable = function (error, data) {
 	data.forEach(function (d) {
         if (typeof d.subjectID === 'number'){
           d.subjectID = "s" + d.subjectID.toString();}
@@ -80,7 +76,7 @@ function afqb.table.buildTable(error, data) {
 	afqb.table.refreshTable(sortOn);
 }
 
-function afqb.table.refreshTable(sortOn){
+afqb.table.refreshTable = function (sortOn) {
 
     // create the table header
     var header = afqb.table.headerGrp.selectAll("g")
@@ -252,14 +248,14 @@ function afqb.table.refreshTable(sortOn){
     }
 }
 
-function afqb.table.ascendingWithNull(a, b) {
+afqb.table.ascendingWithNull = function (a, b) {
 	// d3.ascending ignores null and undefined values
 	// Return the same as d3.ascending but keep all null and
 	// undefined values at the bottom of the list
 	return b == null ? -1 : a == null ? 1 : d3.ascending(a, b);
 }
 
-function afqb.table.descendingWithNull(a, b) {
+afqb.table.descendingWithNull = function (a, b) {
 	// d3.descending ignores null and undefined values
 	// Return the same as d3.descending but keep all null and
 	// undefined values at the bottom of the list
@@ -267,7 +263,7 @@ function afqb.table.descendingWithNull(a, b) {
 }
 
 // onclick function to toggle on and off rows
-function afqb.table.rowSelect() {
+afqb.table.rowSelect = function () {
     if($('g',this).css("opacity") == 0.3) {
 		//uses the opacity of the row for selection and deselection
         d3.selectAll('#' + this.id)
@@ -301,7 +297,7 @@ $(document).mousedown(function() {
         afqb.global.mouse.isDown = false;
     });
 
-function afqb.table.tableMouseDown() {
+afqb.table.tableMouseDown = function () {
 	if(afqb.global.mouse.isDown) {
 		if($('g',this).css("opacity") == 0.3) {
 			//uses the opacity of the row for selection and deselection
@@ -325,3 +321,8 @@ function afqb.table.tableMouseDown() {
 		}
 	}
 }
+
+afqb.global.queues.subjectQ = d3_queue.queue();
+afqb.global.queues.subjectQ.defer(d3.json, "data/subjects.json");
+afqb.global.queues.subjectQ.await(afqb.table.buildTable);
+
