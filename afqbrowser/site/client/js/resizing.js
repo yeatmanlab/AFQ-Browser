@@ -7,7 +7,7 @@ $('.ew-resize')
             $(".ui-resizable-e").css("cursor","col-resize");
         },
 		resize: function( event, ui) {
-			onWindowResize();
+			afqb.three.onWindowResize();
 		}
 	});
 
@@ -20,6 +20,6 @@ $('.ns-resize')
             $(".ui-resizable-s").css("cursor","row-resize");
         },
 		resize: function( event, ui) {
-			onWindowResize();
+			afqb.three.onWindowResize();
 		}
 	});
