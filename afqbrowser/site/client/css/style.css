@@ -64,10 +64,20 @@ h2 {
   flex: 0 0 auto;
   height: 60px;
   display:flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   background-color: #404040;
   margin-bottom: 10px;
+}
+
+#header h1 {
+  flex: 1
+}
+
+#save-settings {
+  /* position: absolute; */
+  /* right: 0; */
+  margin-left: auto;
 }
 
 .app-container {
