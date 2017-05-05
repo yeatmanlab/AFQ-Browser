@@ -1,8 +1,4 @@
 // =========== three js part
-
-afqb.three.colorGroups = new THREE.Object3D();
-afqb.three.greyGroups = new THREE.Object3D();
-
 // Set initial opacitites here
 afqb.three.settings.initLHOpacity = 0.01;
 afqb.three.settings.initRHOpacity = 0.70;
@@ -14,6 +10,19 @@ afqb.three.settings.initHighlightOpacity = 0.75;
 afqb.three.settings.initFiberLineWidth = 1.0;
 afqb.three.settings.initColorLineWidth = 2.0;
 afqb.three.settings.initHighlightLineWidth = 2.5;
+
+// Set boolean value to show rendering stats
+afqb.three.settings.showStats = false;
+
+// Set the initial camera position
+afqb.three.settings.initCameraPosition = {
+	x: -15,
+	y: 0,
+	z: 0
+};
+
+afqb.three.colorGroups = new THREE.Object3D();
+afqb.three.greyGroups = new THREE.Object3D();
 
 afqb.three.greyLineMaterial = new THREE.LineBasicMaterial({
 	opacity: afqb.three.settings.initFiberOpacity,
@@ -53,19 +62,12 @@ afqb.three.initAndAnimate = function (error) {
 	afqb.three.animate();
 };
 
-afqb.three.settings.showStats = false;
 afqb.three.stats = {};
 
 if (afqb.three.settings.showStats) {
 	afqb.three.stats = new Stats();
 	afqb.three.container.appendChild( afqb.three.stats.dom );
 }
-
-afqb.three.settings.cameraPosition = {
-	x: -15,
-	y: 0,
-	z: 0
-};
 
 afqb.three.init = function () {
 	// We put the renderer inside a div with id #threejsbrain
@@ -75,7 +77,11 @@ afqb.three.init = function () {
 	var height = afqb.three.container.clientHeight;
 
     afqb.three.camera = new THREE.PerspectiveCamera( 45, width / height, 1, 2000 );
-    afqb.three.camera.position.x = afqb.three.settings.cameraPosition.x;
+    afqb.three.camera.position.copy(new THREE.Vector3(
+				afqb.three.settings.initCameraPosition.x,
+				afqb.three.settings.initCameraPosition.y,
+				afqb.three.settings.initCameraPosition.z));
+
 	afqb.three.camera.up.set(0, 0, 1);
 
     // scene
@@ -306,37 +312,37 @@ afqb.three.init = function () {
 
 		// Set material properties for each fiber bundle
 		// And add event listeners for mouseover, etc.
-        afqb.three.colorGroups.traverse(function (child) {
+		afqb.three.colorGroups.traverse(function (child) {
 			if (child instanceof THREE.LineSegments) {
-                domEvents.addEventListener(child, 'mouseover', function(event) {
-        					if(!afqb.global.mouse.isDown) {
-								afqb.three.mouseoverBundle(child.idx);
-        						return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
-        					}
-                });
-                domEvents.addEventListener(child, 'mousemove', function(event) {
-        					afqb.global.mouse.mouseMove = true;
-        				});
-                domEvents.addEventListener(child, 'mousedown', function(event) {
-        					afqb.global.mouse.mouseMove = false;
-        				});
+				domEvents.addEventListener(child, 'mouseover', function(event) {
+					if(!afqb.global.mouse.isDown) {
+						afqb.three.mouseoverBundle(child.idx);
+						return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
+					}
+				});
+				domEvents.addEventListener(child, 'mousemove', function(event) {
+					afqb.global.mouse.mouseMove = true;
+				});
+				domEvents.addEventListener(child, 'mousedown', function(event) {
+					afqb.global.mouse.mouseMove = false;
+				});
 				domEvents.addEventListener(child, 'mouseup', function(event) {
-							if(!afqb.global.mouse.mouseMove) {
-								var myBundle = d3.selectAll("input.tracts")[0][child.idx];
-								myBundle.checked = !myBundle.checked;
-								afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name)
-								afqb.three.highlightBundle(myBundle.checked, myBundle.name)
-								return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
-							} else {
-								afqb.global.mouse.mouseMove = false;
-							}
-						});
-                domEvents.addEventListener(child, 'mouseout', function(event) {
-        					var myBundle = d3.selectAll("input.tracts")[0][child.idx];
-        					afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name)
-        					afqb.three.highlightBundle(myBundle.checked, myBundle.name)
-        					return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
-                });
+					if(!afqb.global.mouse.mouseMove) {
+						var myBundle = d3.selectAll("input.tracts")[0][child.idx];
+						myBundle.checked = !myBundle.checked;
+						afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name)
+					afqb.three.highlightBundle(myBundle.checked, myBundle.name)
+					return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
+					} else {
+						afqb.global.mouse.mouseMove = false;
+					}
+				});
+				domEvents.addEventListener(child, 'mouseout', function(event) {
+					var myBundle = d3.selectAll("input.tracts")[0][child.idx];
+					afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name)
+					afqb.three.highlightBundle(myBundle.checked, myBundle.name)
+					return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
+				});
             }
         });
 
