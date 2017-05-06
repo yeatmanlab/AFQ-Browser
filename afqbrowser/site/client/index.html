@@ -27,9 +27,11 @@
   <div id="header">
     <h1 style="color:white;">AFQ Browser</h1>
     <div id="save-and-load-settings">
-      <input type="file" id="load-settings" name="Load Settings"/>
-      <button type="button" id="save-settings"
+      <button type="button" id="save-settings" class="savefile"
           onclick="afqb.global.saveSettings()">Save Settings</button>
+      <label for="save-settings">Save Settings</label>
+      <input type="file" id="load-settings" name="Load Settings" class="inputfile"/>
+      <label for="load-settings">Load Settings</label>
     </div>
   </div>
 
