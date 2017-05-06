@@ -807,6 +807,11 @@ function updateBrush() {
 		}
 	} else {
 		d3.selectAll(".brush").data([]).exit().remove();
+		for (bundle in afqb.plots.bundleBrush) {
+			if (afqb.plots.bundleBrush.hasOwnProperty(bundle)) {
+				afqb.plots.bundleBrush[bundle].brushExtent = [0, 100];
+			}
+		}
 	}
 }
 
