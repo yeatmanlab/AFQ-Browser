@@ -35,14 +35,20 @@ afqb.global.readSettings = function(evt) {
 	var f = files[0];
 
 	var reader = new FileReader();
-	reader.onload = (function(theFile) {
-		return function(e) {
-			afqb.global.threeSettings = JSON.parse(e.target.result);
-		};
-	})(f);
-	
+	reader.onload = function(event) {
+		afqb.three.settings = JSON.parse(event.target.result);
+
+		afqb.three.camera.position.copy(new THREE.Vector3(
+					afqb.three.settings.initCameraPosition.x,
+					afqb.three.settings.initCameraPosition.y,
+					afqb.three.settings.initCameraPosition.z));
+		afqb.global.controls.threeControlBox.lhOpacity = afqb.three.settings.initLHOpacity;
+		afqb.global.controls.threeControlBox.rhOpacity = afqb.three.settings.initRHOpacity;
+		afqb.global.controls.threeControlBox.fiberOpacity = afqb.three.settings.initFiberOpacity;
+		afqb.global.controls.threeControlBox.highlight = afqb.three.settings.mouseoverHighlight;
+	};
+
 	reader.readAsText(f);
-	afqb.three.settings = afqb.global.threeSettings;
 };
 
 document.getElementById('load-settings')
