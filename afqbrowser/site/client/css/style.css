@@ -29,6 +29,7 @@ h1 {
 
 h2 {
   text-align: center;
+  text-transform: uppercase;
 }
 
 .title{
@@ -274,6 +275,12 @@ h2 {
   align-items: stretch;
 }
 
+#table-and-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
 #download-subjects, #download-nodes{
 dispay: none;
 width: 0.1px;
@@ -324,7 +331,9 @@ z-index: -1;
 }
 
 #table {
-  height: 300px;
+  height: 1px;
+  flex-grow: 1;
+  flex-shrink: 1;
   align: center;
 }
 
