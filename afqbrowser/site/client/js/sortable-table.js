@@ -163,7 +163,7 @@ function refreshTable(sortOn){
 			afqb.table.previousSort.order = "ascending";
 
 			// Get unique, non-null values from the column `sortOn`
-			function uniqueNotNull(value, index, self) { 
+			function uniqueNotNull(value, index, self) {
 				return (self.indexOf(value) === index) && (value !== null);
 			}
 

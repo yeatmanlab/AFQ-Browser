@@ -108,6 +108,12 @@ afqb.plots.xAxis = d3.svg.axis()
         .tickPadding(8)
         .ticks(5);
 
+afqb.plots.zoomable = true;
+afqb.plots.yzoom = d3.behavior.zoom()
+				.y(afqb.plots.y)
+				.on("zoom", afqb.plots.zoomable?zoomAxis:null)
+				.on("zoomend",afqb.plots.zoomable?draw:null);
+
 afqb.plots.line = d3.svg.line()
     .interpolate("basis")
     .x(function (d) {
@@ -218,6 +224,15 @@ function ready(error, data) {
         .attr("transform", "translate(" + afqb.plots.m.left + ",0)")
         .call(afqb.plots.yAxis);
 
+		trPanels.append("svg:rect")
+        .attr("class", "zoom y box")
+        .attr("width", afqb.plots.m.left+20)
+        .attr("height", afqb.plots.h - afqb.plots.m.top - afqb.plots.m.bottom)
+        //.attr("transform", "translate(" + afqb.plots.m.left + ",0)")
+        .style("visibility", "hidden")
+        .attr("pointer-events", "all")
+        .call(afqb.plots.yzoom);
+
 	//x-axis
 	trPanels.select("g").append("g")
         .attr("class", "x axis")
@@ -233,15 +248,6 @@ function ready(error, data) {
 		.style("stroke", function (d,i) { return afqb.d3colors[i]; })
 		.style("fill", "none")
 		.style("stroke-width", 2);
-
-    /*trPanels.append("text")
-       	.attr("transform", "rotate(-90)")
-       	.attr("x", -afqb.plots.h/2)
-       	.attr("y",0)
-       	.style("stroke", "#AFBABF")
-       	.attr("dy", "1em")
-       	.style("text-anchor", "middle")
-       	.text("Fractional Anisotropy");*/
 
     trPanels.append("text")
 		.attr("x", 350)
@@ -467,78 +473,303 @@ function updatePlots(error, data) {
 		}
     }
 
-	if (updateAll) {
-		// update axes based on selected data
-		afqb.plots.y.domain(d3.extent(data, function (d) {
-			return +d[afqb.controls.plotsControlBox.plotKey];
-		}));
-		afqb.plots.x.domain([0, 100]).nice();
+		if (updateAll) {
+			// update axes based on selected data
+			afqb.plots.y.domain(d3.extent(data, function (d) {
+				return +d[afqb.controls.plotsControlBox.plotKey];
+			}));
+			afqb.plots.x.domain([0, 100]).nice();
 
-		// Select the section we want to apply our changes to
-		var svg = d3.select("#tractdetails").selectAll("svg")
-			.data(afqb.plots.tractData).transition();
+			// Select the section we want to apply our changes to
+			var svg = d3.select("#tractdetails").selectAll("svg")
+				.data(afqb.plots.tractData).transition();
 
-		/*svg.select(".x.axis") // change the x axis
-		  .duration(750)
-		  .call(afqb.plots.xAxis);*/
-		svg.select(".y.axis") // change the y axis
-			.duration(750)
-			.call(afqb.plots.yAxis);
+			svg.select(".y.axis") // change the y axis
+				.duration(750)
+				.call(afqb.plots.yAxis);
 
-		// JOIN new data with old elements.
-		var trLines = d3.select("#tractdetails").selectAll("svg")
-			.data(afqb.plots.tractData).selectAll(".tracts")
-			.data(function (d) { return d.values; }).transition();
-		//.select("#path").attr("d", function (d) { return d.values; });
+			// update y zoom for new axis
+			afqb.plots.yzoom = d3.behavior.zoom()
+														 .y(afqb.plots.y)
+														 .on("zoom", afqb.plots.zoomable?zoomAxis:null)
+														 .on("zoomend",afqb.plots.zoomable?draw:null);
+			d3.select("#tractdetails").selectAll("svg").selectAll(".zoom.y.box").call(afqb.plots.yzoom);//.remove();
 
-		trLines.select("path")
-			.duration(1000)
-			.attr("d", function (d) { return afqb.plots.line(d.values); });
-	}
 
-	// Remove old meanlines
-	d3.select("#tractdetails").selectAll("svg").selectAll(".means").remove();
-	if (afqb.table.splitGroups) {
-		// Join new afqb.plots.tractMean data with old meanLines elements
-    var meanLines = d3.select("#tractdetails").selectAll("svg")
-		.selectAll(".means")
-		.data(function (d) {
-			return afqb.plots.tractMean.filter(function(element) {
-				return element.key === d.key;
-			})[0].values;
-		});
-		// Enter and update. Merge entered elements and apply operations
-		meanLines.enter().append("g")
-			.attr("class", "tracts means")
-			.attr("id", function(d) {return "mean" + d.key;});
+			// JOIN new data with old elements.
+			var trLines = d3.select("#tractdetails").selectAll("svg")
+				.data(afqb.plots.tractData).selectAll(".tracts")
+				.data(function (d) { return d.values; }).transition();
+			//.select("#path").attr("d", function (d) { return d.values; });
 
-		meanLines.append("path")
-			.attr("class", "line")
-			.attr("d", function(d) {return afqb.plots.line(d.values); })
-			.style("opacity", 0.99)
-			.style("stroke-width", "3.5px");
-    // set mean colors
-    d3.select("#tractdetails").selectAll("svg").selectAll(".means")
-      .style("stroke", function (d, i) { return afqb.table.ramp(i); });
-  } else{
-		// Gray meanLines for unsorted 'Plot Type' change
-		var meanLines = d3.select("#tractdetails").selectAll("svg")
-			.append("g")
-			.datum(function (d) {
+			trLines.select("path")
+				.duration(0)
+				.attr("d", function (d) { return afqb.plots.line(d.values); });
+		}
+
+		// Remove old meanlines
+		d3.select("#tractdetails").selectAll("svg").selectAll(".means").remove();
+		if (afqb.table.splitGroups) {
+			// Join new afqb.plots.tractMean data with old meanLines elements
+	    var meanLines = d3.select("#tractdetails").selectAll("svg")
+			.selectAll(".means")
+			.data(function (d) {
 				return afqb.plots.tractMean.filter(function(element) {
 					return element.key === d.key;
 				})[0].values;
-			})
-			.attr("class", "tracts means")
-			.attr("id", "mean0");
+			});
+			// Enter and update. Merge entered elements and apply operations
+			meanLines.enter().append("g")
+				.attr("class", "tracts means")
+				.attr("id", function(d) {return "mean" + d.key;});
 
-		meanLines.append("path")
-			.attr("class", "line")
-			.attr("d", function(d) {return afqb.plots.line(d); })
-			.style("opacity", 0.99)
-			.style("stroke-width", "3.5px");
-	};
+			meanLines.append("path")
+				.attr("class", "line")
+				.attr("d", function(d) {return afqb.plots.line(d.values); })
+				.style("opacity", 0.99)
+				.style("stroke-width", "3.5px");
+	    // set mean colors
+	    d3.select("#tractdetails").selectAll("svg").selectAll(".means")
+	      .style("stroke", function (d, i) { return afqb.table.ramp(i); });
+	  } else{
+			// Gray meanLines for unsorted 'Plot Type' change
+			var meanLines = d3.select("#tractdetails").selectAll("svg")
+				.append("g")
+				.datum(function (d) {
+					return afqb.plots.tractMean.filter(function(element) {
+						return element.key === d.key;
+					})[0].values;
+				})
+				.attr("class", "tracts means")
+				.attr("id", "mean0");
+
+			meanLines.append("path")
+				.attr("class", "line")
+				.attr("d", function(d) {return afqb.plots.line(d); })
+				.style("opacity", 0.99)
+				.style("stroke-width", "3.5px");
+			}
+
 }
+function zoomAxis(){
+	d3.selectAll('g.y.axis').call(afqb.plots.yAxis);
+}
+function draw() {
+
+	// JOIN new data with old elements.
+	var trLines = d3.select("#tractdetails").selectAll("svg")
+		.data(afqb.plots.tractData).selectAll(".tracts")
+		.data(function (d) { return d.values; }).transition();
+	//.select("#path").attr("d", function (d) { return d.values; });
+
+	trLines.select("path")
+		.duration(0)
+		.attr("d", function (d) { return afqb.plots.line(d.values); });
+
+
+// Remove old meanlines
+d3.select("#tractdetails").selectAll("svg").selectAll(".means").remove();
+if (afqb.table.splitGroups) {
+	// Join new afqb.plots.tractMean data with old meanLines elements
+	var meanLines = d3.select("#tractdetails").selectAll("svg")
+	.selectAll(".means")
+	.data(function (d) {
+		return afqb.plots.tractMean.filter(function(element) {
+			return element.key === d.key;
+		})[0].values;
+	});
+	// Enter and update. Merge entered elements and apply operations
+	meanLines.enter().append("g")
+		.attr("class", "tracts means")
+		.attr("id", function(d) {return "mean" + d.key;});
+
+	meanLines.append("path")
+		.attr("class", "line")
+		.attr("d", function(d) {return afqb.plots.line(d.values); })
+		.style("opacity", 0.99)
+		.style("stroke-width", "3.5px");
+	// set mean colors
+	d3.select("#tractdetails").selectAll("svg").selectAll(".means")
+		.style("stroke", function (d, i) { return afqb.table.ramp(i); });
+} else{
+	// Gray meanLines for unsorted 'Plot Type' change
+	var meanLines = d3.select("#tractdetails").selectAll("svg")
+		.append("g")
+		.datum(function (d) {
+			return afqb.plots.tractMean.filter(function(element) {
+				return element.key === d.key;
+			})[0].values;
+		})
+		.attr("class", "tracts means")
+		.attr("id", "mean0");
+
+	meanLines.append("path")
+		.attr("class", "line")
+		.attr("d", function(d) {return afqb.plots.line(d); })
+		.style("opacity", 0.99)
+		.style("stroke-width", "3.5px");
+	}
+			/*d3.select("#tractdetails").selectAll("svg").selectAll(".tracts").remove();
+			// JOIN new data with old elements.
+			var trLines = d3.select("#tractdetails").selectAll("svg")
+				.data(afqb.plots.tractData).selectAll(".tracts")
+				.data(function (d) { return d.values; })
+						.enter().append("g")
+						.attr("class", "tracts")
+						.attr("id", function (d, i) {
+										return d.values[0].subjectID;
+						})
+						.on("mouseover", mouseover)
+		        .on("mouseout", mouseout)
+		        .on("click", onclick);
+
+						function mouseover() {
+				        if (!afqb.mouse.brushing) {
+				            if ($("path",this).css("stroke-width") == "1px") {
+								// uses the stroke-width of the line clicked on to
+								// determine whether to turn the line on or off
+				                d3.selectAll('#' + this.id)
+				                    .selectAll('path')
+				                    .style("opacity", 1)
+				                    .style("stroke-width", "1.1px");
+				            }
+				            if (afqb.mouse.isDown) {
+				                if ($("path",this).css("stroke-width") == "2.1px") {
+									//uses the opacity of the row for selection and deselection
+				                    d3.selectAll('#' + this.id)
+				                        .selectAll('path')
+				                        .style("opacity", afqb.controls.plotsControlBox.lineOpacity)
+				                        .style("stroke-width", "1px");
+
+				                    d3.selectAll('#' + this.id)
+				                  			.selectAll('g')
+				                				.style("opacity", 0.3);
+
+				                } else {
+				                    d3.selectAll('#' + this.id)
+				                        .selectAll('path')
+				                        .style("opacity", 1)
+				                        .style("stroke-width", "2.1px");
+
+				                    d3.selectAll('#' + this.id)
+				                        .selectAll('g')
+				                        .style("opacity", 1);
+				                }
+				            }
+				        }
+				    }
+
+				    function onclick() {
+				        if (!afqb.mouse.brushing) {
+				            if ($("path",this).css("stroke-width") == "2.1px") {
+								// uses the stroke-width of the line clicked on
+								// to determine whether to turn the line on or off
+								d3.selectAll('#' + this.id)
+									.selectAll('path')
+									.style("stroke-width", "1.1px");
+
+								d3.selectAll('#' + this.id)
+									.selectAll('g')
+									.style("opacity", 0.3);
+
+				            } else if ($("path",this).css("stroke-width") == "1.1px") {
+								d3.selectAll('#' + this.id)
+									.selectAll('path')
+									.style("opacity", 1)
+									.style("stroke-width", "2.1px");
+
+								d3.selectAll('#' + this.id)
+									.selectAll('g')
+									.style("opacity", 1);
+				            } else if ($("path",this).css("opacity") == afqb.controls.plotsControlBox.lineOpacity) {
+								d3.selectAll('#' + this.id)
+									.selectAll('path')
+									.style("opacity", 1)
+									.style("stroke-width", "2.1px");
+
+								d3.selectAll('#' + this.id)
+									.selectAll('g')
+									.style("opacity", 1);
+				            }
+				        }
+				    }
+
+				    function mouseout() {
+				        if (!afqb.mouse.brushing) {
+				            if ($("path",this).css("stroke-width") == "1.1px") {
+								// uses the stroke-width of the line clicked on to
+								// determine whether to turn the line on or off
+				                d3.selectAll('#' + this.id)
+				                    .selectAll('path')
+				                    .style("opacity", afqb.controls.plotsControlBox.lineOpacity)
+				                    .style("stroke-width", "1px");
+				            }
+				        }
+				    }
+
+				trLines.append("path")
+						.attr("class", "line")
+						.attr("d", function (d) { return afqb.plots.line(d.values); })
+						.style("opacity", afqb.controls.plotsControlBox.lineOpacity)
+						.style("stroke-width", "1px");
+
+						function idColor(element) {
+							d3.selectAll('#' + element["subjectID"])
+								.selectAll('.line')
+								.style("stroke",
+										element["group"] === null ? "black" : afqb.table.ramp(element["group"]));
+
+							d3.selectAll('#' + element["subjectID"])
+								.selectAll('.cell').select('text')
+								.style("fill",
+										element["group"] === null ? "black" : afqb.table.ramp(element["group"]));
+						}
+
+						afqb.table.subData.forEach(idColor);
+
+						// Remove old meanlines
+				d3.select("#tractdetails").selectAll("svg").selectAll(".means").remove();
+				if (afqb.table.splitGroups) {
+					 // Join new afqb.plots.tractMean data with old meanLines elements
+					 var meanLines = d3.select("#tractdetails").selectAll("svg")
+							.selectAll(".means")
+							.data(function (d) {
+								return afqb.plots.tractMean.filter(function(element) {
+									return element.key === d.key;
+								})[0].values;
+							});
+					// Enter and update. Merge entered elements and apply operations
+					meanLines.enter().append("g")
+						.attr("class", "tracts means")
+						.attr("id", function(d) {return "mean" + d.key;});
+
+					meanLines.append("path")
+						.attr("class", "line")
+						.attr("d", function(d) {return afqb.plots.line(d.values); })
+						.style("opacity", 0.99)
+						.style("stroke-width", "3.5px");
+					// set mean colors
+					 d3.select("#tractdetails").selectAll("svg").selectAll(".means")
+					   .style("stroke", function (d, i) { return afqb.table.ramp(i); });
+					  } else{
+							// Gray meanLines for unsorted 'Plot Type' change
+							var meanLines = d3.select("#tractdetails").selectAll("svg")
+								.append("g")
+								.datum(function (d) {
+									return afqb.plots.tractMean.filter(function(element) {
+										return element.key === d.key;
+									})[0].values;
+								})
+								.attr("class", "tracts means")
+								.attr("id", "mean0");
+
+							meanLines.append("path")
+								.attr("class", "line")
+								.attr("d", function(d) {return afqb.plots.line(d); })
+								.style("opacity", 0.99)
+								.style("stroke-width", "3.5px");
+						};*/
+};
 
 function updateBrush() {
     if (afqb.controls.plotsControlBox.brushTract) {
