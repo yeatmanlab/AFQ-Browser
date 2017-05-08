@@ -1,10 +1,8 @@
 // ========== Adding Table code ============
 
-afqb.table = {
-	fieldHeight: 30,
-   	rowPadding: 1,
-   	fieldWidth: 140
-};
+afqb.table.fieldHeight = 30;
+afqb.table.rowPadding = 1;
+afqb.table.fieldWidth = 140;
 
 afqb.table.previousSort = {
 	key: null,
