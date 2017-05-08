@@ -1,6 +1,6 @@
 //tractlist js
+afqb.plots.settings.checkboxes = {};
 
-afqb.plots = {};
 afqb.plots.m = {top: 20, right: 10, bottom: 10, left: 20};
 afqb.plots.w = 400 - afqb.plots.m.left - afqb.plots.m.right,
 afqb.plots.h = 350 - afqb.plots.m.top - afqb.plots.m.bottom;
@@ -56,6 +56,7 @@ afqb.plots.buildTractCheckboxes = function (error, data) {
 			var state = this.checked
 			var name = this.name
 			//call tractdetails handler
+			afqb.plots.settings.checkboxes[name] = state;
 			afqb.plots.showHideTractDetails(state, name)
 			afqb.three.highlightBundle(state, name)
 		});
@@ -68,12 +69,14 @@ afqb.plots.buildTractCheckboxes = function (error, data) {
 			if (state) {
 				d3.selectAll(".tracts").each(function (d, i) {
 					this.checked = true;
+					afqb.plots.settings.checkboxes[this.name] = this.checked;
 					afqb.plots.showHideTractDetails(this.checked, this.name);
 					afqb.three.highlightBundle(this.checked, this.name);
 				});
 			} else {
 				d3.selectAll(".tracts").each(function (d, i) {
 					this.checked = false;
+					afqb.plots.settings.checkboxes[this.name] = this.checked;
 					afqb.plots.showHideTractDetails(this.checked, this.name);
 					afqb.three.highlightBundle(this.checked, this.name);
 				});
