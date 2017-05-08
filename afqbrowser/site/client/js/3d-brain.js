@@ -1,25 +1,32 @@
 // =========== three js part
+// Set initial opacitites here
+afqb.three.settings.initLHOpacity = 0.01;
+afqb.three.settings.initRHOpacity = 0.70;
+afqb.three.settings.initFiberOpacity = 0.25;
+afqb.three.settings.initColorOpacity = 0.75;
+afqb.three.settings.initHighlightOpacity = 0.75;
 
-afqb.three = {};
+// Set initial line widths here
+afqb.three.settings.initFiberLineWidth = 1.0;
+afqb.three.settings.initColorLineWidth = 2.0;
+afqb.three.settings.initHighlightLineWidth = 2.5;
+
+// Set boolean value to show rendering stats
+afqb.three.settings.showStats = false;
+
+// Set the initial camera position
+afqb.three.settings.initCameraPosition = {
+	x: -15,
+	y: 0,
+	z: 0
+};
 
 afqb.three.colorGroups = new THREE.Object3D();
 afqb.three.greyGroups = new THREE.Object3D();
 
-// Set initial opacitites here
-afqb.three.initLHOpacity = 0.01;
-afqb.three.initRHOpacity = 0.70;
-afqb.three.initFiberOpacity = 0.25;
-afqb.three.initColorOpacity = 0.75;
-afqb.three.initHighlightOpacity = 0.75;
-
-// Set initial line widths here
-afqb.three.initFiberLineWidth = 1.0;
-afqb.three.initColorLineWidth = 2.0;
-afqb.three.initHighlightLineWidth = 2.5;
-
 afqb.three.greyLineMaterial = new THREE.LineBasicMaterial({
-	opacity: afqb.three.initFiberOpacity,
-	linewidth: afqb.three.initFiberLineWidth,
+	opacity: afqb.three.settings.initFiberOpacity,
+	linewidth: afqb.three.settings.initFiberLineWidth,
 	transparent: true,
 	depthWrite: true
 });
@@ -34,41 +41,35 @@ afqb.three.colorLineMaterial = new THREE.LineBasicMaterial({
 });
 
 // init requires afqb.plots.faPlotLength to be defined.
-// afqb.plots.faPlotLength is defined in buildTractCheckboxes in
+// afqb.plots.faPlotLength is defined in afqb.plots.buildTractCheckboxes in
 // tract-details.js but it is async, deferred until d3 reads nodes.csv.
 // So we have to wait until afqb.plots.faPlotLength is defined
 // Define a function to wait until afqb.plots.faPlotLength is defined.
-function waitForPlotLength(callback) {
+afqb.three.waitForPlotLength = function (callback) {
 	if (afqb.plots.faPlotLength == undefined) {
 		setTimeout(function() {
 			console.log("waiting for plot length");
-			waitForPlotLength(callback);
+			afqb.three.waitForPlotLength(callback);
 		}, 250);
 	} else {
 		callback(null);
 	}
-}
+};
 
 // Combine the init and animate function calls for use in d3.queue()
-function initAndAnimate(error) {
-	init();
-	animate();
-}
+afqb.three.initAndAnimate = function (error) {
+	afqb.three.init();
+	afqb.three.animate();
+};
 
-// Use d3.queue() to wait for afqb.plots.faPlotLength before calling init and animate
-afqb.queues.threeQ = d3_queue.queue();
-afqb.queues.threeQ.defer(waitForPlotLength);
-afqb.queues.threeQ.await(initAndAnimate);
+afqb.three.stats = {};
 
-afqb.three.showStats = false;
-afqb.three.stats;
-
-if (afqb.three.showStats) {
+if (afqb.three.settings.showStats) {
 	afqb.three.stats = new Stats();
 	afqb.three.container.appendChild( afqb.three.stats.dom );
 }
 
-function init() {
+afqb.three.init = function () {
 	// We put the renderer inside a div with id #threejsbrain
 	afqb.three.container = document.getElementById("threejsbrain");
 
@@ -76,7 +77,11 @@ function init() {
 	var height = afqb.three.container.clientHeight;
 
     afqb.three.camera = new THREE.PerspectiveCamera( 45, width / height, 1, 2000 );
-    afqb.three.camera.position.x = -15;
+    afqb.three.camera.position.copy(new THREE.Vector3(
+				afqb.three.settings.initCameraPosition.x,
+				afqb.three.settings.initCameraPosition.y,
+				afqb.three.settings.initCameraPosition.z));
+
 	afqb.three.camera.up.set(0, 0, 1);
 
     // scene
@@ -130,8 +135,8 @@ function init() {
 		afqb.three.lh.translateX(-0.05);
 		afqb.three.rh.translateX( 0.05);
 
-        afqb.three.lh.material.opacity = afqb.three.initLHOpacity;
-        afqb.three.rh.material.opacity = afqb.three.initRHOpacity;
+        afqb.three.lh.material.opacity = afqb.three.settings.initLHOpacity;
+        afqb.three.rh.material.opacity = afqb.three.settings.initRHOpacity;
 
 		afqb.three.lh.material.color.setHex( 0xe8e3d3 );
 		afqb.three.rh.material.color.setHex( 0xe8e3d3 );
@@ -140,9 +145,9 @@ function init() {
     });
 
 	var threeGuiConfigObj = function () {
-		this.lhOpacity = afqb.three.initLHOpacity;
-		this.rhOpacity = afqb.three.initRHOpacity;
-		this.fiberOpacity = afqb.three.initFiberOpacity;
+		this.lhOpacity = afqb.three.settings.initLHOpacity;
+		this.rhOpacity = afqb.three.settings.initRHOpacity;
+		this.fiberOpacity = afqb.three.settings.initFiberOpacity;
 		this.highlight = true;
 	};
 
@@ -152,9 +157,9 @@ function init() {
 		scrollable: false
 	});
 
-	afqb.controls.threeControlBox = new threeGuiConfigObj();
+	afqb.global.controls.threeControlBox = new threeGuiConfigObj();
 
-	var lhOpacityController = threeGui.add(afqb.controls.threeControlBox, 'lhOpacity')
+	var lhOpacityController = threeGui.add(afqb.global.controls.threeControlBox, 'lhOpacity')
 		.min(0).max(1).step(0.01).name('Left Hemi Opacity');
 
 	lhOpacityController.onChange( function(value) {
@@ -165,7 +170,7 @@ function init() {
 		})
 	});
 
-	var rhOpacityController = threeGui.add(afqb.controls.threeControlBox, 'rhOpacity')
+	var rhOpacityController = threeGui.add(afqb.global.controls.threeControlBox, 'rhOpacity')
 		.min(0).max(1).step(0.01).name('Right Hemi Opacity');
 
 	rhOpacityController.onChange( function(value) {
@@ -176,7 +181,7 @@ function init() {
 		})
 	});
 
-	var fiberOpacityController = threeGui.add(afqb.controls.threeControlBox, 'fiberOpacity')
+	var fiberOpacityController = threeGui.add(afqb.global.controls.threeControlBox, 'fiberOpacity')
 		.min(0).max(1).name('Fiber Opacity');
 
 	fiberOpacityController.onChange( function(value) {
@@ -192,7 +197,7 @@ function init() {
 		})
 	});
 
-	var highlightController = threeGui.add(afqb.controls.threeControlBox, 'highlight')
+	var highlightController = threeGui.add(afqb.global.controls.threeControlBox, 'highlight')
 		.name('Mouseover Highlight');
 
 	var guiContainer = document.getElementById('three-gui-container');
@@ -307,37 +312,38 @@ function init() {
 
 		// Set material properties for each fiber bundle
 		// And add event listeners for mouseover, etc.
-        afqb.three.colorGroups.traverse(function (child) {
+		afqb.three.colorGroups.traverse(function (child) {
 			if (child instanceof THREE.LineSegments) {
-                domEvents.addEventListener(child, 'mouseover', function(event) {
-        					if(!afqb.mouse.isDown) {
-								mouseoverBundle(child.idx);
-        						return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
-        					}
-                });
-                domEvents.addEventListener(child, 'mousemove', function(event) {
-        					afqb.mouse.mouseMove = true;
-        				});
-                domEvents.addEventListener(child, 'mousedown', function(event) {
-        					afqb.mouse.mouseMove = false;
-        				});
+				domEvents.addEventListener(child, 'mouseover', function(event) {
+					if(!afqb.global.mouse.isDown) {
+						afqb.three.mouseoverBundle(child.idx);
+						return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
+					}
+				});
+				domEvents.addEventListener(child, 'mousemove', function(event) {
+					afqb.global.mouse.mouseMove = true;
+				});
+				domEvents.addEventListener(child, 'mousedown', function(event) {
+					afqb.global.mouse.mouseMove = false;
+				});
 				domEvents.addEventListener(child, 'mouseup', function(event) {
-							if(!afqb.mouse.mouseMove) {
-								var myBundle = d3.selectAll("input.tracts")[0][child.idx];
-								myBundle.checked = !myBundle.checked;
-								showHideTractDetails(myBundle.checked, myBundle.name)
-								highlightBundle(myBundle.checked, myBundle.name)
-								return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
-							} else {
-								afqb.mouse.mouseMove = false;
-							}
-						});
-                domEvents.addEventListener(child, 'mouseout', function(event) {
-        					var myBundle = d3.selectAll("input.tracts")[0][child.idx];
-        					showHideTractDetails(myBundle.checked, myBundle.name)
-        					highlightBundle(myBundle.checked, myBundle.name)
-        					return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
-                });
+					if(!afqb.global.mouse.mouseMove) {
+						var myBundle = d3.selectAll("input.tracts")[0][child.idx];
+						myBundle.checked = !myBundle.checked;
+						afqb.plots.settings.checkboxes[myBundle.name] = myBundle.checked;
+						afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name);
+						afqb.three.highlightBundle(myBundle.checked, myBundle.name);
+						return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
+					} else {
+						afqb.global.mouse.mouseMove = false;
+					}
+				});
+				domEvents.addEventListener(child, 'mouseout', function(event) {
+					var myBundle = d3.selectAll("input.tracts")[0][child.idx];
+					afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name)
+					afqb.three.highlightBundle(myBundle.checked, myBundle.name)
+					return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
+				});
             }
         });
 
@@ -356,14 +362,14 @@ function init() {
 		afqb.three.scene.add(afqb.three.greyGroups);
     });
 
-    window.addEventListener('resize', onWindowResize, false);
-    controls = new THREE.OrbitControls(afqb.three.camera, afqb.three.renderer.domElement);
-    controls.addEventListener('change', lightUpdate);
-    controls.enableKeys = false;
-}
+    window.addEventListener('resize', afqb.three.onWindowResize, false);
+    afqb.three.orbitControls = new THREE.OrbitControls(afqb.three.camera, afqb.three.renderer.domElement);
+    afqb.three.orbitControls.addEventListener('change', afqb.three.lightUpdate);
+    afqb.three.orbitControls.enableKeys = false;
+};
 
 // Resize the three.js window on full window resize.
-function onWindowResize() {
+afqb.three.onWindowResize = function () {
     var width = afqb.three.container.clientWidth;
 	var height = afqb.three.container.clientHeight;
 
@@ -371,13 +377,13 @@ function onWindowResize() {
     afqb.three.camera.updateProjectionMatrix();
 
     afqb.three.renderer.setSize(width, height);
-}
+};
 
-function animate() {
-    requestAnimationFrame(animate);
+afqb.three.animate = function () {
+    requestAnimationFrame(afqb.three.animate);
     afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
-    controls.update();
-	if (afqb.three.showStats)
+    afqb.three.orbitControls.update();
+	if (afqb.three.settings.showStats)
 		afqb.three.stats.update();
 
 	// For each fiber bundle update the length of fiber to be plotted
@@ -399,19 +405,19 @@ function animate() {
 		// Set the drawing range based on the brush extent.
 		afqb.three.colorGroups.children[i].geometry.setDrawRange(loIdx, count);
 	}
-}
+};
 
-function lightUpdate() {
+afqb.three.lightUpdate = function () {
     afqb.three.directionalLight.position.copy(afqb.three.camera.position);
-}
+};
 
 // Highlight specified bundle based on left panel checkboxes
-function highlightBundle(state, name) {
+afqb.three.highlightBundle = function (state, name) {
 
 	// Temporary line material for highlighted bundles
 	var tmpLineMaterial = new THREE.LineBasicMaterial({
-		opacity: afqb.three.initColorOpacity,
-		linewidth: afqb.three.initColorLineWidth,
+		opacity: afqb.three.settings.initColorOpacity,
+		linewidth: afqb.three.settings.initColorLineWidth,
 		transparent: true,
 		depthWrite: true
 	});
@@ -420,7 +426,7 @@ function highlightBundle(state, name) {
 
 	if (bundle !== undefined) {
 		if (state === true) {
-			tmpLineMaterial.color.setHex( afqb.colors[name] );
+			tmpLineMaterial.color.setHex( afqb.global.colors[name] );
 			bundle.material = tmpLineMaterial;
 			return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 
@@ -429,22 +435,22 @@ function highlightBundle(state, name) {
 			return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 		}
 	}
-}
+};
 
 // Highlight specified bundle based on mouseover
-function mouseoverBundle(name) {
-	if (afqb.controls.threeControlBox.highlight) {
+afqb.three.mouseoverBundle = function (name) {
+	if (afqb.global.controls.threeControlBox.highlight) {
 		// Temporary line material for moused-over bundles
 		var tmpLineMaterial = new THREE.LineBasicMaterial({
-			opacity: afqb.three.initHighlightOpacity,
-			linewidth: afqb.three.initHighlightLineWidth,
+			opacity: afqb.three.settings.initHighlightOpacity,
+			linewidth: afqb.three.settings.initHighlightLineWidth,
 			transparent: true
 		});
 
 		var bundle = afqb.three.colorGroups.children[name];
 
 		if (bundle !== undefined) {
-			tmpLineMaterial.color.setHex( afqb.highlightColors[name] );
+			tmpLineMaterial.color.setHex( afqb.global.highlightColors[name] );
 			if (afqb.plots.bundleBrush['tract' + name].brushOn) {
 				tmpLineMaterial.color.setHex( 0x000000 );
 			}
@@ -452,7 +458,13 @@ function mouseoverBundle(name) {
 			return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 		}
 	}
-}
+};
+
+// Use d3.queue() to wait for afqb.plots.faPlotLength before calling init and animate
+afqb.global.queues.threeQ = d3_queue.queue();
+afqb.global.queues.threeQ.defer(afqb.three.waitForPlotLength);
+afqb.global.queues.threeQ.await(afqb.three.initAndAnimate);
+
 
 // var $window = $(window),
 //    $stickyEl = $('#statcontent'),

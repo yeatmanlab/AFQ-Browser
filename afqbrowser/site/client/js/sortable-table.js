@@ -1,10 +1,8 @@
 // ========== Adding Table code ============
 
-afqb.table = {
-	fieldHeight: 30,
-   	rowPadding: 1,
-   	fieldWidth: 140
-};
+afqb.table.fieldHeight = 30;
+afqb.table.rowPadding = 1;
+afqb.table.fieldWidth = 140;
 
 afqb.table.previousSort = {
 	key: null,
@@ -22,11 +20,7 @@ afqb.table.ramp = null;
 afqb.table.headerGrp;
 afqb.table.rowsGrp;
 
-afqb.queues.subjectQ = d3_queue.queue();
-afqb.queues.subjectQ.defer(d3.json, "data/subjects.json");
-afqb.queues.subjectQ.await(buildTable);
-
-function buildTable(error, data) {
+afqb.table.buildTable = function (error, data) {
 	data.forEach(function (d) {
         if (typeof d.subjectID === 'number'){
           d.subjectID = "s" + d.subjectID.toString();}
@@ -37,10 +31,16 @@ function buildTable(error, data) {
 
 	var tableSvg = d3.select("#table").append("svg")
 		.attr("width", d3.keys(afqb.table.subData[0]).length * afqb.table.fieldWidth)
-		.attr("height", (afqb.table.subData.length + 1) * (afqb.table.fieldHeight + afqb.table.rowPadding));
+		.attr("height", "100%")
+		.attr("display", "flex")
+		.attr("flex-direction", "column");
+		// .attr("height", (afqb.table.subData.length + 1) * (afqb.table.fieldHeight + afqb.table.rowPadding));
 
-	afqb.table.headerGrp = tableSvg.append("g").attr("class", "headerGrp");
-	afqb.table.rowsGrp = tableSvg.append("g").attr("class","rowsGrp");
+	afqb.table.headerGrp = tableSvg.append("g").attr("class", "headerGrp")
+		.attr("flex", "0 1 auto");
+	afqb.table.rowsGrp = tableSvg.append("g").attr("class","rowsGrp")
+		.attr("flex", "1 1 auto");
+		//.attr("height", afqb.table.subData.length * (afqb.table.fieldHeight + afqb.table.rowPadding));
 
 	var tableGuiConfigObj = function () {
 		this.groupCount = 2;
@@ -52,29 +52,29 @@ function buildTable(error, data) {
 		scrollable: false
 	});
 
-	afqb.controls.tableControlBox = new tableGuiConfigObj();
+	var tableGuiContainer = document.getElementById('table-gui-container');
+	tableGuiContainer.appendChild(tableGui.domElement);
 
-	var tableGuiContainer = $('.tableGUI').append($(tableGui.domElement));
+	afqb.global.controls.tableControlBox = new tableGuiConfigObj();
 
-	var groupCountController = tableGui.add(afqb.controls.tableControlBox, 'groupCount')
+	var groupCountController = tableGui.add(afqb.global.controls.tableControlBox, 'groupCount')
 		.min(2).step(1)
 		.name('Number of Groups')
 		.onChange(function () {
-			return refreshTable(sortOn);
+			return afqb.table.refreshTable(sortOn);
 		});
-	tableGui.close()
 
 	groupCountController.onChange(function () {
-		refreshTable(sortOn);
+		afqb.table.refreshTable(sortOn);
 	});
 
 	tableGui.close();
 
 	var sortOn = null;
-	refreshTable(sortOn);
+	afqb.table.refreshTable(sortOn);
 }
 
-function refreshTable(sortOn){
+afqb.table.refreshTable = function (sortOn) {
 
     // create the table header
     var header = afqb.table.headerGrp.selectAll("g")
@@ -88,7 +88,7 @@ function refreshTable(sortOn){
             d3.select(this).style("cursor", "n-resize");
         })
 		// this is where the magic happens...(d) is the column being sorted
-        .on("click", function (d) { return refreshTable(d); });
+        .on("click", function (d) { return afqb.table.refreshTable(d); });
 
     header.append("rect")
         .attr("width", afqb.table.fieldWidth-1)
@@ -112,9 +112,10 @@ function refreshTable(sortOn){
         .attr("transform", function (d, i){
             return "translate(0," + (i+1) * (afqb.table.fieldHeight+afqb.table.rowPadding) + ")";
         })
-        //.on('click', rowSelect )
-        .on('mouseover', tableMouseDown )
-        .on('mousedown', rowSelect );
+        //.on('click', afqb.table.rowSelect )
+        .on('mouseover', afqb.table.tableMouseDown )
+        .on('mousedown', afqb.table.rowSelect );
+
     // select cells
     var cells = rows.selectAll("g.cell")
 		.data(function(d){return d3.values(d);});
@@ -143,21 +144,21 @@ function refreshTable(sortOn){
         if(sortOn === afqb.table.previousSort.key){
 			if (afqb.table.previousSort.order === "ascending") {
 				rows.sort(function(a,b){
-					return descendingWithNull(a[sortOn], b[sortOn]);
+					return afqb.table.descendingWithNull(a[sortOn], b[sortOn]);
 				});
 				afqb.table.previousSort.order = "descending";
 			} else {
 				rows.sort(function(a,b){
-					return ascendingWithNull(a[sortOn], b[sortOn]);
+					return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
 				});
 				afqb.table.previousSort.order = "ascending";
 			}
         } else {
 			rows.sort(function(a,b){
-				return ascendingWithNull(a[sortOn], b[sortOn]);
+				return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
 			});
             afqb.table.subData.sort(function(a,b){
-				return ascendingWithNull(a[sortOn], b[sortOn]);
+				return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
 			});
 			afqb.table.previousSort.key = sortOn;
 			afqb.table.previousSort.order = "ascending";
@@ -175,7 +176,7 @@ function refreshTable(sortOn){
 
 			// usrGroups is the user requested number of groups
 			// numGroups may be smaller if there are not enough unique values
-			var usrGroups = afqb.controls.tableControlBox.groupCount;
+			var usrGroups = afqb.global.controls.tableControlBox.groupCount;
 			var numGroups = Math.min(usrGroups, uniques.length);
 
 			// Create groupScale to map between the unique
@@ -234,7 +235,7 @@ function refreshTable(sortOn){
 
 			// call update -> noticed there is a delay here.
 			// update plots may be the slow down
-			d3.csv("data/nodes.csv", updatePlots);
+			d3.csv("data/nodes.csv", afqb.plots.updatePlots);
 		}
 
         rows//.transition() // sort row position
@@ -245,14 +246,14 @@ function refreshTable(sortOn){
     }
 }
 
-function ascendingWithNull(a, b) {
+afqb.table.ascendingWithNull = function (a, b) {
 	// d3.ascending ignores null and undefined values
 	// Return the same as d3.ascending but keep all null and
 	// undefined values at the bottom of the list
 	return b == null ? -1 : a == null ? 1 : d3.ascending(a, b);
 }
 
-function descendingWithNull(a, b) {
+afqb.table.descendingWithNull = function (a, b) {
 	// d3.descending ignores null and undefined values
 	// Return the same as d3.descending but keep all null and
 	// undefined values at the bottom of the list
@@ -260,7 +261,7 @@ function descendingWithNull(a, b) {
 }
 
 // onclick function to toggle on and off rows
-function rowSelect() {
+afqb.table.rowSelect = function () {
     if($('g',this).css("opacity") == 0.3) {
 		//uses the opacity of the row for selection and deselection
         d3.selectAll('#' + this.id)
@@ -278,24 +279,24 @@ function rowSelect() {
 
         d3.selectAll('#' + this.id)
 			.selectAll('path')
-            .style("opacity", afqb.controls.plotsControlBox.lineOpacity)
+            .style("opacity", afqb.global.controls.plotsControlBox.lineOpacity)
             .style("stroke-width", "1.1px");
 	}
 }
 
-afqb.mouse.isDown = false;   // Tracks status of mouse button
+afqb.global.mouse.isDown = false;   // Tracks status of mouse button
 
 $(document).mousedown(function() {
 		// When mouse goes down, set isDown to true
-		afqb.mouse.isDown = true;
+		afqb.global.mouse.isDown = true;
 	})
     .mouseup(function() {
 		// When mouse goes up, set isDown to false
-        afqb.mouse.isDown = false;
+        afqb.global.mouse.isDown = false;
     });
 
-function tableMouseDown() {
-	if(afqb.mouse.isDown) {
+afqb.table.tableMouseDown = function () {
+	if(afqb.global.mouse.isDown) {
 		if($('g',this).css("opacity") == 0.3) {
 			//uses the opacity of the row for selection and deselection
 			d3.selectAll('#' + this.id)
@@ -313,8 +314,13 @@ function tableMouseDown() {
 
 			d3.selectAll('#' + this.id)
 				.selectAll('path')
-				.style("opacity", afqb.controls.plotsControlBox.lineOpacity)
+				.style("opacity", afqb.global.controls.plotsControlBox.lineOpacity)
 				.style("stroke-width", "1.1px");
 		}
 	}
 }
+
+afqb.global.queues.subjectQ = d3_queue.queue();
+afqb.global.queues.subjectQ.defer(d3.json, "data/subjects.json");
+afqb.global.queues.subjectQ.await(afqb.table.buildTable);
+
