@@ -4,7 +4,7 @@
 <!-- Basic Page Needs
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 <meta charset="utf-8">
-<title>AFQ Browser</title>
+<title>{{ title }} | AFQ Browser</title>
 
 <!-- FONT
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -25,7 +25,7 @@
 
 <div class="page-container">
   <div id="header">
-    <h1 style="color:white;">AFQ Browser</h1>
+    <h1 style="color:white;">{{ title }}</h1>
   </div>
 
   <div class="app-container">
@@ -94,6 +94,9 @@
 
 <!--custom JS code -->
 
+<script type="text/javascript">
+  var DATA_URL = "{{ DATA_URL }}";
+</script>
 <script type="text/javascript" src="js/Projector.js"></script>
 <script type="text/javascript" src="js/threex.domevent.js"></script>
 <script type="text/javascript" src="js/OrbitControls.js"></script>

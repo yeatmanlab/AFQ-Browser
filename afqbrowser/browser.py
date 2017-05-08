@@ -1,18 +1,20 @@
-import os
 import os.path as op
 import shutil
+
 import scipy.io as sio
 import pandas as pd
 import numpy as np
+from flask import Flask, render_template, send_from_directory
+
 import afqbrowser as afqb
 
-# Shim for Python2/Python3:
-try:
-    from http.server import SimpleHTTPRequestHandler
-    import socketserver
-except ImportError:
-    from SimpleHTTPServer import SimpleHTTPRequestHandler
-    import SocketServer as socketserver
+
+def data_path(data_hash=''):
+    return op.join(op.dirname(afqb.__path__[0]), 'data', data_hash)
+
+
+def site_path():
+    return op.join(afqb.__path__[0], 'site', 'client')
 
 
 def mat2tables(mat_file_name, subject_ids=None, stats=None,
@@ -125,7 +127,7 @@ def copy_and_overwrite(from_path, to_path):
     shutil.copytree(from_path, to_path)
 
 
-def assemble(source, target=None):
+def assemble(source, target=None, id=None):
     """
     Spin up an instance of the AFQ-Browser with data provided as a mat file
 
@@ -138,34 +140,36 @@ def assemble(source, target=None):
         Path to a file-system location to create this instance of the
         browser in
     """
-    if target is None:
-        target = '.'
-    site_dir = op.join(target, 'AFQ-browser')
-    # This is where the template is stored:
-    data_path = op.join(afqb.__path__[0], 'site')
-    copy_and_overwrite(data_path, site_dir)
-    # Take in a mat-file as input and create the file
-    nodes_fname, meta_fname = mat2tables(
-        source,
-        out_path=op.join(site_dir, 'client', 'data'))
+    target = target or site_path()
+    nodes_fname, meta_fname = mat2tables(source, out_path=data_path())
 
 
-def run(target=None, port=8080):
-    if target is None:
-        target = '.'
-    site_dir = op.join(target, 'AFQ-browser', 'client')
-    os.chdir(site_dir)
-    Handler = SimpleHTTPRequestHandler
-    success = False
-    while not success:
-        try:
-            httpd = socketserver.TCPServer(("", port), Handler)
-            success = True
-        except OSError:
-            port = port + 1
-    print("Serving AFQ-browser on port", port)
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    httpd.server_close()
+def run(target=None, port=8080, name=__name__, debug=False,
+        title="AFQ Browser"):
+    target = target or op.abspath(op.join(afqb.__path__[0], '..', 'data'))
+    site_dir = op.join(afqb.__path__[0], 'site', 'client')
+
+    app = Flask(name, template_folder=site_dir, static_path=site_dir)
+
+    @app.route("/")
+    @app.route("/index.html")
+    def index():
+        return render_template('index.html', **{
+            'title': 'AFQ Browser',
+            'DATA_URL': 'data'
+        })
+
+    @app.route("/data/<path:path>")
+    def data_files(path):
+        print(data_path())
+        return send_from_directory(data_path(), path)
+
+    @app.route("/<path:path>")
+    def static_files(path):
+        return send_from_directory(site_dir, path)
+
+    @app.route('/index.html')
+    def static_page(page_name):
+        return render_template('%s.html' % page_name)
+
+    app.run(debug=True, port=port)

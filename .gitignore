@@ -2,6 +2,10 @@ node_modules/
 .gitignore
 .elasticbeanstalk/
 
+# Typical outputs
+AFQ-browser
+*.pyc
+
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
