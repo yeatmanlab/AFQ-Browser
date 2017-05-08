@@ -330,9 +330,10 @@ afqb.three.init = function () {
 					if(!afqb.global.mouse.mouseMove) {
 						var myBundle = d3.selectAll("input.tracts")[0][child.idx];
 						myBundle.checked = !myBundle.checked;
-						afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name)
-					afqb.three.highlightBundle(myBundle.checked, myBundle.name)
-					return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
+						afqb.plots.settings.checkboxes[myBundle.name] = myBundle.checked;
+						afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name);
+						afqb.three.highlightBundle(myBundle.checked, myBundle.name);
+						return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 					} else {
 						afqb.global.mouse.mouseMove = false;
 					}
