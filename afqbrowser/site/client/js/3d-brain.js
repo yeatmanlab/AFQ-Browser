@@ -112,7 +112,7 @@ function init() {
 
     // load brain surface
     var loader = new THREE.OBJLoader(manager);
-    loader.load('data/freesurf.OBJ', function (object) {
+    loader.load("resources/freesurf.OBJ", function (object) {
         afqb.three.brain = object;
         afqb.three.rh = object.getObjectByName('rh.pial.asc');
         afqb.three.lh = object.getObjectByName('lh.pial.asc');
@@ -205,7 +205,7 @@ function init() {
 	var greyGeometry = new THREE.Geometry();
 
 	var bundleIdx = 0;
-    $.getJSON("data/data_partial.json", function(json) {
+    $.getJSON("resources/data_partial.json", function(json) {
         for (var key in json) {
             if (json.hasOwnProperty(key)) {
                 var oneBundle = json[key];

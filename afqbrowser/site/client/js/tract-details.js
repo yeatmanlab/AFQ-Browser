@@ -18,7 +18,7 @@ afqb.plots.t = d3.transition().duration(750);
 
 afqb.queues = {};
 afqb.queues.nodeQ = d3_queue.queue();
-afqb.queues.nodeQ.defer(d3.csv, "data/nodes.csv");
+afqb.queues.nodeQ.defer(d3.csv, DATA_URL + "/nodes.csv");
 afqb.queues.nodeQ.await(buildFromNodes);
 
 afqb.controls = {};
@@ -160,7 +160,7 @@ function buildPlotGui(error, data) {
 		.add(afqb.controls.plotsControlBox, 'plotKey', nodeKeys)
         .name('Plot Type')
         .onChange(function () {
-            d3.csv("data/nodes.csv", updatePlots);
+            d3.csv(DATA_URL + "/nodes.csv", updatePlots);
         });
 
     var plotOpacityController = plotsGui
