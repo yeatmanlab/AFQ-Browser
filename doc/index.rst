@@ -1,23 +1,40 @@
-.. shablona documentation master file, created by sphinx-quickstart on Tue Apr 14 10:29:06 2015. You can adapt this file completely to your liking, but it should at least contain the root `toctree` directive.
 
-Welcome to shablona's documentation!
-====================================
+AFQ-Browser: visualizing and sharing Automated Fiber Quantification results
+==============================================================================
 
-`Shablona` is a template for a small scientific Python project. 
+This software generates a browser-based visualization of data processed with
+the `Automated Fiber Quantification (AFQ) <https://github.com/yeatmanlab/AFQ>`_
+software.
 
-To see how to use it, please refer to the `README file 
-<https://github.com/uwescience/shablona/blob/master/README.md>`_ in the Github repository.
+Tractography based on diffusion weighted MRI (dMRI) is used to find  the major
+white matter fascicles (tracts) in the living human brain. The health of these
+tracts is an important factor underlying many cognitive and neurological
+disorders. `AFQ` is a sofware package focused on automated delineation of the
+major fiber tracts in individual human brains, and quantification of the
+tissue properties within the tracts (Yeatman2012_).
 
-This is an example of documentation of the software, using sphinx_. 
+This software package allows researchers to interactively query the data
+processed with `AFQ` to explore patterns in the data.
 
-.. _sphinx: http://sphinx-doc.org/
+    .. toctree::
+       :maxdepth: 2
+
+       installation_guide
+       usage_guide
+       reference/index
 
 
-Contents:
+.. figure:: _static/BDE_Banner_revised20160211-01.jpg
+   :align: center
+   :figclass: align-center
+   :target: http://escience.washington.edu
 
-.. toctree::
-   :maxdepth: 2
+   Acknowledgements: this work was supported by a grant from the
+   `Gordon & Betty Moore Foundation <https://www.moore.org/>`_,  and from the
+   `Alfred P. Sloan Foundation <http://www.sloan.org/>`_ to the
+   `University of Washington eScience Institute <http://escience.washington.edu/>`_.
 
-   theory
-   auto_examples/index
-   api
+.. _AFQ: http://github.com/yeatmanlab/AFQ
+
+
+ .. [Yeatman2012] Jason D Yeatman, Robert F Dougherty, Nathaniel J Myall, Brian A Wandell, Heidi M Feldman, "Tract profiles of white matter properties: automating fiber-tract quantification", PloS One, 7: e49790

@@ -5,7 +5,7 @@ API
 Classes
 -------
 
-.. currentmodule:: shablona
+.. currentmodule:: afqbrowser
 
 .. autosummary::
    :template: class.rst
