@@ -1,3 +1,5 @@
 numpy
 pandas
 scipy
+PyGithub
+GitPython
