@@ -1,6 +1,7 @@
 node_modules/
 .gitignore
 .elasticbeanstalk/
+*.pyc
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
