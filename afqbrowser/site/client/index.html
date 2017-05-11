@@ -69,11 +69,21 @@
       </div>
 
       <div id="container-plots"
-          class="w3-container title-and-content panel-right">
+class="w3-container title-and-content panel-right">
         <div id="plots-title" class="title"><h2>BUNDLE DETAILS</h2></div>
         <div id="plots-and-controls" class="content">
           <div id="tractdetails" class="scrollable"></div>
           <div id="plots-gui-container" class="gui-container"></div>
+
+          <div id="download-data">
+            Download data <br>
+            <a href="./data/subjects.csv"><button type="button" id="dowload-data"></button>
+            <label for="save-settings">Subject metadata</label></a>
+            <a href="./data/nodes.csv"><button type="button" id="dowload-data"></button>
+            <label for="save-settings">Bundle properties</label></a>
+
+        </div>
+
         </div>
       </div>
     </div>
