@@ -11,7 +11,7 @@ white matter fascicles (tracts) in the living human brain. The health of these
 tracts is an important factor underlying many cognitive and neurological
 disorders. `AFQ` is a sofware package focused on automated delineation of the
 major fiber tracts in individual human brains, and quantification of the
-tissue properties within the tracts (Yeatman2012_).
+tissue properties within the tracts (`Yeatman et al. 2012 <http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0049790>`_).
 
 This software package allows researchers to interactively query the data
 processed with `AFQ` to explore patterns in the data.
@@ -35,6 +35,3 @@ processed with `AFQ` to explore patterns in the data.
    `University of Washington eScience Institute <http://escience.washington.edu/>`_.
 
 .. _AFQ: http://github.com/yeatmanlab/AFQ
-
-
- .. [Yeatman2012] Jason D Yeatman, Robert F Dougherty, Nathaniel J Myall, Brian A Wandell, Heidi M Feldman, "Tract profiles of white matter properties: automating fiber-tract quantification", PloS One, 7: e49790
