@@ -14,7 +14,9 @@ var afqb = {
 		mouse: {},
 		queues: {},
 		controls: {},
-		settings: {},
+		settings: {
+			html: {}
+		},
 		colors: {}
 	},
 };
