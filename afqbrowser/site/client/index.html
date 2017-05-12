@@ -24,8 +24,10 @@
 <body id="body">
 
 <div class="page-container">
-  <div id="header">
-    <h1 style="color:white;">AFQ Browser</h1>
+  <header id="header">
+    <h1 id="title-bar" style="color:white;">
+      AFQ Browser
+    </h1>
     <div id="save-and-load-settings">
       <button type="button" id="save-settings" class="savefile"
           onclick="afqb.global.saveSettings()">Save Settings</button>
@@ -33,7 +35,7 @@
       <input type="file" id="load-settings" name="Load Settings" class="inputfile"/>
       <label for="load-settings">Load Settings</label>
     </div>
-  </div>
+  </header>
 
   <div class="app-container">
     <div class="panel-container">
@@ -122,6 +124,7 @@
 
 <script type="text/javascript" src="js/afqb.js"></script>
 <script type="text/javascript" src="js/save-settings.js"></script>
+<script type="text/javascript" src="js/headings.js"></script>
 <script type="text/javascript" src="js/tract-colors.js"></script>
 <script type="text/javascript" src="js/tract-details.js"></script>
 <script type="text/javascript" src="js/3d-brain.js"></script>

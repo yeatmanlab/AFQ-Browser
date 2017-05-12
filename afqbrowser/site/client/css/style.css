@@ -71,17 +71,22 @@ h2 {
   margin-bottom: 10px;
 }
 
-#header h1 {
+#title-bar {
+  margin: auto;
   flex: 1
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 #save-and-load-settings {
-  margin-left: auto;
+  float: right;
   display: flex;
   flex-direction: column;
 }
 
 #load-settings, #save-settings {
+  display: none;
   width: 0.1px;
   height: 0.1px;
   opacity 0;
