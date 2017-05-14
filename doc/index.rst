@@ -1,6 +1,9 @@
 
-AFQ-Browser: visualizing and sharing Automated Fiber Quantification results
-==============================================================================
+AFQ-Browser
+============
+
+visualizing and sharing Automated Fiber Quantification results
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This software generates a browser-based visualization of data processed with
 the `Automated Fiber Quantification (AFQ) <https://github.com/yeatmanlab/AFQ>`_
@@ -17,7 +20,7 @@ This software package allows researchers to interactively query the data
 processed with `AFQ` to explore patterns in the data.
 
     .. toctree::
-       :maxdepth: 2
+       :maxdepth: 1
 
        installation_guide
        usage_guide
