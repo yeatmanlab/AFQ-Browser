@@ -151,6 +151,17 @@ def assemble(source, target=None):
 
 
 def run(target=None, port=8080):
+    """
+    Run a webserver for AFQ-browser
+
+    Parameters
+    ----------
+    target : str
+        Full path to the root folder where AFQ-browser files are stored.
+
+    port : int
+        Which port to run the server on.
+    """
     if target is None:
         target = '.'
     site_dir = op.join(target, 'AFQ-browser', 'client')
