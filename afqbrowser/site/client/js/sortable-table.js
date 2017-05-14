@@ -232,10 +232,7 @@ afqb.table.refreshTable = function (sortOn) {
 			}
 
 			afqb.table.subData.forEach(idColor); // color lines
-
-			// call update -> noticed there is a delay here.
-			// update plots may be the slow down
-			d3.csv("data/nodes.csv", afqb.plots.updatePlots);
+			d3.csv("data/nodes.csv", afqb.plots.changePlots);
 		}
 
         rows//.transition() // sort row position
@@ -323,4 +320,3 @@ afqb.table.tableMouseDown = function () {
 afqb.global.queues.subjectQ = d3_queue.queue();
 afqb.global.queues.subjectQ.defer(d3.json, "data/subjects.json");
 afqb.global.queues.subjectQ.await(afqb.table.buildTable);
-
