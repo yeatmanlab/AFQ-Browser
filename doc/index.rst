@@ -1,5 +1,5 @@
 
-AFQ-Browser
+AFQ-Browser:
 ============
 
 visualizing and sharing Automated Fiber Quantification results
@@ -20,12 +20,12 @@ This software package allows researchers to interactively query the data
 processed with `AFQ` to explore patterns in the data.
 
     .. toctree::
-       :maxdepth: 1
+       :maxdepth: 2
 
        installation_guide
        usage_guide
        reference/index
-
+       api
 
 .. figure:: _static/BDE_Banner_revised20160211-01.jpg
    :align: center
