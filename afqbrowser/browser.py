@@ -11,8 +11,8 @@ try:
     from http.server import SimpleHTTPRequestHandler
     import socketserver
 except ImportError:
-    from SimpleHTTPServer import SimpleHTTPRequestHandler
-    import SocketServer as socketserver
+    from http.server import SimpleHTTPRequestHandler
+    import socketserver as socketserver
 
 
 def mat2tables(mat_file_name, subject_ids=None, stats=None,
@@ -104,7 +104,7 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
     metadata = afq['metadata'].item()
 
     meta_df1 = pd.DataFrame({"subjectID": subject_ids},
-                            index=range(len(subject_ids)))
+                            index=list(range(len(subject_ids))))
     # Metadata has mixed types, and we want to preserve that
     # going into the DataFrame. Hence, we go through a dict:
     metadata_for_df = {k: v for k, v in
