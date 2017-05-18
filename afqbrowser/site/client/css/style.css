@@ -89,13 +89,13 @@ h2 {
   display: none;
   width: 0.1px;
   height: 0.1px;
-  opacity 0;
+  opacity: 0;
   overflow: hidden;
   position: absolute;
   z-index: -1;
 }
 
-.savefile + label {
+.save-and-load-button + label {
   border-radius: 5px;
   color: #404040;
   background: #d9d9d9;
@@ -110,32 +110,8 @@ h2 {
   cursor: pointer; /* "hand" cursor */
 }
 
-.savefile:focus + label,
-.savefile + label:hover {
-  color: #d9d9d9;
-  background: #404040;
-  border-style: solid;
-  border-color: white;
-  border-width: 1px;
-}
-
-.inputfile + label {
-  border-radius: 5px;
-  color: #404040;
-  background: #d9d9d9;
-  padding: 2px;
-  margin: 2px 2px 2px 2px;
-  border-style: solid;
-  border-color: #d9d9d9;
-  border-width: 1px;
-  /* font-size: 1.25em; */
-  /* font-weight: 700; */
-  display: inline-block;
-  cursor: pointer; /* "hand" cursor */
-}
-
-.inputfile:focus + label,
-.inputfile + label:hover {
+.save-and-load-button:focus + label,
+.save-and-load-button + label:hover {
   color: #d9d9d9;
   background: #404040;
   border-style: solid;
