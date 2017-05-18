@@ -4,11 +4,6 @@ afqb.table.fieldHeight = 30;
 afqb.table.rowPadding = 1;
 afqb.table.fieldWidth = 140;
 
-afqb.table.previousSort = {
-	key: null,
-	order: "ascending"
-};
-
 afqb.table.format = d3.time.format("%m/%d/%Y");
 //var dateFn = function(date) { return format.parse(d.created_at) };
 
@@ -21,6 +16,15 @@ afqb.table.headerGrp;
 afqb.table.rowsGrp;
 
 afqb.table.buildTable = function (error, data) {
+	afqb.table.settings.sort = {};
+	afqb.table.settings.sort.key = null;
+	afqb.table.settings.sort.order = "ascending";
+	afqb.table.settings.sort.count = 2;
+	afqb.table.settings.prevSort = {};
+	afqb.table.settings.prevSort.key = null;
+	afqb.table.settings.prevSort.order = "ascending";
+	afqb.table.settings.prevSort.count = 2;
+
 	data.forEach(function (d) {
         if (typeof d.subjectID === 'number'){
           d.subjectID = "s" + d.subjectID.toString();}
@@ -43,7 +47,7 @@ afqb.table.buildTable = function (error, data) {
 		//.attr("height", afqb.table.subData.length * (afqb.table.fieldHeight + afqb.table.rowPadding));
 
 	var tableGuiConfigObj = function () {
-		this.groupCount = 2;
+		this.groupCount = afqb.table.settings.sort.count;
 	};
 
 	var tableGui = new dat.GUI({
@@ -60,22 +64,17 @@ afqb.table.buildTable = function (error, data) {
 	var groupCountController = tableGui.add(afqb.global.controls.tableControlBox, 'groupCount')
 		.min(2).step(1)
 		.name('Number of Groups')
-		.onChange(function () {
-			return afqb.table.refreshTable(sortOn);
+		.onChange(function (value) {
+			afqb.table.settings.sort.count = value;
+			afqb.table.refreshTable();
 		});
-
-	groupCountController.onChange(function () {
-		afqb.table.refreshTable(sortOn);
-	});
 
 	tableGui.close();
 
-	var sortOn = null;
-	afqb.table.refreshTable(sortOn);
+	afqb.table.refreshTable();
 }
 
-afqb.table.refreshTable = function (sortOn) {
-
+afqb.table.refreshTable = function () {
     // create the table header
     var header = afqb.table.headerGrp.selectAll("g")
         .data(d3.keys(afqb.table.subData[0]))
@@ -88,7 +87,10 @@ afqb.table.refreshTable = function (sortOn) {
             d3.select(this).style("cursor", "n-resize");
         })
 		// this is where the magic happens...(d) is the column being sorted
-        .on("click", function (d) { return afqb.table.refreshTable(d); });
+        .on("click", function (d) {
+			afqb.table.settings.sort.key = d;
+			afqb.table.refreshTable();
+		});
 
     header.append("rect")
         .attr("width", afqb.table.fieldWidth-1)
@@ -138,30 +140,36 @@ afqb.table.refreshTable = function (sortOn) {
         .attr("dy", ".35em")
         .text(String);
 
+	var sortOn = afqb.table.settings.sort.key;
     // Update if not in initialisation
     if (sortOn !== null) {
-        // Update row order
-        if(sortOn === afqb.table.previousSort.key){
-			if (afqb.table.previousSort.order === "ascending") {
+        // If sort.key and sort.count are the same, just update the row order
+        if(sortOn === afqb.table.settings.prevSort.key
+				&& afqb.table.settings.sort.count === afqb.table.settings.prevSort.count){
+			if (afqb.table.settings.prevSort.order === "ascending") {
 				rows.sort(function(a,b){
 					return afqb.table.descendingWithNull(a[sortOn], b[sortOn]);
 				});
-				afqb.table.previousSort.order = "descending";
+				afqb.table.settings.prevSort.order = "descending";
 			} else {
 				rows.sort(function(a,b){
 					return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
 				});
-				afqb.table.previousSort.order = "ascending";
+				afqb.table.settings.prevSort.order = "ascending";
 			}
+			afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
         } else {
-			rows.sort(function(a,b){
-				return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
-			});
-            afqb.table.subData.sort(function(a,b){
-				return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
-			});
-			afqb.table.previousSort.key = sortOn;
-			afqb.table.previousSort.order = "ascending";
+			// Only resort the data if the sort key is different
+			if(sortOn !== afqb.table.settings.prevSort.key) {
+				rows.sort(function(a,b){
+					return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
+				});
+				afqb.table.subData.sort(function(a,b){
+					return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
+				});
+			}
+			afqb.table.settings.prevSort.key = sortOn;
+			afqb.table.settings.prevSort.order = "ascending";
 
 			// Get unique, non-null values from the column `sortOn`
 			function uniqueNotNull(value, index, self) {
@@ -176,7 +184,7 @@ afqb.table.refreshTable = function (sortOn) {
 
 			// usrGroups is the user requested number of groups
 			// numGroups may be smaller if there are not enough unique values
-			var usrGroups = afqb.global.controls.tableControlBox.groupCount;
+			var usrGroups = afqb.table.settings.sort.count;
 			var numGroups = Math.min(usrGroups, uniques.length);
 
 			// Create groupScale to map between the unique
@@ -232,7 +240,11 @@ afqb.table.refreshTable = function (sortOn) {
 			}
 
 			afqb.table.subData.forEach(idColor); // color lines
-			d3.csv("data/nodes.csv", afqb.plots.changePlots);
+
+			// call update -> noticed there is a delay here.
+			// update plots may be the slow down
+			d3.csv("data/nodes.csv", afqb.plots.updatePlots);
+			afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
 		}
 
         rows//.transition() // sort row position
