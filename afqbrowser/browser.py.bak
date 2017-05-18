@@ -11,8 +11,8 @@ try:
     from http.server import SimpleHTTPRequestHandler
     import socketserver
 except ImportError:
-    from http.server import SimpleHTTPRequestHandler
-    import socketserver as socketserver
+    from SimpleHTTPServer import SimpleHTTPRequestHandler
+    import SocketServer as socketserver
 
 
 def mat2tables(mat_file_name, subject_ids=None, stats=None,
@@ -104,7 +104,7 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
     metadata = afq['metadata'].item()
 
     meta_df1 = pd.DataFrame({"subjectID": subject_ids},
-                            index=list(range(len(subject_ids))))
+                            index=range(len(subject_ids)))
     # Metadata has mixed types, and we want to preserve that
     # going into the DataFrame. Hence, we go through a dict:
     metadata_for_df = {k: v for k, v in
@@ -163,7 +163,7 @@ def run(target=None, port=8080):
             success = True
         except OSError:
             port = port + 1
-    print(("Serving AFQ-browser on port", port))
+    print("Serving AFQ-browser on port", port)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
