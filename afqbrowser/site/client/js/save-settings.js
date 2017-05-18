@@ -9,6 +9,7 @@ afqb.global.saveSettings = function() {
 	var settings = {};
 	settings.three = afqb.three.settings;
 	settings.plots = afqb.plots.settings;
+	settings.table = afqb.table.settings;
 
 	// Convert to a json string
 	var settingStr = JSON.stringify(settings);
@@ -60,6 +61,11 @@ afqb.global.readSettings = function(evt) {
 				afqb.three.highlightBundle(myBundle.checked, myBundle.name);
 			}
 		}
+
+		afqb.table.settings = settings.table;
+		afqb.global.controls.tableControlBox.groupCount = afqb.table.settings.sort.count;
+		afqb.table.settings.prevSort = {};
+		afqb.table.refreshTable();
 	};
 
 	reader.readAsText(f);
