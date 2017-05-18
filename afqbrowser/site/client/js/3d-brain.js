@@ -390,8 +390,8 @@ afqb.three.animate = function () {
 	// based on the d3 brushes in the FA plots
 	for (var i = 0; i < afqb.three.colorGroups.children.length; i++) {
 		var tract = 'tract' + i;
-		var lo = Math.floor(afqb.plots.bundleBrush[tract].brushExtent[0]);
-		var hi = Math.ceil(afqb.plots.bundleBrush[tract].brushExtent[1]) - 1;
+		var lo = Math.floor(afqb.plots.settings.bundleBrush[tract].brushExtent[0]);
+		var hi = Math.ceil(afqb.plots.settings.bundleBrush[tract].brushExtent[1]) - 1;
 
 		// loIdx is the low index and count is the number of indices
 		// This is a little sloppy and sometimes the count will be too high
@@ -451,7 +451,7 @@ afqb.three.mouseoverBundle = function (name) {
 
 		if (bundle !== undefined) {
 			tmpLineMaterial.color.setHex( afqb.global.highlightColors[name] );
-			if (afqb.plots.bundleBrush['tract' + name].brushOn) {
+			if (afqb.plots.settings.bundleBrush['tract' + name].brushOn) {
 				tmpLineMaterial.color.setHex( 0x000000 );
 			}
 			bundle.material = tmpLineMaterial;
