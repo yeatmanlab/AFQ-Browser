@@ -264,6 +264,7 @@ afqb.plots.ready = function (error, data) {
         .attr("height", afqb.plots.h - afqb.plots.m.top - afqb.plots.m.bottom)
         .style("visibility", "hidden")
         .attr("pointer-events", "all")
+        .style("cursor", "row-resize")
         .call(afqb.plots.yzoom);
 
 	//x-axis
