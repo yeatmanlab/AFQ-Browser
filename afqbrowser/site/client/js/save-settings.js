@@ -6,6 +6,10 @@ afqb.global.saveSettings = function() {
 	afqb.three.settings.initFiberOpacity = afqb.global.controls.threeControlBox.fiberOpacity;
 	afqb.three.settings.mouseoverHighlight = afqb.global.controls.threeControlBox.highlight;
 
+	afqb.plots.settings.brushTract = afqb.global.controls.plotsControlBox.brushTract;
+	afqb.plots.settings.plotKey = afqb.global.controls.plotsControlBox.plotKey;
+	afqb.plots.settings.lineOpacity = afqb.global.controls.plotsControlBox.lineOpacity;
+
 	var settings = {};
 	settings.three = afqb.three.settings;
 	settings.plots = afqb.plots.settings;
@@ -53,6 +57,7 @@ afqb.global.readSettings = function(evt) {
 		afqb.global.controls.threeControlBox.highlight = afqb.three.settings.mouseoverHighlight;
 
 		afqb.plots.settings = settings.plots;
+		console.log(afqb.plots.settings.bundleBrush);
 		for (bundle in afqb.plots.settings.checkboxes) {
 			if (afqb.plots.settings.checkboxes.hasOwnProperty(bundle)) {
 				var myBundle = d3.selectAll("input.tracts")[0][bundle];
@@ -61,6 +66,10 @@ afqb.global.readSettings = function(evt) {
 				afqb.three.highlightBundle(myBundle.checked, myBundle.name);
 			}
 		}
+
+		afqb.global.controls.plotsControlBox.brushTract = afqb.plots.settings.brushTract;
+		afqb.global.controls.plotsControlBox.plotKey = afqb.plots.settings.plotKey;
+		afqb.global.controls.plotsControlBox.lineOpacity= afqb.plots.settings.lineOpacity;
 
 		afqb.table.settings = settings.table;
 		afqb.global.controls.tableControlBox.groupCount = afqb.table.settings.sort.count;

@@ -124,15 +124,19 @@ afqb.plots.line = d3.svg.line()
         }
     });
 
-afqb.plots.bundleBrush = {};
+afqb.plots.settings.bundleBrush = {};
 
 afqb.plots.buildPlotGui = function (error, data) {
     if (error) throw error;
 
+		afqb.plots.settings.brushTract = false;
+		afqb.plots.settings.plotKey = null;
+		afqb.plots.settings.lineOpacity = 0.3;
+
 	var plotsGuiConfigObj = function () {
-		this.brushTract = false;
-		this.plotKey = null;
-		this.lineOpacity = 0.3;
+		this.brushTract = afqb.plots.settings.brushTract;
+		this.plotKey = afqb.plots.settings.plotKey;
+		this.lineOpacity = afqb.plots.settings.lineOpacity;
 	};
 
 	var plotsGui = new dat.GUI({
@@ -281,7 +285,7 @@ afqb.plots.ready = function (error, data) {
     // Populate budleBrush
     d3.select("#tractdetails").selectAll("svg")[0]
         .forEach(function (d) {
-            afqb.plots.bundleBrush[d.id] = {
+            afqb.plots.settings.bundleBrush[d.id] = {
                 brushOn: false,
                 brushExtent: [0, 100]
             }
@@ -568,11 +572,11 @@ afqb.plots.updateBrush = function () {
             .attr("height", afqb.plots.h - afqb.plots.axisOffset.bottom);
 
 		function brushed() {
-			afqb.plots.bundleBrush[this.parentElement.id].brushOn = !brush.empty();
+			afqb.plots.settings.bundleBrush[this.parentElement.id].brushOn = !brush.empty();
 			if (brush.empty()) {
-				afqb.plots.bundleBrush[this.parentElement.id].brushExtent = [0, 100];
+				afqb.plots.settings.bundleBrush[this.parentElement.id].brushExtent = [0, 100];
 			} else {
-				afqb.plots.bundleBrush[this.parentElement.id].brushExtent = brush.extent();
+				afqb.plots.settings.bundleBrush[this.parentElement.id].brushExtent = brush.extent();
 			}
 		}
 
@@ -585,9 +589,9 @@ afqb.plots.updateBrush = function () {
 		}
 	} else {
 		d3.selectAll(".brush").data([]).exit().remove();
-		for (bundle in afqb.plots.bundleBrush) {
-			if (afqb.plots.bundleBrush.hasOwnProperty(bundle)) {
-				afqb.plots.bundleBrush[bundle].brushExtent = [0, 100];
+		for (bundle in afqb.plots.settings.bundleBrush) {
+			if (afqb.plots.settings.bundleBrush.hasOwnProperty(bundle)) {
+				afqb.plots.settings.bundleBrush[bundle].brushExtent = [0, 100];
 			}
 		}
 	}
