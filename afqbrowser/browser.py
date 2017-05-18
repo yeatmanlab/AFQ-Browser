@@ -163,7 +163,7 @@ def run(target=None, port=8080):
             success = True
         except OSError:
             port = port + 1
-    print(("Serving AFQ-browser on port", port))
+    print("Serving AFQ-browser on port", port)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
