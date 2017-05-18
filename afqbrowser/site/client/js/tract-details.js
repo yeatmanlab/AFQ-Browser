@@ -224,6 +224,7 @@ afqb.plots.ready = function (error, data) {
         //.attr("transform", "translate(" + afqb.plots.m.left + ",0)")
         .style("visibility", "hidden")
         .attr("pointer-events", "all")
+				.style("cursor", "row-resize")
         .call(afqb.plots.yzoom);
 
 	//x-axis
