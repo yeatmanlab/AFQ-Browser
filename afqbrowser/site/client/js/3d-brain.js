@@ -1,21 +1,21 @@
 // =========== three js part
 // Set initial opacitites here
-afqb.three.settings.initLHOpacity = 0.01;
-afqb.three.settings.initRHOpacity = 0.70;
-afqb.three.settings.initFiberOpacity = 0.25;
-afqb.three.settings.initColorOpacity = 0.75;
-afqb.three.settings.initHighlightOpacity = 0.75;
+afqb.three.settings.lHOpacity = 0.01;
+afqb.three.settings.rHOpacity = 0.70;
+afqb.three.settings.fiberOpacity = 0.25;
+afqb.three.settings.colorOpacity = 0.75;
+afqb.three.settings.highlightOpacity = 0.75;
 
 // Set initial line widths here
-afqb.three.settings.initFiberLineWidth = 1.0;
-afqb.three.settings.initColorLineWidth = 2.0;
-afqb.three.settings.initHighlightLineWidth = 2.5;
+afqb.three.settings.fiberLineWidth = 1.0;
+afqb.three.settings.colorLineWidth = 2.0;
+afqb.three.settings.highlightLineWidth = 2.5;
 
 // Set boolean value to show rendering stats
 afqb.three.settings.showStats = false;
 
 // Set the initial camera position
-afqb.three.settings.initCameraPosition = {
+afqb.three.settings.cameraPosition = {
 	x: -15,
 	y: 0,
 	z: 0
@@ -25,8 +25,8 @@ afqb.three.colorGroups = new THREE.Object3D();
 afqb.three.greyGroups = new THREE.Object3D();
 
 afqb.three.greyLineMaterial = new THREE.LineBasicMaterial({
-	opacity: afqb.three.settings.initFiberOpacity,
-	linewidth: afqb.three.settings.initFiberLineWidth,
+	opacity: afqb.three.settings.fiberOpacity,
+	linewidth: afqb.three.settings.fiberLineWidth,
 	transparent: true,
 	depthWrite: true
 });
@@ -78,9 +78,9 @@ afqb.three.init = function () {
 
     afqb.three.camera = new THREE.PerspectiveCamera( 45, width / height, 1, 2000 );
     afqb.three.camera.position.copy(new THREE.Vector3(
-				afqb.three.settings.initCameraPosition.x,
-				afqb.three.settings.initCameraPosition.y,
-				afqb.three.settings.initCameraPosition.z));
+				afqb.three.settings.cameraPosition.x,
+				afqb.three.settings.cameraPosition.y,
+				afqb.three.settings.cameraPosition.z));
 
 	afqb.three.camera.up.set(0, 0, 1);
 
@@ -135,8 +135,8 @@ afqb.three.init = function () {
 		afqb.three.lh.translateX(-0.05);
 		afqb.three.rh.translateX( 0.05);
 
-        afqb.three.lh.material.opacity = afqb.three.settings.initLHOpacity;
-        afqb.three.rh.material.opacity = afqb.three.settings.initRHOpacity;
+        afqb.three.lh.material.opacity = afqb.three.settings.lHOpacity;
+        afqb.three.rh.material.opacity = afqb.three.settings.rHOpacity;
 
 		afqb.three.lh.material.color.setHex( 0xe8e3d3 );
 		afqb.three.rh.material.color.setHex( 0xe8e3d3 );
@@ -145,13 +145,13 @@ afqb.three.init = function () {
     });
 
 	var threeGuiConfigObj = function () {
-		this.lhOpacity = afqb.three.settings.initLHOpacity;
-		this.rhOpacity = afqb.three.settings.initRHOpacity;
-		this.fiberOpacity = afqb.three.settings.initFiberOpacity;
+		this.lhOpacity = afqb.three.settings.lHOpacity;
+		this.rhOpacity = afqb.three.settings.rHOpacity;
+		this.fiberOpacity = afqb.three.settings.fiberOpacity;
 		this.highlight = true;
 	};
 
-	var threeGui = new dat.GUI({
+	afqb.three.gui = new dat.GUI({
 		autoplace: false,
 		width: 250,
 		scrollable: false
@@ -159,7 +159,8 @@ afqb.three.init = function () {
 
 	afqb.global.controls.threeControlBox = new threeGuiConfigObj();
 
-	var lhOpacityController = threeGui.add(afqb.global.controls.threeControlBox, 'lhOpacity')
+	var lhOpacityController = afqb.three.gui
+		.add(afqb.global.controls.threeControlBox, 'lhOpacity')
 		.min(0).max(1).step(0.01).name('Left Hemi Opacity');
 
 	lhOpacityController.onChange( function(value) {
@@ -170,7 +171,8 @@ afqb.three.init = function () {
 		})
 	});
 
-	var rhOpacityController = threeGui.add(afqb.global.controls.threeControlBox, 'rhOpacity')
+	var rhOpacityController = afqb.three.gui
+		.add(afqb.global.controls.threeControlBox, 'rhOpacity')
 		.min(0).max(1).step(0.01).name('Right Hemi Opacity');
 
 	rhOpacityController.onChange( function(value) {
@@ -181,7 +183,8 @@ afqb.three.init = function () {
 		})
 	});
 
-	var fiberOpacityController = threeGui.add(afqb.global.controls.threeControlBox, 'fiberOpacity')
+	var fiberOpacityController = afqb.three.gui
+		.add(afqb.global.controls.threeControlBox, 'fiberOpacity')
 		.min(0).max(1).name('Fiber Opacity');
 
 	fiberOpacityController.onChange( function(value) {
@@ -197,12 +200,13 @@ afqb.three.init = function () {
 		})
 	});
 
-	var highlightController = threeGui.add(afqb.global.controls.threeControlBox, 'highlight')
+	var highlightController = afqb.three.gui
+		.add(afqb.global.controls.threeControlBox, 'highlight')
 		.name('Mouseover Highlight');
 
 	var guiContainer = document.getElementById('three-gui-container');
-	guiContainer.appendChild(threeGui.domElement);
-	threeGui.close();
+	guiContainer.appendChild(afqb.three.gui.domElement);
+	afqb.three.gui.close();
 
     // contain all bundles in this Group object
     // each bundle is represented by an Object3D
@@ -416,8 +420,8 @@ afqb.three.highlightBundle = function (state, name) {
 
 	// Temporary line material for highlighted bundles
 	var tmpLineMaterial = new THREE.LineBasicMaterial({
-		opacity: afqb.three.settings.initColorOpacity,
-		linewidth: afqb.three.settings.initColorLineWidth,
+		opacity: afqb.three.settings.colorOpacity,
+		linewidth: afqb.three.settings.colorLineWidth,
 		transparent: true,
 		depthWrite: true
 	});
@@ -442,8 +446,8 @@ afqb.three.mouseoverBundle = function (name) {
 	if (afqb.global.controls.threeControlBox.highlight) {
 		// Temporary line material for moused-over bundles
 		var tmpLineMaterial = new THREE.LineBasicMaterial({
-			opacity: afqb.three.settings.initHighlightOpacity,
-			linewidth: afqb.three.settings.initHighlightLineWidth,
+			opacity: afqb.three.settings.highlightOpacity,
+			linewidth: afqb.three.settings.highlightLineWidth,
 			transparent: true
 		});
 
