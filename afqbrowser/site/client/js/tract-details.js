@@ -127,7 +127,7 @@ afqb.plots.line = d3.svg.line()
         if (d[afqb.controls.plotsControlBox.plotKey]) {
             return afqb.plots.y(+d[afqb.controls.plotsControlBox.plotKey]);
         } else {
-            return afqb.plots.y(+d.values);
+            return afqb.plots.y(+d.values.mean);
         }
     });
 
@@ -293,15 +293,20 @@ function ready(error, data) {
             }
         });
 
+
+
     // compute mean line
     afqb.plots.tractMean = d3.nest()
         .key(function (d) { return d.tractID; })
         .key(function (d) { return d.nodeID; })
         .rollup(function (v) {
-			return d3.mean(v, function (d) {
-				return +d[afqb.controls.plotsControlBox.plotKey];
-			});
-		})
+			 		return{
+						mean: d3.mean(v, function (d) {
+						 return +d[afqb.controls.plotsControlBox.plotKey];}),
+					  stderr: d3.deviation(v, function (d) {
+						 return +d[afqb.controls.plotsControlBox.plotKey];
+					})/afqb.plots.tractData[0].values.length
+				};})
         .entries(data);
 
     var meanLines = d3.select("#tractdetails").selectAll("svg")
@@ -433,10 +438,13 @@ function updatePlots(error, data) {
 			.key(function (d) { return afqb.table.subGroups[d.subjectID]; })
 			.key(function (d) { return d.nodeID; })
 			.rollup(function (v) {
-				return d3.mean(v, function (d) {
-					return +d[afqb.controls.plotsControlBox.plotKey];
-				});
-			})
+				return{
+					mean: d3.mean(v, function (d) {
+					 return +d[afqb.controls.plotsControlBox.plotKey];}),
+					stderr: d3.deviation(v, function (d) {
+					 return +d[afqb.controls.plotsControlBox.plotKey];
+				})/afqb.plots.tractData[0].values.length
+			};})
 			.entries(data);
 
 		for (iTract = 0; iTract < afqb.plots.tractMean.length; iTract++) {
@@ -458,10 +466,13 @@ function updatePlots(error, data) {
 			.key(function (d) { return d.tractID; })
 			.key(function (d) { return d.nodeID; })
 			.rollup(function (v) {
-				return d3.mean(v, function (d) {
-					return +d[afqb.controls.plotsControlBox.plotKey];
-				});
-			})
+				return{
+					mean: d3.mean(v, function (d) {
+					 return +d[afqb.controls.plotsControlBox.plotKey];}),
+					stderr: d3.deviation(v, function (d) {
+					 return +d[afqb.controls.plotsControlBox.plotKey];
+				})/afqb.plots.tractData[0].values.length
+			};})
 			.entries(data);
 
 		for (iTract = 0; iTract < afqb.plots.tractMean.length; iTract++) {
