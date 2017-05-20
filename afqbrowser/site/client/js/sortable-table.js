@@ -50,18 +50,19 @@ afqb.table.buildTable = function (error, data) {
 		this.groupCount = afqb.table.settings.sort.count;
 	};
 
-	var tableGui = new dat.GUI({
+	afqb.table.gui = new dat.GUI({
 		autoplace: false,
 		width: 350,
 		scrollable: false
 	});
 
 	var tableGuiContainer = document.getElementById('table-gui-container');
-	tableGuiContainer.appendChild(tableGui.domElement);
+	tableGuiContainer.appendChild(afqb.table.gui.domElement);
 
 	afqb.global.controls.tableControlBox = new tableGuiConfigObj();
 
-	var groupCountController = tableGui.add(afqb.global.controls.tableControlBox, 'groupCount')
+	var groupCountController = afqb.table.gui
+		.add(afqb.global.controls.tableControlBox, 'groupCount')
 		.min(2).step(1)
 		.name('Number of Groups')
 		.onChange(function (value) {
@@ -69,7 +70,7 @@ afqb.table.buildTable = function (error, data) {
 			afqb.table.refreshTable();
 		});
 
-	tableGui.close();
+	afqb.table.gui.close();
 
 	afqb.table.refreshTable();
 }
