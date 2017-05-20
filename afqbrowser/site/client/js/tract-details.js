@@ -92,16 +92,16 @@ afqb.plots.y = d3.scale.linear()
 
 //create axes
 afqb.plots.yAxis = d3.svg.axis()
-    .scale(afqb.plots.y)
-    .orient("left")
-    .tickSize(0 - afqb.plots.w - 5)
-    .ticks(5);
+	.scale(afqb.plots.y)
+	.orient("left")
+	.tickSize(0 - afqb.plots.w - 5)
+	.ticks(5);
 
 afqb.plots.xAxis = d3.svg.axis()
-    .scale(afqb.plots.x)
-    .orient("bottom")
-    .tickPadding(8)
-    .ticks(5);
+	.scale(afqb.plots.x)
+	.orient("bottom")
+	.tickPadding(8)
+	.ticks(5);
 
 
 afqb.plots.line = d3.svg.line()
@@ -194,7 +194,7 @@ afqb.plots.buildPlotGui = function (error, data) {
 		        d3.csv("data/nodes.csv", afqb.plots.changePlots);
         });
 
-    var plotOpacityController = plotsGui
+    var plotOpacityController = afqb.plots.gui
 		.add(afqb.global.controls.plotsControlBox, 'lineOpacity', 0,1)
         .name('Line Opacity')
         .onChange(function () {
@@ -203,9 +203,9 @@ afqb.plots.buildPlotGui = function (error, data) {
 				.filter(function(d,i) {
 					return (this.id.indexOf("mean") === -1)
                 })
-                .select(".line")
-                .style("opacity", afqb.global.controls.plotsControlBox.lineOpacity);
-        });
+				.select(".line")
+				.style("opacity", afqb.global.controls.plotsControlBox.lineOpacity);
+		});
 
 	var brushController = afqb.plots.gui
 		.add(afqb.global.controls.plotsControlBox, 'brushTract')
@@ -218,11 +218,11 @@ afqb.plots.buildPlotGui = function (error, data) {
 afqb.plots.ready = function (error, data) {
     if (error) throw error;
 
-    data.forEach(function (d) {
-        if (typeof d.subjectID === 'number'){
-            d.subjectID = "s" + d.subjectID.toString();
+	data.forEach(function (d) {
+		if (typeof d.subjectID === 'number'){
+			d.subjectID = "s" + d.subjectID.toString();
         }
-    });
+	});
 
 	data = data.filter(function (d) {
 		return Boolean(d[afqb.global.controls.plotsControlBox.plotKey]);
@@ -394,8 +394,8 @@ afqb.plots.ready = function (error, data) {
 						.style("stroke-width", "1px");
 
 					d3.selectAll('#' + this.id)
-							.selectAll('g')
-								.style("opacity", 0.3);
+						.selectAll('g')
+						.style("opacity", 0.3);
 
 				} else {
 					d3.selectAll('#' + this.id)
@@ -466,8 +466,8 @@ afqb.plots.changePlots = function (error, data) {
 	afqb.plots.lastPlotKey = afqb.global.controls.plotsControlBox.plotKey;
 
 	data.forEach(function (d) {
-        if (typeof d.subjectID === 'number'){
-            d.subjectID = "s" + d.subjectID.toString();
+		if (typeof d.subjectID === 'number'){
+			d.subjectID = "s" + d.subjectID.toString();
         }
 	});
 
@@ -533,27 +533,28 @@ afqb.plots.changePlots = function (error, data) {
 		}
 	}
 
-    // update axes based on selected data
-    afqb.plots.y.domain(d3.extent(data, function (d) {
-        return +d[afqb.global.controls.plotsControlBox.plotKey];
-    }));
-    afqb.plots.x.domain([0, 100]).nice();
+	// update axes based on selected data
+	afqb.plots.y.domain(d3.extent(data, function (d) {
+		return +d[afqb.global.controls.plotsControlBox.plotKey];
+	}));
+	afqb.plots.x.domain([0, 100]).nice();
 
-    // Select the section we want to apply our changes to
-    var svg = d3.select("#tractdetails").selectAll("svg")
-        .data(afqb.plots.tractData).transition();
+	// Select the section we want to apply our changes to
+	var svg = d3.select("#tractdetails").selectAll("svg")
+		.data(afqb.plots.tractData).transition();
 
-    svg.select(".y.axis") // change the y axis
-        .duration(750)
-        .call(afqb.plots.yAxis);
+	svg.select(".y.axis") // change the y axis
+		.duration(750)
+		.call(afqb.plots.yAxis);
 
-    // update y zoom for new axis
-    afqb.plots.yzoom = d3.behavior.zoom()
-        .y(afqb.plots.y)
-        .on("zoom", afqb.plots.zoomable?afqb.plots.zoomAxis:null)
-        .on("zoomend",afqb.plots.zoomable?afqb.plots.draw:null);
-    
-    d3.select("#tractdetails").selectAll("svg").selectAll(".zoom.y.box").call(afqb.plots.yzoom);//.remove();
+	// update y zoom for new axis
+	afqb.plots.yzoom = d3.behavior.zoom()
+		.y(afqb.plots.y)
+		.on("zoom", afqb.plots.zoomable?afqb.plots.zoomAxis:null)
+		.on("zoomend",afqb.plots.zoomable?afqb.plots.draw:null);
+
+	d3.select("#tractdetails").selectAll("svg")
+		.selectAll(".zoom.y.box").call(afqb.plots.yzoom);//.remove();
 
 	afqb.plots.draw()
 }
@@ -563,7 +564,7 @@ afqb.plots.draw = function() {
 	var trLines = d3.select("#tractdetails").selectAll("svg")
 		.data(afqb.plots.tractData).selectAll(".tracts")
 		.data(function (d) { return d.values; }).transition();
-	//.select("#path").attr("d", function (d) { return d.values; });
+		//.select("#path").attr("d", function (d) { return d.values; });
 
 	trLines.select("path")
 		.duration(0)
@@ -633,9 +634,9 @@ afqb.plots.zoomAxis = function (){
 
 afqb.plots.zoomable = true;
 afqb.plots.yzoom = d3.behavior.zoom()
-				.y(afqb.plots.y)
-				.on("zoom", afqb.plots.zoomable?afqb.plots.zoomAxis:null)
-				.on("zoomend",afqb.plots.zoomable?afqb.plots.draw:null);
+	.y(afqb.plots.y)
+	.on("zoom", afqb.plots.zoomable?afqb.plots.zoomAxis:null)
+	.on("zoomend",afqb.plots.zoomable?afqb.plots.draw:null);
 
 afqb.plots.updateBrush = function () {
 	// generate brush
@@ -683,17 +684,15 @@ afqb.plots.updateBrush = function () {
 };
 
 afqb.plots.showHideTractDetails = function (state, name) {
-  if (state==true){
-	d3.select("#tract"+name).style("display", "inline");
-	  d3.select("#label"+name)
-		.style("color",afqb.global.d3colors[name]);
-  }
-  else {
-	d3.select("#tract"+name).style("display", "none");
-	d3.select("#label"+name)
-	  .style("color","#111111");
-  }
-
+	if (state==true){
+		d3.select("#tract"+name).style("display", "inline");
+		d3.select("#label"+name)
+			.style("color",afqb.global.d3colors[name]);
+	} else {
+		d3.select("#tract"+name).style("display", "none");
+		d3.select("#label"+name)
+			.style("color","#111111");
+	}
 };
 
 afqb.global.queues.nodeQ = d3_queue.queue();
