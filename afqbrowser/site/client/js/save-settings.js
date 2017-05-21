@@ -57,7 +57,7 @@ afqb.global.readSettings = function(evt) {
 		afqb.global.controls.threeControlBox.rhOpacity = afqb.three.settings.rHOpacity;
 		afqb.global.controls.threeControlBox.fiberOpacity = afqb.three.settings.fiberOpacity;
 		afqb.global.controls.threeControlBox.highlight = afqb.three.settings.mouseoverHighlight;
-		afqb.global.updateGui(afqb.three.gui);
+		afqb.global.updateGui(afqb.three.gui, afqb.global.controls.threeControlBox);
 
 		// Restore plot settings
 		afqb.plots.settings = settings.plots;
@@ -72,7 +72,7 @@ afqb.global.readSettings = function(evt) {
 		afqb.global.controls.plotsControlBox.brushTract = afqb.plots.settings.brushTract;
 		afqb.global.controls.plotsControlBox.plotKey = afqb.plots.settings.plotKey;
 		afqb.global.controls.plotsControlBox.lineOpacity= afqb.plots.settings.lineOpacity;
-		afqb.global.updateGui(afqb.plots.gui);
+		afqb.global.updateGui(afqb.plots.gui, afqb.global.controls.plotsControlBox);
 		// Call updateBrush before restoreBrush to ensure that afqb.plot.brush
 		// is instantiated before calling it in restoreBrush.
 		afqb.plots.updateBrush();
@@ -83,7 +83,7 @@ afqb.global.readSettings = function(evt) {
 		afqb.global.controls.tableControlBox.groupCount = afqb.table.settings.sort.count;
 		afqb.table.settings.prevSort = {};
 		afqb.table.refreshTable();
-		afqb.global.updateGui(afqb.table.gui);
+		afqb.global.updateGui(afqb.table.gui, afqb.global.controls.tableControlBox);
 	};
 
 	reader.readAsText(f);
@@ -100,12 +100,13 @@ afqb.plots.restoreBrush = function() {
 			}
 		}
 	}
-}
+};
 
-afqb.global.updateGui = function(gui) {
-	for (var i in gui.__controllers) {
-		gui.__controllers[i].updateDisplay();
-	}
+afqb.global.updateGui = function(gui, controlBox) {
+	gui.__controllers.forEach(function (controller) {
+		controller.setValue(controlBox[controller.property]);
+		controller.updateDisplay();
+	});
 };
 
 document.getElementById('load-settings')
