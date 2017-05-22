@@ -81,8 +81,16 @@ afqb.global.readSettings = function(evt) {
 		// Restore table settings
 		afqb.table.settings = settings.table;
 		afqb.global.controls.tableControlBox.groupCount = afqb.table.settings.sort.count;
-		afqb.table.settings.prevSort = {};
-		afqb.table.refreshTable();
+		afqb.table.settings.prevSort.key = afqb.table.settings.sort.key;
+		afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
+		if (afqb.table.settings.sort.order == "ascending") {
+			afqb.table.settings.prevSort.order = "ascending";
+			afqb.table.settings.sort.order = "descending";
+		} else {
+			afqb.table.settings.prevSort.order = "descending";
+			afqb.table.settings.sort.order = "ascending";
+		}
+		afqb.table.settings.restoring = true;
 		afqb.global.updateGui(afqb.table.gui, afqb.global.controls.tableControlBox);
 	};
 

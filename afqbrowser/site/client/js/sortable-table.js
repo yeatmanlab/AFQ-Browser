@@ -89,6 +89,7 @@ afqb.table.refreshTable = function () {
         })
 		// this is where the magic happens...(d) is the column being sorted
         .on("click", function (d) {
+			afqb.table.settings.prevSort.key = afqb.table.settings.sort.key
 			afqb.table.settings.sort.key = d;
 			afqb.table.refreshTable();
 		});
@@ -145,33 +146,36 @@ afqb.table.refreshTable = function () {
     // Update if not in initialisation
     if (sortOn !== null) {
         // If sort.key and sort.count are the same, just update the row order
-        if(sortOn === afqb.table.settings.prevSort.key
-				&& afqb.table.settings.sort.count === afqb.table.settings.prevSort.count){
-			if (afqb.table.settings.prevSort.order === "ascending") {
+		var sameKey = (sortOn === afqb.table.settings.prevSort.key);
+		var sameCount = (afqb.table.settings.sort.count === afqb.table.settings.prevSort.count);
+        if(sameKey && sameCount) {
+			if (afqb.table.settings.sort.order === "ascending") {
 				rows.sort(function(a,b){
 					return afqb.table.descendingWithNull(a[sortOn], b[sortOn]);
 				});
-				afqb.table.settings.prevSort.order = "descending";
+				afqb.table.settings.prevSort.order = "ascending";
+				afqb.table.settings.sort.order = "descending";
 			} else {
 				rows.sort(function(a,b){
 					return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
 				});
-				afqb.table.settings.prevSort.order = "ascending";
+				afqb.table.settings.prevSort.order = "descending";
+				afqb.table.settings.sort.order = "ascending";
 			}
-			afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
-        } else {
+        }
+		
+		if(!sameKey) {
 			// Only resort the data if the sort key is different
-			if(sortOn !== afqb.table.settings.prevSort.key) {
-				rows.sort(function(a,b){
-					return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
-				});
-				afqb.table.subData.sort(function(a,b){
-					return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
-				});
-			}
-			afqb.table.settings.prevSort.key = sortOn;
-			afqb.table.settings.prevSort.order = "ascending";
-
+			rows.sort(function(a,b){
+				return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
+			});
+			afqb.table.subData.sort(function(a,b){
+				return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
+			});
+			afqb.table.settings.sort.order = "ascending";
+		}
+		
+		if(!sameKey || !sameCount || afqb.table.settings.restoring) {
 			// Get unique, non-null values from the column `sortOn`
 			function uniqueNotNull(value, index, self) {
 				return (self.indexOf(value) === index) && (value !== null);
@@ -242,10 +246,10 @@ afqb.table.refreshTable = function () {
 
 			afqb.table.subData.forEach(idColor); // color lines
 
-			// call update -> noticed there is a delay here.
-			// update plots may be the slow down
 			d3.csv("data/nodes.csv", afqb.plots.updatePlots);
 			afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
+
+			afqb.table.settings.restoring = false;
 		}
 
         rows//.transition() // sort row position
