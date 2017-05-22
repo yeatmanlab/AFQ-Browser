@@ -131,6 +131,11 @@ afqb.plots.line = d3.svg.line()
         }
     });
 
+afqb.plots.area = d3.svg.area()
+		.x(function(d) { return afqb.plots.x(+d.key) })
+		.y0(function(d) { return afqb.plots.y(+d.values.mean - +d.values.stderr*3); })
+		.y1(function(d) { return afqb.plots.y(+d.values.mean + +d.values.stderr*3); });
+
 afqb.plots.bundleBrush = {};
 
 function buildPlotGui(error, data) {
@@ -318,6 +323,11 @@ function ready(error, data) {
 		})
         .attr("class", "tracts means")
         .attr("id", "mean0");
+
+	  meanLines.append("path")
+			  .attr("class", "area")
+				.attr("d", function(d) {return afqb.plots.area(d); })
+				.style("opacity", 0.4);
 
     meanLines.append("path")
         .attr("class", "line")
