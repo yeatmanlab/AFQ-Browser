@@ -1,5 +1,6 @@
 //tractlist js
 afqb.plots.settings.checkboxes = {};
+afqb.plots.settings.zoom = {};
 
 afqb.plots.m = {top: 20, right: 10, bottom: 10, left: 25};
 afqb.plots.w = 400 - afqb.plots.m.left - afqb.plots.m.right,
@@ -102,7 +103,6 @@ afqb.plots.xAxis = d3.svg.axis()
 	.orient("bottom")
 	.tickPadding(8)
 	.ticks(5);
-
 
 afqb.plots.line = d3.svg.line()
     .interpolate("basis")
@@ -219,16 +219,19 @@ afqb.plots.ready = function (error, data) {
     if (error) throw error;
 
 	data.forEach(function (d) {
-		if (typeof d.subjectID === 'number'){
+		if (typeof d.subjectID === 'number') {
 			d.subjectID = "s" + d.subjectID.toString();
         }
 	});
 
+	var plotKey = afqb.global.controls.plotsControlBox.plotKey;
+	afqb.plots.settings.zoom[plotKey] = {};
+
 	data = data.filter(function (d) {
-		return Boolean(d[afqb.global.controls.plotsControlBox.plotKey]);
+		return Boolean(d[plotKey]);
 	});
 
-	afqb.plots.lastPlotKey = afqb.global.controls.plotsControlBox.plotKey;
+	afqb.plots.lastPlotKey = plotKey;
 
 	afqb.plots.tractData = d3.nest()
 		.key(function (d) { return d.tractID; })
@@ -237,7 +240,7 @@ afqb.plots.ready = function (error, data) {
 
 	// set x and y domains for the tract plots
 	afqb.plots.y.domain(d3.extent(data, function (d) {
-		return +d[afqb.global.controls.plotsControlBox.plotKey];
+		return +d[plotKey];
 	}));
 	afqb.plots.x.domain([0, 100]).nice();
 
@@ -343,12 +346,12 @@ afqb.plots.ready = function (error, data) {
         .rollup(function (v) {
             return {
                 mean: d3.mean(v, function (d) {
-                        return +d[afqb.global.controls.plotsControlBox.plotKey];}),
+                        return +d[plotKey];}),
                 stderr: d3.deviation(v, function (d) {
-                        return +d[afqb.global.controls.plotsControlBox.plotKey];
+                        return +d[plotKey];
                 })/Math.sqrt(v.length),
                 std: d3.deviation(v, function (d) {
-                        return +d[afqb.global.controls.plotsControlBox.plotKey];
+                        return +d[plotKey];
                 })
             };
         })
@@ -463,7 +466,9 @@ afqb.plots.ready = function (error, data) {
 afqb.plots.changePlots = function (error, data) {
 	if (error) throw error;
 
-	afqb.plots.lastPlotKey = afqb.global.controls.plotsControlBox.plotKey;
+	var plotKey = afqb.global.controls.plotsControlBox.plotKey;
+
+	afqb.plots.lastPlotKey = plotKey;
 
 	data.forEach(function (d) {
 		if (typeof d.subjectID === 'number'){
@@ -472,7 +477,7 @@ afqb.plots.changePlots = function (error, data) {
 	});
 
 	data = data.filter(function (d) {
-		return Boolean(d[afqb.global.controls.plotsControlBox.plotKey]);
+		return Boolean(d[plotKey]);
 	});
 
 	afqb.plots.tractData = d3.nest()
@@ -488,11 +493,11 @@ afqb.plots.changePlots = function (error, data) {
 			.rollup(function (v) {
 				return{
 					mean: d3.mean(v, function (d) {
-                        return +d[afqb.global.controls.plotsControlBox.plotKey];}),
+                        return +d[plotKey];}),
 					stderr: d3.deviation(v, function (d,i) {
-                        return +d[afqb.global.controls.plotsControlBox.plotKey];})/Math.sqrt(v.length),
+                        return +d[plotKey];})/Math.sqrt(v.length),
 					std: d3.deviation(v, function (d) {
-                        return +d[afqb.global.controls.plotsControlBox.plotKey];
+                        return +d[plotKey];
                     })
                 };
             })
@@ -513,12 +518,12 @@ afqb.plots.changePlots = function (error, data) {
 			.rollup(function (v) {
                 return{
                     mean: d3.mean(v, function (d) {
-                        return +d[afqb.global.controls.plotsControlBox.plotKey];}),
+                        return +d[plotKey];}),
                     stderr: d3.deviation(v, function (d) {
- 						 return +d[afqb.global.controls.plotsControlBox.plotKey];
+ 						 return +d[plotKey];
                     })/Math.sqrt(v.length),
                     std: d3.deviation(v, function (d) {
- 						 return +d[afqb.global.controls.plotsControlBox.plotKey];
+ 						 return +d[plotKey];
                     })
 				 };
 			 })
@@ -535,7 +540,7 @@ afqb.plots.changePlots = function (error, data) {
 
 	// update axes based on selected data
 	afqb.plots.y.domain(d3.extent(data, function (d) {
-		return +d[afqb.global.controls.plotsControlBox.plotKey];
+		return +d[plotKey];
 	}));
 	afqb.plots.x.domain([0, 100]).nice();
 
@@ -550,16 +555,35 @@ afqb.plots.changePlots = function (error, data) {
 	// update y zoom for new axis
 	afqb.plots.yzoom = d3.behavior.zoom()
 		.y(afqb.plots.y)
-		.on("zoom", afqb.plots.zoomable?afqb.plots.zoomAxis:null)
-		.on("zoomend",afqb.plots.zoomable?afqb.plots.draw:null);
+		.on("zoom", afqb.plots.zoomable ? afqb.plots.zoomAxis : null)
+		.on("zoomend",afqb.plots.zoomable ? afqb.plots.draw : null);
+
+	// If we've already stored this type of plot's zoom settings, recover them
+	if (afqb.plots.settings.zoom[plotKey]) {
+		afqb.plots.yzoom.scale(
+				afqb.plots.settings.zoom[plotKey].scale || 1);
+		afqb.plots.yzoom.translate(
+				afqb.plots.settings.zoom[plotKey].translate || [0, 0]);
+	} else {
+		// We need to store this for later use
+		afqb.plots.settings.zoom[plotKey] = {};
+		afqb.plots.settings.zoom[plotKey].scale = afqb.plots.yzoom.scale();
+		afqb.plots.settings.zoom[plotKey].translate = afqb.plots.yzoom.translate();
+	}
 
 	d3.select("#tractdetails").selectAll("svg")
 		.selectAll(".zoom.y.box").call(afqb.plots.yzoom);//.remove();
 
-	afqb.plots.draw()
+	afqb.plots.draw();
 }
 
 afqb.plots.draw = function() {
+	var plotKey = afqb.global.controls.plotsControlBox.plotKey;
+
+	// Update the zoom settings to reflect the latest zoom parameters
+	afqb.plots.settings.zoom[plotKey].scale = afqb.plots.yzoom.scale();
+	afqb.plots.settings.zoom[plotKey].translate = afqb.plots.yzoom.translate();
+
 	// JOIN new data with old elements.
 	var trLines = d3.select("#tractdetails").selectAll("svg")
 		.data(afqb.plots.tractData).selectAll(".tracts")
@@ -635,8 +659,8 @@ afqb.plots.zoomAxis = function (){
 afqb.plots.zoomable = true;
 afqb.plots.yzoom = d3.behavior.zoom()
 	.y(afqb.plots.y)
-	.on("zoom", afqb.plots.zoomable?afqb.plots.zoomAxis:null)
-	.on("zoomend",afqb.plots.zoomable?afqb.plots.draw:null);
+	.on("zoom", afqb.plots.zoomable ? afqb.plots.zoomAxis : null)
+	.on("zoomend",afqb.plots.zoomable ? afqb.plots.draw : null);
 
 afqb.plots.updateBrush = function () {
 	// generate brush

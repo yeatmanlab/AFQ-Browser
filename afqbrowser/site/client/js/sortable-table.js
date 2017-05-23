@@ -24,6 +24,7 @@ afqb.table.buildTable = function (error, data) {
 	afqb.table.settings.prevSort.key = null;
 	afqb.table.settings.prevSort.order = "ascending";
 	afqb.table.settings.prevSort.count = 2;
+	afqb.table.settings.selectedRows = {};
 
 	data.forEach(function (d) {
         if (typeof d.subjectID === 'number'){
@@ -66,6 +67,7 @@ afqb.table.buildTable = function (error, data) {
 		.min(2).step(1)
 		.name('Number of Groups')
 		.onChange(function (value) {
+			afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
 			afqb.table.settings.sort.count = value;
 			afqb.table.refreshTable();
 		});
@@ -246,8 +248,7 @@ afqb.table.refreshTable = function () {
 
 			afqb.table.subData.forEach(idColor); // color lines
 
-			d3.csv("data/nodes.csv", afqb.plots.updatePlots);
-			afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
+			d3.csv("data/nodes.csv", afqb.plots.changePlots);
 
 			afqb.table.settings.restoring = false;
 		}
@@ -277,6 +278,7 @@ afqb.table.descendingWithNull = function (a, b) {
 // onclick function to toggle on and off rows
 afqb.table.rowSelect = function () {
     if($('g',this).css("opacity") == 0.3) {
+		afqb.table.settings.selectedRows[this.id] = true;
 		//uses the opacity of the row for selection and deselection
         d3.selectAll('#' + this.id)
 			.selectAll('g')
@@ -287,6 +289,7 @@ afqb.table.rowSelect = function () {
             .style("opacity", 1)
             .style("stroke-width", "2.1px");
     } else {
+		afqb.table.settings.selectedRows[this.id] = false;
 		d3.selectAll('#' + this.id)
 			.selectAll('g')
 			.style("opacity", 0.3);

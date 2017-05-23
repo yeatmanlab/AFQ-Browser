@@ -77,6 +77,7 @@ afqb.global.readSettings = function(evt) {
 		// is instantiated before calling it in restoreBrush.
 		afqb.plots.updateBrush();
 		afqb.plots.restoreBrush();
+		// afqb.plots.yzoom.event(d3.selectAll('g.y.axis'));
 
 		// Restore table settings
 		afqb.table.settings = settings.table;
@@ -92,6 +93,7 @@ afqb.global.readSettings = function(evt) {
 		}
 		afqb.table.settings.restoring = true;
 		afqb.global.updateGui(afqb.table.gui, afqb.global.controls.tableControlBox);
+		afqb.table.restoreRowSelection();
 	};
 
 	reader.readAsText(f);
@@ -105,6 +107,23 @@ afqb.plots.restoreBrush = function() {
 					.selectAll(".brush")
 					.call(afqb.plots.brush.extent(
 								afqb.plots.settings.bundleBrush[tract].brushExtent));
+			}
+		}
+	}
+};
+
+afqb.table.restoreRowSelection = function() {
+	for (var rowID in afqb.table.settings.selectedRows) {
+		if (afqb.table.settings.selectedRows.hasOwnProperty(rowID)) {
+			if (afqb.table.settings.selectedRows[rowID]) {
+				d3.selectAll('#' + rowID)
+					.selectAll('g')
+					.style("opacity", 1);
+
+				d3.selectAll('#' + rowID)
+					.selectAll('path')
+					.style("opacity", 1)
+					.style("stroke-width", "2.1px");
 			}
 		}
 	}
