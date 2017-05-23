@@ -47,53 +47,68 @@ afqb.global.readSettings = function(evt) {
 	reader.onload = function(event) {
 		var settings = JSON.parse(event.target.result);
 
-		// Restore 3D settings
-		afqb.three.settings = settings.three;
-		afqb.three.camera.position.copy(new THREE.Vector3(
-					afqb.three.settings.cameraPosition.x,
-					afqb.three.settings.cameraPosition.y,
-					afqb.three.settings.cameraPosition.z));
-		afqb.global.controls.threeControlBox.lhOpacity = afqb.three.settings.lHOpacity;
-		afqb.global.controls.threeControlBox.rhOpacity = afqb.three.settings.rHOpacity;
-		afqb.global.controls.threeControlBox.fiberOpacity = afqb.three.settings.fiberOpacity;
-		afqb.global.controls.threeControlBox.highlight = afqb.three.settings.mouseoverHighlight;
-		afqb.global.updateGui(afqb.three.gui, afqb.global.controls.threeControlBox);
+		var q = d3_queue.queue();
 
-		// Restore plot settings
-		afqb.plots.settings = settings.plots;
-		for (bundle in afqb.plots.settings.checkboxes) {
-			if (afqb.plots.settings.checkboxes.hasOwnProperty(bundle)) {
-				var myBundle = d3.selectAll("input.tracts")[0][bundle];
-				myBundle.checked = afqb.plots.settings.checkboxes[bundle];
-				afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name);
-				afqb.three.highlightBundle(myBundle.checked, myBundle.name);
+		function loadThree(callback) {
+			// Restore 3D settings
+			afqb.three.settings = settings.three;
+			afqb.three.camera.position.copy(new THREE.Vector3(
+						afqb.three.settings.cameraPosition.x,
+						afqb.three.settings.cameraPosition.y,
+						afqb.three.settings.cameraPosition.z));
+			afqb.global.controls.threeControlBox.lhOpacity = afqb.three.settings.lHOpacity;
+			afqb.global.controls.threeControlBox.rhOpacity = afqb.three.settings.rHOpacity;
+			afqb.global.controls.threeControlBox.fiberOpacity = afqb.three.settings.fiberOpacity;
+			afqb.global.controls.threeControlBox.highlight = afqb.three.settings.mouseoverHighlight;
+			afqb.global.updateGui(afqb.three.gui, afqb.global.controls.threeControlBox);
+		}
+
+		function loadPlots(callback) {
+			// Restore plot settings
+			afqb.plots.settings = settings.plots;
+			for (bundle in afqb.plots.settings.checkboxes) {
+				if (afqb.plots.settings.checkboxes.hasOwnProperty(bundle)) {
+					var myBundle = d3.selectAll("input.tracts")[0][bundle];
+					myBundle.checked = afqb.plots.settings.checkboxes[bundle];
+					afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name);
+					afqb.three.highlightBundle(myBundle.checked, myBundle.name);
+				}
 			}
+			afqb.global.controls.plotsControlBox.brushTract = afqb.plots.settings.brushTract;
+			afqb.global.controls.plotsControlBox.plotKey = afqb.plots.settings.plotKey;
+			afqb.global.controls.plotsControlBox.lineOpacity= afqb.plots.settings.lineOpacity;
+			afqb.global.updateGui(afqb.plots.gui, afqb.global.controls.plotsControlBox);
+			// Call updateBrush before restoreBrush to ensure that afqb.plot.brush
+			// is instantiated before calling it in restoreBrush.
+			afqb.plots.updateBrush();
+			afqb.plots.restoreBrush();
 		}
-		afqb.global.controls.plotsControlBox.brushTract = afqb.plots.settings.brushTract;
-		afqb.global.controls.plotsControlBox.plotKey = afqb.plots.settings.plotKey;
-		afqb.global.controls.plotsControlBox.lineOpacity= afqb.plots.settings.lineOpacity;
-		afqb.global.updateGui(afqb.plots.gui, afqb.global.controls.plotsControlBox);
-		// Call updateBrush before restoreBrush to ensure that afqb.plot.brush
-		// is instantiated before calling it in restoreBrush.
-		afqb.plots.updateBrush();
-		afqb.plots.restoreBrush();
-		// afqb.plots.yzoom.event(d3.selectAll('g.y.axis'));
 
-		// Restore table settings
-		afqb.table.settings = settings.table;
-		afqb.global.controls.tableControlBox.groupCount = afqb.table.settings.sort.count;
-		afqb.table.settings.prevSort.key = afqb.table.settings.sort.key;
-		afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
-		if (afqb.table.settings.sort.order == "ascending") {
-			afqb.table.settings.prevSort.order = "ascending";
-			afqb.table.settings.sort.order = "descending";
-		} else {
-			afqb.table.settings.prevSort.order = "descending";
-			afqb.table.settings.sort.order = "ascending";
+		function loadTable(callback) {
+			// Restore table settings
+			afqb.table.settings = settings.table;
+			afqb.global.controls.tableControlBox.groupCount = afqb.table.settings.sort.count;
+			afqb.table.settings.prevSort.key = afqb.table.settings.sort.key;
+			afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
+			if (afqb.table.settings.sort.order == "ascending") {
+				afqb.table.settings.prevSort.order = "ascending";
+				afqb.table.settings.sort.order = "descending";
+			} else {
+				afqb.table.settings.prevSort.order = "descending";
+				afqb.table.settings.sort.order = "ascending";
+			}
+			afqb.table.settings.restoring = true;
+			afqb.global.updateGui(afqb.table.gui, afqb.global.controls.tableControlBox);
+			afqb.table.restoreRowSelection();
 		}
-		afqb.table.settings.restoring = true;
-		afqb.global.updateGui(afqb.table.gui, afqb.global.controls.tableControlBox);
-		afqb.table.restoreRowSelection();
+
+		q.defer(loadThree);
+		q.defer(loadPlots);
+		q.defer(loadTable);
+		q.await(function (error) {
+			if (error) throw error;
+			afqb.plots.yzoom.event(d3.selectAll(".y.axis"));
+		});
 	};
 
 	reader.readAsText(f);
