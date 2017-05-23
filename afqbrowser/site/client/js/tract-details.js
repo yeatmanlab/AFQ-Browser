@@ -133,8 +133,22 @@ afqb.plots.line = d3.svg.line()
 
 afqb.plots.area = d3.svg.area()
 		.x(function(d) { return afqb.plots.x(+d.key) })
-		.y0(function(d) { return afqb.plots.y(+d.values.mean - +d.values.stderr); })
-		.y1(function(d) { return afqb.plots.y(+d.values.mean + +d.values.stderr); });
+		//.y0(function(d) { return afqb.plots.y(+d.values.mean - +d.values.stderr); })
+		.y0(function (d) {
+        if (afqb.controls.plotsControlBox.errorType == 'stderr') {
+            return afqb.plots.y(+d.values.mean - +d.values.stderr);
+        } else {
+            return afqb.plots.y(+d.values.mean - +d.values.std);
+        }
+    })
+		//.y1(function(d) { return afqb.plots.y(+d.values.mean + +d.values.stderr); });
+		.y1(function (d) {
+				if (afqb.controls.plotsControlBox.errorType == 'stderr') {
+						return afqb.plots.y(+d.values.mean + +d.values.stderr);
+				} else {
+						return afqb.plots.y(+d.values.mean + +d.values.std);
+				}
+		})
 
 afqb.plots.bundleBrush = {};
 
@@ -142,9 +156,10 @@ function buildPlotGui(error, data) {
     if (error) throw error;
 
 	var plotsGuiConfigObj = function () {
-		this.brushTract = false;
 		this.plotKey = null;
+		this.errorType = 'std';
 		this.lineOpacity = 0.3;
+		this.brushTract = false;
 	};
 
 	var plotsGui = new dat.GUI({
@@ -166,6 +181,13 @@ function buildPlotGui(error, data) {
         .name('Plot Type')
         .onChange(function () {
             d3.csv("data/nodes.csv", updatePlots);
+        });
+
+		var errorController = plotsGui
+		.add(afqb.controls.plotsControlBox, 'errorType', ['stderr', 'std'])
+        .name('Error Type')
+		    .onChange(function () {
+		        d3.csv("data/nodes.csv", updatePlots);
         });
 
     var plotOpacityController = plotsGui
@@ -310,7 +332,10 @@ function ready(error, data) {
 						 return +d[afqb.controls.plotsControlBox.plotKey];}),
 					  stderr: d3.deviation(v, function (d) {
 						 return +d[afqb.controls.plotsControlBox.plotKey];
-					})/afqb.plots.tractData[0].values.length
+					   })/Math.sqrt(afqb.plots.tractData[0].values.length),
+					  std: d3.deviation(v, function (d) {
+						 return +d[afqb.controls.plotsControlBox.plotKey];
+					   })
 				};})
         .entries(data);
 
@@ -453,7 +478,10 @@ function updatePlots(error, data) {
 					 return +d[afqb.controls.plotsControlBox.plotKey];}),
 					stderr: d3.deviation(v, function (d) {
 					 return +d[afqb.controls.plotsControlBox.plotKey];
-				})/afqb.plots.tractData[0].values.length
+				 })/Math.sqrt(afqb.table.splitGroups[0].values.length),
+					std: d3.deviation(v, function (d) {
+	 				 return +d[afqb.controls.plotsControlBox.plotKey];
+	 				 })
 			};})
 			.entries(data);
 
@@ -481,7 +509,10 @@ function updatePlots(error, data) {
 					 return +d[afqb.controls.plotsControlBox.plotKey];}),
 					stderr: d3.deviation(v, function (d) {
 					 return +d[afqb.controls.plotsControlBox.plotKey];
-				})/afqb.plots.tractData[0].values.length
+				 })/Math.sqrt(afqb.table.splitGroups[0].values.length),
+					std: d3.deviation(v, function (d) {
+ 					 return +d[afqb.controls.plotsControlBox.plotKey];
+ 					 })
 			};})
 			.entries(data);
 
@@ -603,7 +634,7 @@ function draw() {
 // Remove old meanlines
 d3.select("#tractdetails").selectAll("svg").selectAll(".means").remove();
 if (afqb.table.splitGroups) {
-	// Join new afqb.plots.tractMean data with old meanLines elements
+	// Join new afqb.plots.3px data with old meanLines elements
 	var meanLines = d3.select("#tractdetails").selectAll("svg")
 	.selectAll(".means")
 	.data(function (d) {
