@@ -66,7 +66,7 @@ afqb.table.buildTable = function (error, data) {
 		.add(afqb.global.controls.tableControlBox, 'groupCount')
 		.min(2).step(1)
 		.name('Number of Groups')
-		.onChange(function (value) {
+		.onFinishChange(function (value) {
 			afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
 			afqb.table.settings.sort.count = value;
 			afqb.table.refreshTable();
@@ -93,6 +93,7 @@ afqb.table.refreshTable = function () {
         .on("click", function (d) {
 			afqb.table.settings.prevSort.key = afqb.table.settings.sort.key
 			afqb.table.settings.sort.key = d;
+			afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
 			afqb.table.refreshTable();
 		});
 
