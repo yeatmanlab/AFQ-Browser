@@ -1,5 +1,5 @@
 // Tell jslint that certain variables are global
-/*global afqb*/
+/* global afqb */
 
 // color Palettes in Hex format, HTML needs colors in d3colors format
 // colors are the Tableau20 colors

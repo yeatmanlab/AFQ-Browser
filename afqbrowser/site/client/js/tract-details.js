@@ -1,5 +1,6 @@
 // Tell jslint that certain variables are global
-/*global afqb, d3, d3_queue, dat, $*/
+/* global afqb, d3, d3_queue, dat, $ */
+/* eslint experimentalObjectRestSpread: true */
 
 //tractlist js
 afqb.plots.settings.checkboxes = {};
@@ -74,14 +75,14 @@ afqb.plots.buildTractCheckboxes = function (error, data) {
 		.on("change", function () {
 			var state = this.checked;
 			if (state) {
-				d3.selectAll(".tracts").each(function (d, i) {
+				d3.selectAll(".tracts").each(function () {
 					this.checked = true;
 					afqb.plots.settings.checkboxes[this.name] = this.checked;
 					afqb.plots.showHideTractDetails(this.checked, this.name);
 					afqb.three.highlightBundle(this.checked, this.name);
 				});
 			} else {
-				d3.selectAll(".tracts").each(function (d, i) {
+				d3.selectAll(".tracts").each(function () {
 					this.checked = false;
 					afqb.plots.settings.checkboxes[this.name] = this.checked;
 					afqb.plots.showHideTractDetails(this.checked, this.name);
@@ -148,7 +149,8 @@ afqb.plots.area = d3.svg.area()
 afqb.plots.settings.bundleBrush = {};
 
 afqb.plots.buildPlotGui = function (error, data) {
-	if (error) throw error;
+    "use strict";
+	if (error) { throw error; }
 
     afqb.plots.settings.brushTract = false;
     afqb.plots.settings.plotKey = null;
@@ -176,7 +178,8 @@ afqb.plots.buildPlotGui = function (error, data) {
     var nodeKeys = Object.keys(data[0]).slice(3);
     afqb.global.controls.plotsControlBox.plotKey = nodeKeys[0];
 
-	var keyController = afqb.plots.gui
+    // Add key controller
+	afqb.plots.gui
 		.add(afqb.global.controls.plotsControlBox, 'plotKey', nodeKeys)
         .name('Plot Type')
         .onChange(function () {
@@ -193,27 +196,30 @@ afqb.plots.buildPlotGui = function (error, data) {
                 .text(function (d,i) { return afqb.global.controls.plotsControlBox.plotKey});
         });
 
-    var errorController = plotsGui
+    // Add error controller
+    afqb.plots.gui
 		.add(afqb.global.controls.plotsControlBox, 'errorType', ['stderr', 'std'])
         .name('Error Type')
 		    .onChange(function () {
 		        d3.csv("data/nodes.csv", afqb.plots.changePlots);
         });
 
-    var plotOpacityController = afqb.plots.gui
+    // Add plot opacity controller
+    afqb.plots.gui
 		.add(afqb.global.controls.plotsControlBox, 'lineOpacity', 0,1)
         .name('Line Opacity')
         .onChange(function () {
 			d3.select("#tractdetails")
 				.selectAll("svg").selectAll(".tracts")
-				.filter(function(d,i) {
+				.filter(function () {
 					return (this.id.indexOf("mean") === -1);
                 })
 				.select(".line")
 				.style("opacity", afqb.global.controls.plotsControlBox.lineOpacity);
 		});
 
-	var brushController = afqb.plots.gui
+    // Add brush controller
+	afqb.plots.gui
 		.add(afqb.global.controls.plotsControlBox, 'brushTract')
 		.name('Brushable Tracts')
 		.onChange(afqb.plots.updateBrush);
@@ -222,7 +228,8 @@ afqb.plots.buildPlotGui = function (error, data) {
 };
 
 afqb.plots.ready = function (error, data) {
-    if (error) { throw error; }
+    "use strict";
+	if (error) { throw error; }
 
 	data.forEach(function (d) {
 		if (typeof d.subjectID === 'number') {
@@ -323,7 +330,7 @@ afqb.plots.ready = function (error, data) {
 		.data(function(d){ return d.values; })
 		.enter().append("g")
 		.attr("class", "tracts")
-		.attr("id", function (d, i) {
+		.attr("id", function (d) {
 				return d.values[0].subjectID;
 		})
 		.on("mouseover", mouseover)
@@ -386,7 +393,7 @@ afqb.plots.ready = function (error, data) {
 
 	function mouseover() {
 		if (!afqb.global.mouse.brushing) {
-			if ($("path",this).css("stroke-width") == "1px") {
+			if ($("path",this).css("stroke-width") === "1px") {
 				// uses the stroke-width of the line clicked on to
 				// determine whether to turn the line on or off
 				d3.selectAll('#' + this.id)
@@ -395,7 +402,7 @@ afqb.plots.ready = function (error, data) {
 					.style("stroke-width", "1.1px");
 			}
 			if (afqb.global.mouse.isDown) {
-				if ($("path",this).css("stroke-width") == "2.1px") {
+				if ($("path",this).css("stroke-width") === "2.1px") {
 					//uses the opacity of the row for selection and deselection
 					d3.selectAll('#' + this.id)
 						.selectAll('path')
@@ -422,7 +429,7 @@ afqb.plots.ready = function (error, data) {
 
 	function onclick() {
 		if (!afqb.global.mouse.brushing) {
-			if ($("path",this).css("stroke-width") == "2.1px") {
+			if ($("path",this).css("stroke-width") === "2.1px") {
 				// uses the stroke-width of the line clicked on
 				// to determine whether to turn the line on or off
 				d3.selectAll('#' + this.id)
@@ -433,7 +440,7 @@ afqb.plots.ready = function (error, data) {
 					.selectAll('g')
 					.style("opacity", 0.3);
 
-			} else if ($("path",this).css("stroke-width") == "1.1px") {
+			} else if ($("path",this).css("stroke-width") === "1.1px") {
 				d3.selectAll('#' + this.id)
 					.selectAll('path')
 					.style("opacity", 1)
@@ -442,7 +449,7 @@ afqb.plots.ready = function (error, data) {
 				d3.selectAll('#' + this.id)
 					.selectAll('g')
 					.style("opacity", 1);
-			} else if ($("path",this).css("opacity") == afqb.global.controls.plotsControlBox.lineOpacity) {
+			} else if ($("path",this).css("opacity") === afqb.global.controls.plotsControlBox.lineOpacity) {
 				d3.selectAll('#' + this.id)
 					.selectAll('path')
 					.style("opacity", 1)
@@ -457,7 +464,7 @@ afqb.plots.ready = function (error, data) {
 
 	function mouseout() {
 		if (!afqb.global.mouse.brushing) {
-			if ($("path",this).css("stroke-width") == "1.1px") {
+			if ($("path",this).css("stroke-width") === "1.1px") {
 				// uses the stroke-width of the line clicked on to
 				// determine whether to turn the line on or off
 				d3.selectAll('#' + this.id)
@@ -470,7 +477,8 @@ afqb.plots.ready = function (error, data) {
 };
 
 afqb.plots.changePlots = function (error, data) {
-	if (error) throw error;
+    "use strict";
+	if (error) { throw error; }
 
 	var plotKey = afqb.global.controls.plotsControlBox.plotKey;
 
@@ -562,7 +570,7 @@ afqb.plots.changePlots = function (error, data) {
 	afqb.plots.yzoom = d3.behavior.zoom()
 		.y(afqb.plots.y)
 		.on("zoom", afqb.plots.zoomable ? afqb.plots.zoomAxis : null)
-		.on("zoomend",afqb.plots.zoomable ? afqb.plots.draw : null);
+		.on("zoomend", afqb.plots.zoomable ? afqb.plots.draw : null);
 
 	// If we've already stored this type of plot's zoom settings, recover them
 	if (afqb.plots.settings.zoom[plotKey]) {
@@ -585,6 +593,7 @@ afqb.plots.changePlots = function (error, data) {
 };
 
 afqb.plots.draw = function() {
+    "use strict";
 	var plotKey = afqb.global.controls.plotsControlBox.plotKey;
 
 	// Update the zoom settings to reflect the latest zoom parameters
@@ -659,8 +668,9 @@ afqb.plots.draw = function() {
     }
 };
 
-afqb.plots.zoomAxis = function (){
-	d3.selectAll('g.y.axis').call(afqb.plots.yAxis);
+afqb.plots.zoomAxis = function () {
+    "use strict";
+	d3.selectAll('.y.axis').call(afqb.plots.yAxis);
 };
 
 afqb.plots.zoomable = true;
@@ -670,6 +680,7 @@ afqb.plots.yzoom = d3.behavior.zoom()
 	.on("zoomend",afqb.plots.zoomable ? afqb.plots.draw : null);
 
 afqb.plots.newBrush = function (id) {
+    "use strict";
     var brush = d3.svg.brush()
         .x(afqb.plots.x)
         .on("brush", brushed)
@@ -701,6 +712,7 @@ afqb.plots.newBrush = function (id) {
 };
 
 afqb.plots.updateBrush = function () {
+    "use strict";
     d3.select("#tractdetails").selectAll("svg")[0].forEach(function (tract) {
         afqb.plots.newBrush(tract.id);
     });
@@ -732,6 +744,7 @@ afqb.plots.updateBrush = function () {
 };
 
 afqb.plots.showHideTractDetails = function (state, name) {
+    "use strict";
 	if (state === true){
 		d3.select("#tract"+name).style("display", "inline");
 		d3.select("#label"+name)

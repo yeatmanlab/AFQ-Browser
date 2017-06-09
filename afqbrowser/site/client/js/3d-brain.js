@@ -1,5 +1,5 @@
 // Tell jslint that certain variables are global
-/*global afqb, THREE, THREEx, dat, d3, d3_queue, Stats, $, Float32Array*/
+/* global afqb, THREE, THREEx, dat, d3, d3_queue, Stats, $, Float32Array */
 
 // =========== three js part
 // Set initial opacitites here
@@ -63,6 +63,7 @@ afqb.three.waitForPlotLength = function (callback) {
 // Combine the init and animate function calls for use in d3.queue()
 afqb.three.initAndAnimate = function (error) {
     "use strict";
+    if (error) { throw error; }
     afqb.three.init();
 	afqb.three.animate();
 };
@@ -107,7 +108,7 @@ afqb.three.init = function () {
 
     var manager = new THREE.LoadingManager();
     manager.onProgress = function (item, loaded, total) {
-        //console.log(item, loaded, total);
+        // console.log(item, loaded, total);
     };
 
     // renderer
@@ -205,7 +206,8 @@ afqb.three.init = function () {
 		});
 	});
 
-	var highlightController = afqb.three.gui
+    // Add highlight controller
+	afqb.three.gui
 		.add(afqb.global.controls.threeControlBox, 'highlight')
 		.name('Mouseover Highlight');
 
@@ -315,19 +317,19 @@ afqb.three.init = function () {
 		// And add event listeners for mouseover, etc.
 		afqb.three.colorGroups.traverse(function (child) {
 			if (child instanceof THREE.LineSegments) {
-				domEvents.addEventListener(child, 'mouseover', function(event) {
+				domEvents.addEventListener(child, 'mouseover', function() {
 					if(!afqb.global.mouse.isDown) {
 						afqb.three.mouseoverBundle(child.idx);
 						return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 					}
 				});
-				domEvents.addEventListener(child, 'mousemove', function(event) {
+				domEvents.addEventListener(child, 'mousemove', function() {
 					afqb.global.mouse.mouseMove = true;
 				});
-				domEvents.addEventListener(child, 'mousedown', function(event) {
+				domEvents.addEventListener(child, 'mousedown', function() {
 					afqb.global.mouse.mouseMove = false;
 				});
-				domEvents.addEventListener(child, 'mouseup', function(event) {
+				domEvents.addEventListener(child, 'mouseup', function() {
 					if(!afqb.global.mouse.mouseMove) {
 						var myBundle = d3.selectAll("input.tracts")[0][child.idx];
 						myBundle.checked = !myBundle.checked;
@@ -339,7 +341,7 @@ afqb.three.init = function () {
 						afqb.global.mouse.mouseMove = false;
 					}
 				});
-				domEvents.addEventListener(child, 'mouseout', function(event) {
+				domEvents.addEventListener(child, 'mouseout', function() {
 					var myBundle = d3.selectAll("input.tracts")[0][child.idx];
 					afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name);
 					afqb.three.highlightBundle(myBundle.checked, myBundle.name);
@@ -371,6 +373,7 @@ afqb.three.init = function () {
 
 // Resize the three.js window on full window resize.
 afqb.three.onWindowResize = function () {
+    "use strict";
     var width = afqb.three.container.clientWidth;
 	var height = afqb.three.container.clientHeight;
 
@@ -381,11 +384,13 @@ afqb.three.onWindowResize = function () {
 };
 
 afqb.three.animate = function () {
+    "use strict";
     requestAnimationFrame(afqb.three.animate);
     afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
     afqb.three.orbitControls.update();
-	if (afqb.three.settings.showStats)
+	if (afqb.three.settings.showStats) {
 		afqb.three.stats.update();
+    }
 
 	// For each fiber bundle update the length of fiber to be plotted
 	// based on the d3 brushes in the FA plots
@@ -409,11 +414,13 @@ afqb.three.animate = function () {
 };
 
 afqb.three.lightUpdate = function () {
+    "use strict";
     afqb.three.directionalLight.position.copy(afqb.three.camera.position);
 };
 
 // Highlight specified bundle based on left panel checkboxes
 afqb.three.highlightBundle = function (state, name) {
+    "use strict";
 
 	// Temporary line material for highlighted bundles
 	var tmpLineMaterial = new THREE.LineBasicMaterial({
@@ -440,6 +447,7 @@ afqb.three.highlightBundle = function (state, name) {
 
 // Highlight specified bundle based on mouseover
 afqb.three.mouseoverBundle = function (name) {
+    "use strict";
 	if (afqb.global.controls.threeControlBox.highlight) {
 		// Temporary line material for moused-over bundles
 		var tmpLineMaterial = new THREE.LineBasicMaterial({

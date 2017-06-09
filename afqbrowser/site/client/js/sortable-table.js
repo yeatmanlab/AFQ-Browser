@@ -1,5 +1,5 @@
 // Tell jslint that certain variables are global
-/*global afqb, d3, d3_queue, $, dat*/
+/* global afqb, d3, d3_queue, $, dat */
 
 // ========== Adding Table code ============
 afqb.table.fieldHeight = 30;
@@ -64,7 +64,8 @@ afqb.table.buildTable = function (error, data) {
 
 	afqb.global.controls.tableControlBox = new TableGuiConfigObj();
 
-	var groupCountController = afqb.table.gui
+    // Add group count controller
+	afqb.table.gui
 		.add(afqb.global.controls.tableControlBox, 'groupCount')
 		.min(2).step(1)
 		.name('Number of Groups')
@@ -89,7 +90,7 @@ afqb.table.refreshTable = function () {
         .attr("transform", function (d, i) {
             return "translate(" + i * afqb.table.fieldWidth + ",0)";
         })
-        .on("mouseover", function (d, i) {
+        .on("mouseover", function () {
             d3.select(this).style("cursor", "n-resize");
         })
 		// this is where the magic happens...(d) is the column being sorted
@@ -116,7 +117,7 @@ afqb.table.refreshTable = function () {
         function (d) { return d.subjectID; });
 
     // create rows
-    var rowsEnter = rows.enter().append("svg:g")
+    rows.enter().append("svg:g")
         .attr("class", "row")
         .attr("id", function (d) { return d.subjectID; })
         .attr("transform", function (d, i) {
@@ -282,6 +283,7 @@ afqb.table.refreshTable = function () {
 };
 
 afqb.table.ascendingWithNull = function (a, b) {
+    "use strict";
 	// d3.ascending ignores null and undefined values
 	// Return the same as d3.ascending but keep all null and
 	// undefined values at the bottom of the list
@@ -289,6 +291,7 @@ afqb.table.ascendingWithNull = function (a, b) {
 };
 
 afqb.table.descendingWithNull = function (a, b) {
+    "use strict";
 	// d3.descending ignores null and undefined values
 	// Return the same as d3.descending but keep all null and
 	// undefined values at the bottom of the list
@@ -297,7 +300,8 @@ afqb.table.descendingWithNull = function (a, b) {
 
 // onclick function to toggle on and off rows
 afqb.table.rowSelect = function () {
-    if($('g',this).css("opacity") == 0.3) {
+    "use strict";
+    if($('g',this).css("opacity") === 0.3) {
 		afqb.table.settings.selectedRows[this.id] = true;
 		//uses the opacity of the row for selection and deselection
         d3.selectAll('#' + this.id)
@@ -324,17 +328,20 @@ afqb.table.rowSelect = function () {
 afqb.global.mouse.isDown = false;   // Tracks status of mouse button
 
 $(document).mousedown(function() {
+        "use strict";
 		// When mouse goes down, set isDown to true
 		afqb.global.mouse.isDown = true;
 	})
     .mouseup(function() {
+        "use strict";
 		// When mouse goes up, set isDown to false
         afqb.global.mouse.isDown = false;
     });
 
 afqb.table.tableMouseDown = function () {
+    "use strict";
 	if(afqb.global.mouse.isDown) {
-		if($('g',this).css("opacity") == 0.3) {
+		if($('g',this).css("opacity") === 0.3) {
 			//uses the opacity of the row for selection and deselection
 			d3.selectAll('#' + this.id)
 				.selectAll('g')

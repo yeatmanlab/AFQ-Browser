@@ -1,5 +1,5 @@
 // Tell jslint that afqb is a global variable
-/*global afqb*/
+/* global afqb */
 
 // Change the title in the html header
 document.title = afqb.global.settings.html.title || "AFQ Browser";

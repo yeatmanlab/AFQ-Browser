@@ -1,5 +1,5 @@
 // Tell jslint that certain variables are global
-/*global afqb, FileReader, d3, d3_queue, THREE, $*/
+/* global afqb, FileReader, d3, d3_queue, THREE */
 
 afqb.global.saveSettings = function () {
 	"use strict";
@@ -116,12 +116,11 @@ afqb.global.readSettings = function (evt) {
             callback(null);
 		}
 
-		q.defer(loadThree);
 		q.defer(loadPlots);
+		q.defer(loadThree);
 		q.defer(loadTable);
 		q.await(function (error) {
 			if (error) { throw error; }
-            console.log("I'm in your await function!");
             afqb.plots.zoomAxis();
 		});
 	};
