@@ -1,5 +1,9 @@
-afqb.global.saveSettings = function() {
-	// Save the three settings
+// Tell jslint that certain variables are global
+/*global afqb, FileReader, d3, d3_queue, THREE, $*/
+
+afqb.global.saveSettings = function () {
+	"use strict";
+    // Save the three settings
 	afqb.three.settings.cameraPosition = afqb.three.camera.position.clone();
 	afqb.three.settings.lHOpacity = afqb.global.controls.threeControlBox.lhOpacity;
 	afqb.three.settings.rHOpacity = afqb.global.controls.threeControlBox.rhOpacity;
@@ -19,7 +23,7 @@ afqb.global.saveSettings = function() {
 	var settingStr = JSON.stringify(settings);
 
 	// Download a string to a file
-	function download (filename, text) {
+	function download(filename, text) {
 		var pom = document.createElement('a');
 		pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
 		pom.setAttribute('download', filename);
@@ -37,14 +41,15 @@ afqb.global.saveSettings = function() {
 	download("settings.json", settingStr);
 };
 
-afqb.global.readSettings = function(evt) {
-	var files = evt.target.files; // FileList object
+afqb.global.readSettings = function (evt) {
+	"use strict";
+    var files = evt.target.files; // FileList object
 
 	// There should be only one file
 	var f = files[0];
 
 	var reader = new FileReader();
-	reader.onload = function(event) {
+	reader.onload = function (event) {
 		var settings = JSON.parse(event.target.result);
 
 		var q = d3_queue.queue();
@@ -53,35 +58,42 @@ afqb.global.readSettings = function(evt) {
 			// Restore 3D settings
 			afqb.three.settings = settings.three;
 			afqb.three.camera.position.copy(new THREE.Vector3(
-						afqb.three.settings.cameraPosition.x,
-						afqb.three.settings.cameraPosition.y,
-						afqb.three.settings.cameraPosition.z));
+				afqb.three.settings.cameraPosition.x,
+				afqb.three.settings.cameraPosition.y,
+				afqb.three.settings.cameraPosition.z
+            ));
 			afqb.global.controls.threeControlBox.lhOpacity = afqb.three.settings.lHOpacity;
 			afqb.global.controls.threeControlBox.rhOpacity = afqb.three.settings.rHOpacity;
 			afqb.global.controls.threeControlBox.fiberOpacity = afqb.three.settings.fiberOpacity;
 			afqb.global.controls.threeControlBox.highlight = afqb.three.settings.mouseoverHighlight;
 			afqb.global.updateGui(afqb.three.gui, afqb.global.controls.threeControlBox);
+            callback(null);
 		}
 
 		function loadPlots(callback) {
 			// Restore plot settings
+            // Call updateBrush before restoreBrush to ensure that
+            // afqb.plot.brushes is instantiated before calling it in
+            // restoreBrush.
+			afqb.plots.updateBrush();
+            // Remove the old brush groups
+            d3.selectAll(".brush").data([]).exit().remove();
+            // Transfer settings
 			afqb.plots.settings = settings.plots;
-			for (bundle in afqb.plots.settings.checkboxes) {
-				if (afqb.plots.settings.checkboxes.hasOwnProperty(bundle)) {
-					var myBundle = d3.selectAll("input.tracts")[0][bundle];
-					myBundle.checked = afqb.plots.settings.checkboxes[bundle];
-					afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name);
-					afqb.three.highlightBundle(myBundle.checked, myBundle.name);
-				}
-			}
+            // Check all the right boxes
+            Object.keys(afqb.plots.settings.checkboxes).forEach(function (bundle) {
+                var myBundle = d3.selectAll("input.tracts")[0][bundle];
+				myBundle.checked = afqb.plots.settings.checkboxes[bundle];
+				afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name);
+				afqb.three.highlightBundle(myBundle.checked, myBundle.name);
+
+            });
 			afqb.global.controls.plotsControlBox.brushTract = afqb.plots.settings.brushTract;
 			afqb.global.controls.plotsControlBox.plotKey = afqb.plots.settings.plotKey;
-			afqb.global.controls.plotsControlBox.lineOpacity= afqb.plots.settings.lineOpacity;
+			afqb.global.controls.plotsControlBox.lineOpacity = afqb.plots.settings.lineOpacity;
 			afqb.global.updateGui(afqb.plots.gui, afqb.global.controls.plotsControlBox);
-			// Call updateBrush before restoreBrush to ensure that afqb.plot.brush
-			// is instantiated before calling it in restoreBrush.
-			afqb.plots.updateBrush();
 			afqb.plots.restoreBrush();
+            callback(null);
 		}
 
 		function loadTable(callback) {
@@ -90,7 +102,7 @@ afqb.global.readSettings = function(evt) {
 			afqb.global.controls.tableControlBox.groupCount = afqb.table.settings.sort.count;
 			afqb.table.settings.prevSort.key = afqb.table.settings.sort.key;
 			afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
-			if (afqb.table.settings.sort.order == "ascending") {
+			if (afqb.table.settings.sort.order === "ascending") {
 				afqb.table.settings.prevSort.order = "ascending";
 				afqb.table.settings.sort.order = "descending";
 			} else {
@@ -99,53 +111,63 @@ afqb.global.readSettings = function(evt) {
 			}
 			afqb.table.settings.restoring = true;
 			afqb.global.updateGui(afqb.table.gui, afqb.global.controls.tableControlBox);
+            afqb.table.refreshTable();
 			afqb.table.restoreRowSelection();
+            callback(null);
 		}
 
 		q.defer(loadThree);
 		q.defer(loadPlots);
 		q.defer(loadTable);
 		q.await(function (error) {
-			if (error) throw error;
-			afqb.plots.yzoom.event(d3.selectAll(".y.axis"));
+			if (error) { throw error; }
+            console.log("I'm in your await function!");
+            afqb.plots.zoomAxis();
 		});
 	};
 
 	reader.readAsText(f);
+    
+    // We want the user to be able to reload the same settings file
+    // So we scrub the input element's fileList by setting its value to ""
+    document.getElementById('load-settings').value = "";
 };
 
-afqb.plots.restoreBrush = function() {
-	for (var tract in afqb.plots.settings.bundleBrush) {
-	    if (afqb.plots.settings.bundleBrush.hasOwnProperty(tract)) {
-			if (afqb.plots.settings.bundleBrush[tract].brushOn) {
-				d3.selectAll("#" + tract)
-					.selectAll(".brush")
-					.call(afqb.plots.brush.extent(
-								afqb.plots.settings.bundleBrush[tract].brushExtent));
-			}
-		}
-	}
+afqb.plots.restoreBrush = function () {
+	"use strict";
+    Object.keys(afqb.plots.settings.bundleBrush).forEach(function (tract) {
+        if (afqb.plots.settings.bundleBrush[tract].brushOn) {
+            var targetBrush = afqb.plots.brushes.filter(function (b) {
+                return b.id === tract;
+            })[0].brush;
+            d3.selectAll("#" + tract)
+                .selectAll(".brush")
+                .call(targetBrush.extent(
+                    afqb.plots.settings.bundleBrush[tract].brushExtent
+                ));
+        }
+    });
 };
 
-afqb.table.restoreRowSelection = function() {
-	for (var rowID in afqb.table.settings.selectedRows) {
-		if (afqb.table.settings.selectedRows.hasOwnProperty(rowID)) {
-			if (afqb.table.settings.selectedRows[rowID]) {
-				d3.selectAll('#' + rowID)
-					.selectAll('g')
-					.style("opacity", 1);
+afqb.table.restoreRowSelection = function () {
+    "use strict";
+    Object.keys(afqb.table.settings.selectedRows).forEach(function (rowID) {
+        if (afqb.table.settings.selectedRows[rowID]) {
+            d3.selectAll('#' + rowID)
+                .selectAll('g')
+                .style("opacity", 1);
 
-				d3.selectAll('#' + rowID)
-					.selectAll('path')
-					.style("opacity", 1)
-					.style("stroke-width", "2.1px");
-			}
-		}
-	}
+            d3.selectAll('#' + rowID)
+                .selectAll('path')
+                .style("opacity", 1)
+                .style("stroke-width", "2.1px");
+        }
+    });
 };
 
-afqb.global.updateGui = function(gui, controlBox) {
-	gui.__controllers.forEach(function (controller) {
+afqb.global.updateGui = function (gui, controlBox) {
+	"use strict";
+    gui.__controllers.forEach(function (controller) {
 		controller.setValue(controlBox[controller.property]);
 		controller.updateDisplay();
 	});
