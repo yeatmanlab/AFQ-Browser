@@ -256,8 +256,8 @@ afqb.three.init = function () {
             // This is counterintuitive but we want spatial locality to
             // be preserved in index locality. This will make brushing
             // much easier in the end.
-            for (var i = 0; i < afqb.plots.faPlotLength - 1; i++) {
-                Object.keys(oneBundle).forEach(function (fiberKey, iFiber) {
+            Object.keys(oneBundle).forEach(function (fiberKey, iFiber) {
+                for (var i = 0; i < afqb.plots.faPlotLength - 1; i++) {
                     var oneFiber = oneBundle[fiberKey];
 
                     // Vertices must be added in pairs. Later a
@@ -281,8 +281,8 @@ afqb.three.init = function () {
                     positions[i * nFibers * 6 + iFiber * 6 + 3] = x2;
                     positions[i * nFibers * 6 + iFiber * 6 + 4] = y2;
                     positions[i * nFibers * 6 + iFiber * 6 + 5] = z2;
-                });
-            }
+                }
+            });
 
             // Create a buffered geometry and line segments from these
             // positions. Buffered Geometry is slightly more performant
