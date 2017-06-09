@@ -1,0 +1,7 @@
+,patient,score,session,subjectID
+0,1,0.1947642896,1,patient_01
+1,1,0.22592178100000002,1,patient_02
+2,1,0.1707080471,1,patient_03
+3,0,0.2276642978,1,control_01
+4,0,0.4356986841,1,control_02
+5,0,0.3111022867,1,control_03
