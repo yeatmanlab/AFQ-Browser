@@ -1,3 +1,6 @@
+// Tell jslint that certain variables are global
+/*global afqb, THREE, THREEx, dat, d3, d3_queue, Stats, $, Float32Array*/
+
 // =========== three js part
 // Set initial opacitites here
 afqb.three.settings.lHOpacity = 0.01;
@@ -31,7 +34,7 @@ afqb.three.greyLineMaterial = new THREE.LineBasicMaterial({
 	depthWrite: true
 });
 
-afqb.three.greyLineMaterial.color.setHex( 0x444444 );
+afqb.three.greyLineMaterial.color.setHex(0x444444);
 
 afqb.three.colorLineMaterial = new THREE.LineBasicMaterial({
 	opacity: 0.0,
@@ -46,8 +49,9 @@ afqb.three.colorLineMaterial = new THREE.LineBasicMaterial({
 // So we have to wait until afqb.plots.faPlotLength is defined
 // Define a function to wait until afqb.plots.faPlotLength is defined.
 afqb.three.waitForPlotLength = function (callback) {
-	if (afqb.plots.faPlotLength == undefined) {
-		setTimeout(function() {
+	"use strict";
+    if (afqb.plots.faPlotLength === undefined) {
+		setTimeout(function () {
 			console.log("waiting for plot length");
 			afqb.three.waitForPlotLength(callback);
 		}, 250);
@@ -58,7 +62,8 @@ afqb.three.waitForPlotLength = function (callback) {
 
 // Combine the init and animate function calls for use in d3.queue()
 afqb.three.initAndAnimate = function (error) {
-	afqb.three.init();
+    "use strict";
+    afqb.three.init();
 	afqb.three.animate();
 };
 
@@ -66,21 +71,23 @@ afqb.three.stats = {};
 
 if (afqb.three.settings.showStats) {
 	afqb.three.stats = new Stats();
-	afqb.three.container.appendChild( afqb.three.stats.dom );
+	afqb.three.container.appendChild(afqb.three.stats.dom);
 }
 
 afqb.three.init = function () {
+    "use strict";
 	// We put the renderer inside a div with id #threejsbrain
 	afqb.three.container = document.getElementById("threejsbrain");
 
     var width = afqb.three.container.clientWidth;
 	var height = afqb.three.container.clientHeight;
 
-    afqb.three.camera = new THREE.PerspectiveCamera( 45, width / height, 1, 2000 );
+    afqb.three.camera = new THREE.PerspectiveCamera(45, width / height, 1, 2000);
     afqb.three.camera.position.copy(new THREE.Vector3(
-				afqb.three.settings.cameraPosition.x,
-				afqb.three.settings.cameraPosition.y,
-				afqb.three.settings.cameraPosition.z));
+        afqb.three.settings.cameraPosition.x,
+        afqb.three.settings.cameraPosition.y,
+        afqb.three.settings.cameraPosition.z
+    ));
 
 	afqb.three.camera.up.set(0, 0, 1);
 
@@ -92,9 +99,10 @@ afqb.three.init = function () {
 
     afqb.three.directionalLight = new THREE.DirectionalLight(0xffeedd, 1);
     afqb.three.directionalLight.position.set(
-			afqb.three.camera.position.x,
-			afqb.three.camera.position.y,
-			afqb.three.camera.position.z);
+		afqb.three.camera.position.x,
+		afqb.three.camera.position.y,
+		afqb.three.camera.position.z
+    );
     afqb.three.scene.add(afqb.three.directionalLight);
 
     var manager = new THREE.LoadingManager();
@@ -109,12 +117,9 @@ afqb.three.init = function () {
     afqb.three.container.appendChild(afqb.three.renderer.domElement);
 
     // dom event
-    domEvents = new THREEx.DomEvents(afqb.three.camera, afqb.three.renderer.domElement);
+    var domEvents = new THREEx.DomEvents(afqb.three.camera, afqb.three.renderer.domElement);
 
     // model
-    // Load our brain
-    material = new THREE.MeshBasicMaterial();
-
     // load brain surface
     var loader = new THREE.OBJLoader(manager);
     loader.load('data/freesurf.OBJ', function (object) {
@@ -133,18 +138,18 @@ afqb.three.init = function () {
             }
         });
 		afqb.three.lh.translateX(-0.05);
-		afqb.three.rh.translateX( 0.05);
+		afqb.three.rh.translateX(0.05);
 
         afqb.three.lh.material.opacity = afqb.three.settings.lHOpacity;
         afqb.three.rh.material.opacity = afqb.three.settings.rHOpacity;
 
-		afqb.three.lh.material.color.setHex( 0xe8e3d3 );
-		afqb.three.rh.material.color.setHex( 0xe8e3d3 );
+		afqb.three.lh.material.color.setHex(0xe8e3d3);
+		afqb.three.rh.material.color.setHex(0xe8e3d3);
 
         afqb.three.scene.add(object);
     });
 
-	var threeGuiConfigObj = function () {
+	var ThreeGuiConfigObj = function () {
 		this.lhOpacity = afqb.three.settings.lHOpacity;
 		this.rhOpacity = afqb.three.settings.rHOpacity;
 		this.fiberOpacity = afqb.three.settings.fiberOpacity;
@@ -157,37 +162,37 @@ afqb.three.init = function () {
 		scrollable: false
 	});
 
-	afqb.global.controls.threeControlBox = new threeGuiConfigObj();
+	afqb.global.controls.threeControlBox = new ThreeGuiConfigObj();
 
 	var lhOpacityController = afqb.three.gui
 		.add(afqb.global.controls.threeControlBox, 'lhOpacity')
 		.min(0).max(1).step(0.01).name('Left Hemi Opacity');
 
-	lhOpacityController.onChange( function(value) {
+	lhOpacityController.onChange(function (value) {
 		afqb.three.lh.traverse(function (child) {
 			if (child instanceof THREE.Mesh) {
 				child.material.opacity = value;
 			}
-		})
+		});
 	});
 
 	var rhOpacityController = afqb.three.gui
 		.add(afqb.global.controls.threeControlBox, 'rhOpacity')
 		.min(0).max(1).step(0.01).name('Right Hemi Opacity');
 
-	rhOpacityController.onChange( function(value) {
+	rhOpacityController.onChange(function (value) {
 		afqb.three.rh.traverse(function (child) {
 			if (child instanceof THREE.Mesh) {
 				child.material.opacity = value;
 			}
-		})
+		});
 	});
 
 	var fiberOpacityController = afqb.three.gui
 		.add(afqb.global.controls.threeControlBox, 'fiberOpacity')
 		.min(0).max(1).name('Fiber Opacity');
 
-	fiberOpacityController.onChange( function(value) {
+	fiberOpacityController.onChange(function (value) {
         afqb.three.greyGroups.traverse(function (child) {
 			if (child instanceof THREE.LineSegments) {
                 child.material.opacity = value;
@@ -197,7 +202,7 @@ afqb.three.init = function () {
 					child.material.depthWrite = true;
 				}
 			}
-		})
+		});
 	});
 
 	var highlightController = afqb.three.gui
@@ -214,105 +219,97 @@ afqb.three.init = function () {
 	var greyGeometry = new THREE.Geometry();
 
 	var bundleIdx = 0;
-    $.getJSON("data/data_partial.json", function(json) {
-        for (var key in json) {
-            if (json.hasOwnProperty(key)) {
-                var oneBundle = json[key];
-				var nFibers = 0;
+    $.getJSON("data/data_partial.json", function (json) {
+        Object.keys(json).forEach(function (key) {
+            var oneBundle = json[key];
+            var nFibers = 0;
 
-				// subkeys correspond to individual fibers in each fiber bundle
-				// They may not be consecutive keys depending on the
-				// downsampling of the input data, hence the need for `nFibers`
-				// and `iFiber`
-				//
-				// First loop simply counts the number of fibers in this bundle
-				// and asserts that each individual fiber has been resampled to
-				// the size of the FA plot data.
-                for (var subkey in oneBundle) {
-                    if (oneBundle.hasOwnProperty(subkey)) {
-						++nFibers;
-						var oneFiber = oneBundle[subkey];
-						if (oneFiber.length !== afqb.plots.faPlotLength) {
-							var errMessage = 'Streamlines have unexpected length. faPlotLength = ' + afqb.plots.faPlotLength + ", but oneFiber.length = " + oneFiber.length;
-							if (typeof Error !== 'undefined') {
-								throw new Error(errMessage);
-							}
-							throw errMessage;
-						}
-					}
-				}
-
-				// Positions will hold x,y,z vertices for each fiber
-				var positions = new Float32Array(
-						nFibers * (afqb.plots.faPlotLength - 1) * 3 * 2);
-
-				// Outer loop is along the length of each fiber.
-				// Inner loop cycles through each fiber group.
-				// This is counterintuitive but we want spatial locality to
-				// be preserved in index locality. This will make brushing
-				// much easier in the end.
-                for (var i = 0; i < afqb.plots.faPlotLength - 1; i++) {
-					var iFiber = 0;
-					for (var subkey in oneBundle) {
-						if (oneBundle.hasOwnProperty(subkey)) {
-							var oneFiber = oneBundle[subkey];
-
-							// Vertices must be added in pairs. Later a
-							// line segment will be drawn in between each pair.
-							// This requires some repeat values to have a
-							// continuous line but will allow us to avoid
-							// having the beginning and end of the fiber
-							// connect.
-							var x1 = oneFiber[i][0],
-								y1 = oneFiber[i][1],
-								z1 = oneFiber[i][2];
-
-							var x2 = oneFiber[i+1][0],
-								y2 = oneFiber[i+1][1],
-								z2 = oneFiber[i+1][2];
-
-							positions[i * nFibers * 6 + iFiber * 6 + 0] = x1;
-							positions[i * nFibers * 6 + iFiber * 6 + 1] = y1;
-							positions[i * nFibers * 6 + iFiber * 6 + 2] = z1;
-
-							positions[i * nFibers * 6 + iFiber * 6 + 3] = x2;
-							positions[i * nFibers * 6 + iFiber * 6 + 4] = y2;
-							positions[i * nFibers * 6 + iFiber * 6 + 5] = z2;
-
-							++iFiber;
-                        }
+            // fiberKeys correspond to individual fibers in each fiber bundle
+            // They may not be consecutive keys depending on the
+            // downsampling of the input data, hence the need for `nFibers`
+            // and `iFiber`
+            //
+            // First loop simply counts the number of fibers in this bundle
+            // and asserts that each individual fiber has been resampled to
+            // the size of the FA plot data.
+            Object.keys(oneBundle).forEach(function (fiberKey) {
+                ++nFibers;
+                var oneFiber = oneBundle[fiberKey];
+                if (oneFiber.length !== afqb.plots.faPlotLength) {
+                    var errMessage = 'Streamlines have unexpected length. faPlotLength = ' + afqb.plots.faPlotLength + ", but oneFiber.length = " + oneFiber.length;
+                    if (typeof Error !== 'undefined') {
+                        throw new Error(errMessage);
                     }
+                    throw errMessage;
                 }
+            });
 
-				// Create a buffered geometry and line segments from these
-				// positions. Buffered Geometry is slightly more performant
-				// and necessary to interact with d3 brushing later on.
-				var bundleGeometry = new THREE.BufferGeometry();
-				bundleGeometry.addAttribute('position',
-						new THREE.BufferAttribute(positions, 3));
+            // Positions will hold x,y,z vertices for each fiber
+            var positions = new Float32Array(
+                nFibers * (afqb.plots.faPlotLength - 1) * 3 * 2
+            );
 
-				greyGeometry.merge(
-						new THREE.Geometry()
-						.fromBufferGeometry(bundleGeometry));
+            // Outer loop is along the length of each fiber.
+            // Inner loop cycles through each fiber group.
+            // This is counterintuitive but we want spatial locality to
+            // be preserved in index locality. This will make brushing
+            // much easier in the end.
+            for (var i = 0; i < afqb.plots.faPlotLength - 1; i++) {
+                Object.keys(oneBundle).forEach(function (fiberKey, iFiber) {
+                    var oneFiber = oneBundle[fiberKey];
 
-				var colorBundleLine = new THREE.LineSegments(bundleGeometry,
-						afqb.three.colorLineMaterial);
+                    // Vertices must be added in pairs. Later a
+                    // line segment will be drawn in between each pair.
+                    // This requires some repeat values to have a
+                    // continuous line but will allow us to avoid
+                    // having the beginning and end of the fiber
+                    // connect.
+                    var x1 = oneFiber[i][0],
+                        y1 = oneFiber[i][1],
+                        z1 = oneFiber[i][2];
 
-				// Set scale to match the brain surface,
-				// (determined by trial and error)
-				colorBundleLine.scale.set(0.05,0.05,0.05);
-                colorBundleLine.position.set(0, 0.8, -0.5);
+                    var x2 = oneFiber[i+1][0],
+                        y2 = oneFiber[i+1][1],
+                        z2 = oneFiber[i+1][2];
 
-				// Record some useful info for later
-				colorBundleLine.name = afqb.plots.tracts[ bundleIdx ];
-				colorBundleLine.nFibers = nFibers;
-				colorBundleLine.idx = bundleIdx;
+                    positions[i * nFibers * 6 + iFiber * 6 + 0] = x1;
+                    positions[i * nFibers * 6 + iFiber * 6 + 1] = y1;
+                    positions[i * nFibers * 6 + iFiber * 6 + 2] = z1;
 
-				++bundleIdx;
-
-                afqb.three.colorGroups.add(colorBundleLine);
+                    positions[i * nFibers * 6 + iFiber * 6 + 3] = x2;
+                    positions[i * nFibers * 6 + iFiber * 6 + 4] = y2;
+                    positions[i * nFibers * 6 + iFiber * 6 + 5] = z2;
+                });
             }
-        }
+
+            // Create a buffered geometry and line segments from these
+            // positions. Buffered Geometry is slightly more performant
+            // and necessary to interact with d3 brushing later on.
+            var bundleGeometry = new THREE.BufferGeometry();
+            bundleGeometry.addAttribute('position',
+                    new THREE.BufferAttribute(positions, 3));
+
+            greyGeometry.merge(
+                    new THREE.Geometry()
+                    .fromBufferGeometry(bundleGeometry));
+
+            var colorBundleLine = new THREE.LineSegments(bundleGeometry,
+                    afqb.three.colorLineMaterial);
+
+            // Set scale to match the brain surface,
+            // (determined by trial and error)
+            colorBundleLine.scale.set(0.05,0.05,0.05);
+            colorBundleLine.position.set(0, 0.8, -0.5);
+
+            // Record some useful info for later
+            colorBundleLine.name = afqb.plots.tracts[ bundleIdx ];
+            colorBundleLine.nFibers = nFibers;
+            colorBundleLine.idx = bundleIdx;
+
+            ++bundleIdx;
+
+            afqb.three.colorGroups.add(colorBundleLine);
+        });
 
 		// Set material properties for each fiber bundle
 		// And add event listeners for mouseover, etc.
@@ -344,8 +341,8 @@ afqb.three.init = function () {
 				});
 				domEvents.addEventListener(child, 'mouseout', function(event) {
 					var myBundle = d3.selectAll("input.tracts")[0][child.idx];
-					afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name)
-					afqb.three.highlightBundle(myBundle.checked, myBundle.name)
+					afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name);
+					afqb.three.highlightBundle(myBundle.checked, myBundle.name);
 					return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 				});
             }
