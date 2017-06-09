@@ -18,5 +18,5 @@ var afqb = {
 			html: {}
 		},
 		colors: {}
-	},
+	}
 };

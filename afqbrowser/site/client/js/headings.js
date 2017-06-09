@@ -1,3 +1,6 @@
+// Tell jslint that afqb is a global variable
+/*global afqb*/
+
 // Change the title in the html header
 document.title = afqb.global.settings.html.title || "AFQ Browser";
 
@@ -5,7 +8,7 @@ document.title = afqb.global.settings.html.title || "AFQ Browser";
 var title = document.getElementById("title-bar");
 // If user specified a link, then create an "a" tag and fill it appropriately
 // else, just put the text
-if(afqb.global.settings.html.link) {
+if (afqb.global.settings.html.link) {
 	var a = document.createElement("a");
 	a.href = afqb.global.settings.html.link;
 	a.innerHTML = afqb.global.settings.html.title || "AFQ Browser";
@@ -15,12 +18,12 @@ if(afqb.global.settings.html.link) {
 	title.innerHTML = afqb.global.settings.html.title || "AFQ Browser";
 }
 
-if(afqb.global.settings.html.subtitle) {
+if (afqb.global.settings.html.subtitle) {
 	// If the user specified a subtitle then add a span tag to the title-bar 
 	var subtitle = document.createElement("span");
 	subtitle.id = "title-bar-subtitle"; //Assign span id
     subtitle.setAttribute("style", "font-size: 75%;"); //Set span style
-	if(afqb.global.settings.html.sublink) {
+	if (afqb.global.settings.html.sublink) {
 		var a = document.createElement("a");
 		a.href = afqb.global.settings.html.sublink;
 		a.innerHTML = afqb.global.settings.html.subtitle || "";
