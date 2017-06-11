@@ -29,7 +29,6 @@ h1 {
 
 h2 {
   text-align: center;
-  text-transform: uppercase;
 }
 
 .title{
@@ -63,60 +62,12 @@ h2 {
 
 #header {
   flex: 0 0 auto;
-  height: 65px;
+  height: 60px;
   display:flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   background-color: #404040;
   margin-bottom: 10px;
-}
-
-#title-bar {
-  margin: auto;
-  flex: 1
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-#save-and-load-settings {
-  float: right;
-  display: flex;
-  flex-direction: column;
-}
-
-#load-settings, #save-settings {
-  display: none;
-  width: 0.1px;
-  height: 0.1px;
-  opacity: 0;
-  overflow: hidden;
-  position: absolute;
-  z-index: -1;
-}
-
-.save-and-load-button + label {
-  border-radius: 5px;
-  color: #404040;
-  background: #d9d9d9;
-  padding: 2px;
-  margin: 2px 2px 0px 2px;
-  border-style: solid;
-  border-color: #d9d9d9;
-  border-width: 1px;
-  /* font-size: 1.25em; */
-  /* font-weight: 700; */
-  display: inline-block;
-  cursor: pointer; /* "hand" cursor */
-}
-
-.save-and-load-button:focus + label,
-.save-and-load-button + label:hover {
-  color: #d9d9d9;
-  background: #404040;
-  border-style: solid;
-  border-color: white;
-  border-width: 1px;
 }
 
 .app-container {
@@ -132,7 +83,7 @@ h2 {
   display: flex;
   flex-direction: row;
   overflow: hidden;
-  
+
   width: 100%;
 }
 
@@ -205,9 +156,9 @@ h2 {
 #threejsbrain-with-title {
   flex: 1 1 auto;
   /* There was an issue where this div would not shrink when the user
-   * shortened the main left panel. This next line fixes that issue. It 
-   * makes absolutely no sense to me why this works. But it works.      
-   * I hereby bequeash this bug, this comment, and this hacky fix to    
+   * shortened the main left panel. This next line fixes that issue. It
+   * makes absolutely no sense to me why this works. But it works.
+   * I hereby bequeash this bug, this comment, and this hacky fix to
    * the flexbox ninja brave enough to give it a legitimate solution. */
   width: 30%;
 }
@@ -257,11 +208,38 @@ h2 {
   align-items: stretch;
 }
 
-#table-and-controls {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
+#download-subjects, #download-nodes{
+dispay: none;
+width: 0.1px;
+height: 0.1px;
+opacity: 0;
+overflow: hidden;
+position: absolute;
+z-index: -1;
 }
+
+.download-file-button + label{
+  border-radius: 5px;
+  color: #404040 ;
+  background: #d9d9d9 ;
+  padding: 2px;
+  margin: 2px 2px 0px 2px;
+  border-style: solid;
+  border-color: #d9d9d9 ;
+  border-width: 1px;
+  /* font-size: 1.25em; */
+  /* font-weight: 700; */
+  display: inline-block;
+  cursor: pointer; /* “hand” cursor */}
+
+.download-file-button:focus + label,
+.download-file-button + label:hover {
+    color: #d9d9d9 ;
+    background: #404040 ;
+    border-style: solid;
+    border-color: white;
+    border-width: 1px;
+  }
 
 #tractlist {
   /* Set a height restriction for the tract list. We can use a
@@ -280,9 +258,7 @@ h2 {
 }
 
 #table {
-  height: 1px;
-  flex-grow: 1;
-  flex-shrink: 1;
+  height: 300px;
   align: center;
 }
 
