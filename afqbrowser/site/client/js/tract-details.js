@@ -338,8 +338,6 @@ function ready(error, data) {
             }
         });
 
-
-
     // compute mean line
     afqb.plots.tractMean = d3.nest()
         .key(function (d) { return d.tractID; })
@@ -350,7 +348,7 @@ function ready(error, data) {
 						 return +d[afqb.controls.plotsControlBox.plotKey];}),
 					  stderr: d3.deviation(v, function (d) {
 						 return +d[afqb.controls.plotsControlBox.plotKey];
-					   })/Math.sqrt(afqb.plots.tractData[0].values.length),
+					 })/Math.sqrt(v.length),
 					  std: d3.deviation(v, function (d) {
 						 return +d[afqb.controls.plotsControlBox.plotKey];
 					   })
@@ -486,6 +484,7 @@ function updatePlots(error, data) {
 				.entries(data);
 		}
 
+
         afqb.plots.tractMean = d3.nest()
 			.key(function (d) { return d.tractID; })
 			.key(function (d) { return afqb.table.subGroups[d.subjectID]; })
@@ -494,14 +493,15 @@ function updatePlots(error, data) {
 				return{
 					mean: d3.mean(v, function (d) {
 					 return +d[afqb.controls.plotsControlBox.plotKey];}),
-					stderr: d3.deviation(v, function (d) {
-					 return +d[afqb.controls.plotsControlBox.plotKey];
-				 })/Math.sqrt(afqb.table.splitGroups[0].values.length),
+					stderr: d3.deviation(v, function (d,i) {
+					 return +d[afqb.controls.plotsControlBox.plotKey];})/Math.sqrt(v.length),
 					std: d3.deviation(v, function (d) {
 	 				 return +d[afqb.controls.plotsControlBox.plotKey];
 	 				 })
 			};})
 			.entries(data);
+
+
 
 		for (iTract = 0; iTract < afqb.plots.tractMean.length; iTract++) {
 			var index = afqb.plots.tractMean[iTract].values
@@ -518,31 +518,20 @@ function updatePlots(error, data) {
 				.entries(data);
 		}
 
-        afqb.plots.tractMean = d3.nest()
+     afqb.plots.tractMean = d3.nest()
 			.key(function (d) { return d.tractID; })
 			.key(function (d) { return d.nodeID; })
 			.rollup(function (v) {
-				if (afqb.table.splitGroups) {
-				return{
-					mean: d3.mean(v, function (d) {
-					 return +d[afqb.controls.plotsControlBox.plotKey];}),
-					stderr: d3.deviation(v, function (d) {
-					 return +d[afqb.controls.plotsControlBox.plotKey];
-				 })/Math.sqrt(afqb.table.splitGroups[0].values.length),
-					std: d3.deviation(v, function (d) {
- 					 return +d[afqb.controls.plotsControlBox.plotKey];
- 					 })
-				 }} else {
 					 return{
  						mean: d3.mean(v, function (d) {
  						 return +d[afqb.controls.plotsControlBox.plotKey];}),
  					  stderr: d3.deviation(v, function (d) {
  						 return +d[afqb.controls.plotsControlBox.plotKey];
- 					   })/Math.sqrt(afqb.plots.tractData[0].values.length),
+					 })/Math.sqrt(v.length),
  					  std: d3.deviation(v, function (d) {
  						 return +d[afqb.controls.plotsControlBox.plotKey];
  					   })
-				 };}
+				 };
 			 })
 			.entries(data);
 
