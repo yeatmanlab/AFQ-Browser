@@ -208,6 +208,39 @@ h2 {
   align-items: stretch;
 }
 
+#download-subjects, #download-nodes{
+dispay: none;
+width: 0.1px;
+height: 0.1px;
+opacity: 0;
+overflow: hidden;
+position: absolute;
+z-index: -1;
+}
+
+.download-file-button + label{
+  border-radius: 5px;
+  color: #404040 ;
+  background: #d9d9d9 ;
+  padding: 2px;
+  margin: 2px 2px 0px 2px;
+  border-style: solid;
+  border-color: #d9d9d9 ;
+  border-width: 1px;
+  /* font-size: 1.25em; */
+  /* font-weight: 700; */
+  display: inline-block;
+  cursor: pointer; /* “hand” cursor */}
+
+.download-file-button:focus + label,
+.download-file-button + label:hover {
+    color: #d9d9d9 ;
+    background: #404040 ;
+    border-style: solid;
+    border-color: white;
+    border-width: 1px;
+  }
+
 #tractlist {
   /* Set a height restriction for the tract list. We can use a
    * ridiculously small number here because flexbox will grow
@@ -272,11 +305,6 @@ label:hover, label:active, input:hover+label, input:active+label {
   fill: none;
   stroke-linejoin: round;
   stroke-linecap:round;
-}
-
-.area {
-    fill: #AFBABF;
-    stroke-width: 0;
 }
 
 .tracts {
