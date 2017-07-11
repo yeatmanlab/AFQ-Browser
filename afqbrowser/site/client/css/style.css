@@ -366,6 +366,11 @@ fill: #404040;
     font-size: 14px;
 }
 
+.area {
+  stroke: none;
+  fill: #AFBABF;
+}
+
 .x.axis path {
     display: none;
 }
