@@ -502,7 +502,6 @@ function updatePlots(error, data) {
 			.entries(data);
 
 
-
 		for (iTract = 0; iTract < afqb.plots.tractMean.length; iTract++) {
 			var index = afqb.plots.tractMean[iTract].values
 				.findIndex(item => item.key === "null");
@@ -597,7 +596,7 @@ function updatePlots(error, data) {
 				meanLines.append("path")
 						.attr("class", "area")
 						.attr("d", function(d) {return afqb.plots.area(d.values); })
-						.style("opacity", 0.25);
+						.style("opacity", 0.3);
 
 			meanLines.append("path")
 				.attr("class", "line")
