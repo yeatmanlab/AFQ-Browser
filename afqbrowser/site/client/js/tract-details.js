@@ -5,6 +5,8 @@
 //tractlist js
 afqb.plots.settings.checkboxes = {};
 afqb.plots.settings.zoom = {};
+afqb.plots.yzooms = {};
+afqb.plots.zoomable = true;
 
 afqb.plots.m = {top: 20, right: 10, bottom: 10, left: 25};
 afqb.plots.w = 400 - afqb.plots.m.left - afqb.plots.m.right,
@@ -92,21 +94,21 @@ afqb.plots.buildTractCheckboxes = function (error, data) {
 		});
 };
 
-afqb.plots.x = d3.scale.linear()
-    .range([afqb.plots.m.left + 25, afqb.plots.w + afqb.plots.m.left + 20]);
+afqb.plots.xScale = d3.scale.linear()
+	.range([afqb.plots.m.left + 25, afqb.plots.w + afqb.plots.m.left + 20]);
 
-afqb.plots.y = d3.scale.linear()
+afqb.plots.yScale = d3.scale.linear()
 	.range([afqb.plots.h - afqb.plots.axisOffset.bottom, 0]);
 
 //create axes
 afqb.plots.yAxis = d3.svg.axis()
-	.scale(afqb.plots.y)
+	.scale(afqb.plots.yScale)
 	.orient("left")
 	.tickSize(0 - afqb.plots.w - 5)
 	.ticks(5);
 
 afqb.plots.xAxis = d3.svg.axis()
-	.scale(afqb.plots.x)
+	.scale(afqb.plots.xScale)
 	.orient("bottom")
 	.tickPadding(8)
 	.ticks(5);
@@ -115,16 +117,16 @@ afqb.plots.line = d3.svg.line()
     .interpolate("basis")
     .x(function (d) {
         if (d.nodeID) {
-            return afqb.plots.x(+d.nodeID);
+            return afqb.plots.xScale(+d.nodeID);
         } else {
-            return afqb.plots.x(+d.key);
+            return afqb.plots.xScale(+d.key);
         }
     })
     .y(function (d) {
         if (d[afqb.global.controls.plotsControlBox.plotKey]) {
-            return afqb.plots.y(+d[afqb.global.controls.plotsControlBox.plotKey]);
+            return afqb.plots.yScale(+d[afqb.global.controls.plotsControlBox.plotKey]);
         } else {
-            return afqb.plots.y(+d.values.mean);
+            return afqb.plots.yScale(+d.values.mean);
         }
     });
 
@@ -133,16 +135,16 @@ afqb.plots.area = d3.svg.area()
     .x(function(d) { return afqb.plots.x(+d.key) })
     .y0(function (d) {
         if (afqb.global.controls.plotsControlBox.errorType == 'stderr') {
-            return afqb.plots.y(+d.values.mean - +d.values.stderr);
+            return afqb.plots.yScale(+d.values.mean - +d.values.stderr);
         } else {
-            return afqb.plots.y(+d.values.mean - +d.values.std);
+            return afqb.plots.yScale(+d.values.mean - +d.values.std);
         }
     })
     .y1(function (d) {
 		if (afqb.global.controls.plotsControlBox.errorType == 'stderr') {
-            return afqb.plots.y(+d.values.mean + +d.values.stderr);
+            return afqb.plots.yScale(+d.values.mean + +d.values.stderr);
         } else {
-			return afqb.plots.y(+d.values.mean + +d.values.std);
+			return afqb.plots.yScale(+d.values.mean + +d.values.std);
 		}
 	});
 
@@ -194,6 +196,8 @@ afqb.plots.buildPlotGui = function (error, data) {
                 .attr("class", "y label")
                 .style("stroke", "#888888;")
                 .text(function (d,i) { return afqb.global.controls.plotsControlBox.plotKey});
+            
+            setTimeout(afqb.plots.zoomAxis, 1000);
         });
 
     // Add error controller
@@ -243,6 +247,11 @@ afqb.plots.ready = function (error, data) {
 	data = data.filter(function (d) {
 		return Boolean(d[plotKey]);
 	});
+    
+    afqb.plots.yzooms[plotKey] = d3.behavior.zoom()
+        .y(afqb.plots.yScale)
+        .on("zoom", afqb.plots.zoomable ? afqb.plots.zoomAxis : null)
+        .on("zoomend",afqb.plots.zoomable ? afqb.plots.draw : null);
 
 	afqb.plots.lastPlotKey = plotKey;
 
@@ -252,10 +261,12 @@ afqb.plots.ready = function (error, data) {
 		.entries(data);
 
 	// set x and y domains for the tract plots
-	afqb.plots.y.domain(d3.extent(data, function (d) {
+	afqb.plots.yScale.domain(d3.extent(data, function (d) {
 		return +d[plotKey];
 	}));
-	afqb.plots.x.domain([0, 100]).nice();
+	afqb.plots.xScale.domain([0, 100]).nice();
+    
+    afqb.plots.yAxis.scale(afqb.plots.yScale);
 
 	//initialize panels for each tract - and attach tract data with them
 	var trPanels = d3.select("#tractdetails").selectAll("svg").data(afqb.plots.tractData);
@@ -288,7 +299,7 @@ afqb.plots.ready = function (error, data) {
         .style("visibility", "hidden")
         .attr("pointer-events", "all")
         .style("cursor", "row-resize")
-        .call(afqb.plots.yzoom);
+        .call(afqb.plots.yzooms[plotKey]);
 
 	//x-axis
 	trPanels.select("g").append("g")
@@ -525,7 +536,6 @@ afqb.plots.changePlots = function (error, data) {
 			}
 		}
 	} else {
-
 		afqb.plots.tractMean = d3.nest()
 			.key(function (d) { return d.tractID; })
 			.key(function (d) { return d.nodeID; })
@@ -553,40 +563,41 @@ afqb.plots.changePlots = function (error, data) {
 	}
 
 	// update axes based on selected data
-	afqb.plots.y.domain(d3.extent(data, function (d) {
+	afqb.plots.yScale.domain(d3.extent(data, function (d) {
 		return +d[plotKey];
 	}));
-	afqb.plots.x.domain([0, 100]).nice();
+	afqb.plots.xScale.domain([0, 100]).nice();
+    
+    afqb.plots.yAxis.scale(afqb.plots.yScale);
 
 	// Select the section we want to apply our changes to
 	var svg = d3.select("#tractdetails").selectAll("svg")
 		.data(afqb.plots.tractData).transition();
 
-	svg.select(".y.axis") // change the y axis
-		.duration(750)
+	svg.selectAll(".y.axis") // change the y axis
 		.call(afqb.plots.yAxis);
 
 	// update y zoom for new axis
-	afqb.plots.yzoom = d3.behavior.zoom()
-		.y(afqb.plots.y)
+	afqb.plots.yzooms[plotKey] = d3.behavior.zoom()
+		.y(afqb.plots.yScale)
 		.on("zoom", afqb.plots.zoomable ? afqb.plots.zoomAxis : null)
 		.on("zoomend", afqb.plots.zoomable ? afqb.plots.draw : null);
 
 	// If we've already stored this type of plot's zoom settings, recover them
 	if (afqb.plots.settings.zoom[plotKey]) {
-		afqb.plots.yzoom.scale(
+		afqb.plots.yzooms[plotKey].scale(
 				afqb.plots.settings.zoom[plotKey].scale || 1);
-		afqb.plots.yzoom.translate(
+		afqb.plots.yzooms[plotKey].translate(
 				afqb.plots.settings.zoom[plotKey].translate || [0, 0]);
 	} else {
 		// We need to store this for later use
 		afqb.plots.settings.zoom[plotKey] = {};
-		afqb.plots.settings.zoom[plotKey].scale = afqb.plots.yzoom.scale();
-		afqb.plots.settings.zoom[plotKey].translate = afqb.plots.yzoom.translate();
+		afqb.plots.settings.zoom[plotKey].scale = afqb.plots.yzooms[plotKey].scale();
+		afqb.plots.settings.zoom[plotKey].translate = afqb.plots.yzooms[plotKey].translate();
 	}
 
 	d3.select("#tractdetails").selectAll("svg")
-		.selectAll(".zoom.y.box").call(afqb.plots.yzoom);//.remove();
+		.selectAll(".zoom.y.box").call(afqb.plots.yzooms[plotKey]);//.remove();
 
 	afqb.plots.draw();
     afqb.plots.zoomAxis();
@@ -597,8 +608,8 @@ afqb.plots.draw = function() {
 	var plotKey = afqb.global.controls.plotsControlBox.plotKey;
 
 	// Update the zoom settings to reflect the latest zoom parameters
-	afqb.plots.settings.zoom[plotKey].scale = afqb.plots.yzoom.scale();
-	afqb.plots.settings.zoom[plotKey].translate = afqb.plots.yzoom.translate();
+	afqb.plots.settings.zoom[plotKey].scale = afqb.plots.yzooms[plotKey].scale();
+	afqb.plots.settings.zoom[plotKey].translate = afqb.plots.yzooms[plotKey].translate();
 
 	// JOIN new data with old elements.
 	var trLines = d3.select("#tractdetails").selectAll("svg")
@@ -666,6 +677,8 @@ afqb.plots.draw = function() {
             .style("opacity", 0.99)
             .style("stroke-width", "3px");
     }
+    
+    afqb.plots.zoomAxis();
 };
 
 afqb.plots.zoomAxis = function () {
@@ -673,16 +686,10 @@ afqb.plots.zoomAxis = function () {
 	d3.selectAll('.y.axis').call(afqb.plots.yAxis);
 };
 
-afqb.plots.zoomable = true;
-afqb.plots.yzoom = d3.behavior.zoom()
-	.y(afqb.plots.y)
-	.on("zoom", afqb.plots.zoomable ? afqb.plots.zoomAxis : null)
-	.on("zoomend",afqb.plots.zoomable ? afqb.plots.draw : null);
-
 afqb.plots.newBrush = function (id) {
     "use strict";
     var brush = d3.svg.brush()
-        .x(afqb.plots.x)
+        .x(afqb.plots.xScale)
         .on("brush", brushed)
 		.on("brushstart", brushStart)
 		.on("brushend", brushEnd);
