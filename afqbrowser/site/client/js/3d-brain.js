@@ -3,45 +3,26 @@
 
 // =========== three js part
 // Set initial opacitites here
-afqb.three.settings.lHOpacity = 0.01;
-afqb.three.settings.rHOpacity = 0.70;
-afqb.three.settings.fiberOpacity = 0.25;
-afqb.three.settings.colorOpacity = 0.75;
-afqb.three.settings.highlightOpacity = 0.75;
+//afqb.three.settings.lHOpacity = 0.01;
+//afqb.three.settings.rHOpacity = 0.70;
+//afqb.three.settings.fiberOpacity = 0.25;
+//afqb.three.settings.colorOpacity = 0.75;
+//afqb.three.settings.highlightOpacity = 0.75;
 
 // Set initial line widths here
-afqb.three.settings.fiberLineWidth = 1.0;
-afqb.three.settings.colorLineWidth = 2.0;
-afqb.three.settings.highlightLineWidth = 2.5;
+//afqb.three.settings.fiberLineWidth = 1.0;
+//afqb.three.settings.colorLineWidth = 2.0;
+//afqb.three.settings.highlightLineWidth = 2.5;
 
 // Set boolean value to show rendering stats
-afqb.three.settings.showStats = false;
+//afqb.three.settings.showStats = false;
 
 // Set the initial camera position
-afqb.three.settings.cameraPosition = {
-	x: -15,
-	y: 0,
-	z: 0
-};
-
-afqb.three.colorGroups = new THREE.Object3D();
-afqb.three.greyGroups = new THREE.Object3D();
-
-afqb.three.greyLineMaterial = new THREE.LineBasicMaterial({
-	opacity: afqb.three.settings.fiberOpacity,
-	linewidth: afqb.three.settings.fiberLineWidth,
-	transparent: true,
-	depthWrite: true
-});
-
-afqb.three.greyLineMaterial.color.setHex(0x444444);
-
-afqb.three.colorLineMaterial = new THREE.LineBasicMaterial({
-	opacity: 0.0,
-	linewidth: 0.000000000001,
-    transparent: true,
-	depthWrite: false
-});
+//afqb.three.settings.cameraPosition = {
+//	x: -15,
+//	y: 0,
+//	z: 0
+//};
 
 // init requires afqb.plots.faPlotLength to be defined.
 // afqb.plots.faPlotLength is defined in afqb.plots.buildTractCheckboxes in
@@ -77,6 +58,25 @@ if (afqb.three.settings.showStats) {
 
 afqb.three.init = function () {
     "use strict";
+    afqb.three.colorGroups = new THREE.Object3D();
+    afqb.three.greyGroups = new THREE.Object3D();
+
+    afqb.three.greyLineMaterial = new THREE.LineBasicMaterial({
+        opacity: afqb.three.settings.fiberOpacity,
+        linewidth: afqb.three.settings.fiberLineWidth,
+        transparent: true,
+        depthWrite: true
+    });
+
+    afqb.three.greyLineMaterial.color.setHex(0x444444);
+
+    afqb.three.colorLineMaterial = new THREE.LineBasicMaterial({
+        opacity: 0.0,
+        linewidth: 0.000000000001,
+        transparent: true,
+        depthWrite: false
+    });
+
 	// We put the renderer inside a div with id #threejsbrain
 	afqb.three.container = document.getElementById("threejsbrain");
 
@@ -471,6 +471,7 @@ afqb.three.mouseoverBundle = function (name) {
 
 // Use d3.queue() to wait for afqb.plots.faPlotLength before calling init and animate
 afqb.global.queues.threeQ = d3_queue.queue();
+afqb.global.queues.threeQ.defer(afqb.global.waitForSettings);
 afqb.global.queues.threeQ.defer(afqb.three.waitForPlotLength);
 afqb.global.queues.threeQ.await(afqb.three.initAndAnimate);
 

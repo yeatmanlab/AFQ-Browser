@@ -15,17 +15,17 @@ afqb.table.splitGroups = false;
 
 afqb.table.ramp = null;
 
-afqb.table.buildTable = function (error, data) {
+afqb.table.buildTable = function (error, useless, data) {
 	"use strict";
-    afqb.table.settings.sort = {};
-	afqb.table.settings.sort.key = null;
-	afqb.table.settings.sort.order = "ascending";
-	afqb.table.settings.sort.count = 2;
-	afqb.table.settings.prevSort = {};
-	afqb.table.settings.prevSort.key = null;
-	afqb.table.settings.prevSort.order = "ascending";
-	afqb.table.settings.prevSort.count = 2;
-	afqb.table.settings.selectedRows = {};
+//  afqb.table.settings.sort = {};
+//	afqb.table.settings.sort.key = null;
+//	afqb.table.settings.sort.order = "ascending";
+//	afqb.table.settings.sort.count = 2;
+//	afqb.table.settings.prevSort = {};
+//	afqb.table.settings.prevSort.key = null;
+//	afqb.table.settings.prevSort.order = "ascending";
+//	afqb.table.settings.prevSort.count = 2;
+//	afqb.table.settings.selectedRows = {};
 
 	data.forEach(function (d) {
         if (typeof d.subjectID === 'number') {
@@ -365,5 +365,6 @@ afqb.table.tableMouseDown = function () {
 };
 
 afqb.global.queues.subjectQ = d3_queue.queue();
+afqb.global.queues.subjectQ.defer(afqb.global.waitForSettings);
 afqb.global.queues.subjectQ.defer(d3.json, "data/subjects.json");
 afqb.global.queues.subjectQ.await(afqb.table.buildTable);

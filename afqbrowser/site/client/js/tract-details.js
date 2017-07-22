@@ -3,8 +3,8 @@
 /* eslint experimentalObjectRestSpread: true */
 
 //tractlist js
-afqb.plots.settings.checkboxes = {};
-afqb.plots.settings.zoom = {};
+//afqb.plots.settings.checkboxes = {};
+//afqb.plots.settings.zoom = {};
 afqb.plots.yzooms = {};
 afqb.plots.zoomable = true;
 
@@ -22,7 +22,7 @@ afqb.plots.lastPlotKey = null;
 // transition variable for consistency
 afqb.plots.t = d3.transition().duration(750);
 
-afqb.plots.buildFromNodes = function (error, data) {
+afqb.plots.buildFromNodes = function (error, useless, data) {
 	"use strict";
     afqb.plots.buildTractCheckboxes(error, data);
 	afqb.plots.buildPlotGui(error, data);
@@ -148,22 +148,22 @@ afqb.plots.area = d3.svg.area()
 		}
 	});
 
-afqb.plots.settings.bundleBrush = {};
+//afqb.plots.settings.bundleBrush = {};
 
 afqb.plots.buildPlotGui = function (error, data) {
     "use strict";
 	if (error) { throw error; }
 
-    afqb.plots.settings.brushTract = false;
-    afqb.plots.settings.plotKey = null;
-    afqb.plots.settings.lineOpacity = 0.3;
-    afqb.plots.settings.errorType = 'std';
+    // afqb.plots.settings.brushTract = false;
+    // afqb.plots.settings.plotKey = null;
+    // afqb.plots.settings.lineOpacity = 0.3;
+    // afqb.plots.settings.errorType = 'std';
 
 	var plotsGuiConfigObj = function () {
+		this.brushTract = afqb.plots.settings.brushTract;
 		this.plotKey = afqb.plots.settings.plotKey;
-        this.errorType = 'std';
 		this.lineOpacity = afqb.plots.settings.lineOpacity;
-        this.brushTract = afqb.plots.settings.brushTract;
+        this.errorType = afqb.plots.settings.errorType;
 	};
 
 	afqb.plots.gui = new dat.GUI({
@@ -177,14 +177,14 @@ afqb.plots.buildPlotGui = function (error, data) {
 
 	afqb.global.controls.plotsControlBox = new plotsGuiConfigObj();
 
-    var nodeKeys = Object.keys(data[0]).slice(3);
-    afqb.global.controls.plotsControlBox.plotKey = nodeKeys[0];
+	var nodeKeys = Object.keys(data[0]).slice(3);
+	afqb.global.controls.plotsControlBox.plotKey = nodeKeys[0];
 
     // Add key controller
 	afqb.plots.gui
 		.add(afqb.global.controls.plotsControlBox, 'plotKey', nodeKeys)
-        .name('Plot Type')
-        .onChange(function () {
+		.name('Plot Type')
+		.onChange(function () {
             d3.csv("data/nodes.csv", afqb.plots.changePlots);
             // update y label
             d3.selectAll(".y.label").remove();
@@ -197,6 +197,12 @@ afqb.plots.buildPlotGui = function (error, data) {
                 .style("stroke", "#888888;")
                 .text(function (d,i) { return afqb.global.controls.plotsControlBox.plotKey});
             
+            // This next line is so embarassingly hacky.
+            // Without it, the call to zoomAxis happens before some
+            // other drawing functions. Try as I might, I cannot figure
+            // out the dependency in order to make these tasks execute
+            // sequentially. So instead, I just make the call to zoomAxis
+            // wait for a second.
             setTimeout(afqb.plots.zoomAxis, 1000);
         });
 
@@ -209,10 +215,10 @@ afqb.plots.buildPlotGui = function (error, data) {
         });
 
     // Add plot opacity controller
-    afqb.plots.gui
+	afqb.plots.gui
 		.add(afqb.global.controls.plotsControlBox, 'lineOpacity', 0,1)
-        .name('Line Opacity')
-        .onChange(function () {
+		.name('Line Opacity')
+		.onChange(function () {
 			d3.select("#tractdetails")
 				.selectAll("svg").selectAll(".tracts")
 				.filter(function () {
@@ -242,7 +248,7 @@ afqb.plots.ready = function (error, data) {
 	});
 
 	var plotKey = afqb.global.controls.plotsControlBox.plotKey;
-	afqb.plots.settings.zoom[plotKey] = {};
+//	afqb.plots.settings.zoom[plotKey] = {};
 
 	data = data.filter(function (d) {
 		return Boolean(d[plotKey]);
@@ -355,13 +361,13 @@ afqb.plots.ready = function (error, data) {
 		.style("stroke-width", "1px");
 
 	// Populate budleBrush
-	d3.select("#tractdetails").selectAll("svg")[0]
-		.forEach(function (d) {
-			afqb.plots.settings.bundleBrush[d.id] = {
-				brushOn: false,
-				brushExtent: [0, 100]
-			};
-		});
+//	d3.select("#tractdetails").selectAll("svg")[0]
+//		.forEach(function (d) {
+//			afqb.plots.settings.bundleBrush[d.id] = {
+//				brushOn: false,
+//				brushExtent: [0, 100]
+//			};
+//		});
 
     // compute mean line
     afqb.plots.tractMean = d3.nest()
@@ -764,5 +770,6 @@ afqb.plots.showHideTractDetails = function (state, name) {
 };
 
 afqb.global.queues.nodeQ = d3_queue.queue();
+afqb.global.queues.nodeQ.defer(afqb.global.waitForSettings);
 afqb.global.queues.nodeQ.defer(d3.csv, "data/nodes.csv");
 afqb.global.queues.nodeQ.await(afqb.plots.buildFromNodes);

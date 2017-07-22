@@ -18,6 +18,7 @@ afqb.global.saveSettings = function () {
 	settings.three = afqb.three.settings;
 	settings.plots = afqb.plots.settings;
 	settings.table = afqb.table.settings;
+    settings.global = afqb.global.settings;
 
 	// Convert to a json string
 	var settingStr = JSON.stringify(settings);
@@ -39,6 +40,31 @@ afqb.global.saveSettings = function () {
 
 	// Download the settings string to settings.json
 	download("settings.json", settingStr);
+};
+
+afqb.global.initSettings = function () {
+    "use strict";
+    
+    d3.json("settings.json", function(settings) {
+		afqb.three.settings = settings.three;
+        afqb.plots.settings = settings.plots;
+        afqb.table.settings = settings.table;
+        afqb.global.settings = settings.global;
+        afqb.global.settings.loaded = true;
+    });
+};
+
+afqb.global.waitForSettings = function(callback) {
+    "use strict";
+    if (afqb.global.settings.loaded !== true) {
+        setTimeout(function () {
+            console.log("Waiting for settings to load...");
+            afqb.global.waitForSettings(callback);
+        }, 250);
+    } else {
+        callback(null);
+        console.log("Settings loaded!");
+    }
 };
 
 afqb.global.readSettings = function (evt) {
@@ -121,6 +147,7 @@ afqb.global.readSettings = function (evt) {
 		q.defer(loadTable);
 		q.await(function (error) {
 			if (error) { throw error; }
+            afqb.global.updateHeadings();
             afqb.plots.zoomAxis();
 		});
 	};
@@ -174,3 +201,5 @@ afqb.global.updateGui = function (gui, controlBox) {
 
 document.getElementById('load-settings')
 	.addEventListener('change', afqb.global.readSettings, false);
+
+afqb.global.initSettings();
