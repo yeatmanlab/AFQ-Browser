@@ -132,7 +132,7 @@ afqb.plots.line = d3.svg.line()
 
        
 afqb.plots.area = d3.svg.area()
-    .x(function(d) { return afqb.plots.x(+d.key) })
+    .x(function(d) { return afqb.plots.xScale(+d.key) })
     .y0(function (d) {
         if (afqb.global.controls.plotsControlBox.errorType == 'stderr') {
             return afqb.plots.yScale(+d.values.mean - +d.values.stderr);
