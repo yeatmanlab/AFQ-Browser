@@ -29,6 +29,7 @@ h1 {
 
 h2 {
   text-align: center;
+  text-transform: uppercase;
 }
 
 .title{
@@ -62,12 +63,60 @@ h2 {
 
 #header {
   flex: 0 0 auto;
-  height: 60px;
+  height: 65px;
   display:flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   background-color: #404040;
   margin-bottom: 10px;
+}
+
+#title-bar {
+  margin: auto;
+  flex: 1
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#save-and-load-settings {
+  float: right;
+  display: flex;
+  flex-direction: column;
+}
+
+#load-settings, #save-settings {
+  display: none;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.save-and-load-button + label {
+  border-radius: 5px;
+  color: #404040;
+  background: #d9d9d9;
+  padding: 2px;
+  margin: 2px 2px 0px 2px;
+  border-style: solid;
+  border-color: #d9d9d9;
+  border-width: 1px;
+  /* font-size: 1.25em; */
+  /* font-weight: 700; */
+  display: inline-block;
+  cursor: pointer; /* "hand" cursor */
+}
+
+.save-and-load-button:focus + label,
+.save-and-load-button + label:hover {
+  color: #d9d9d9;
+  background: #404040;
+  border-style: solid;
+  border-color: white;
+  border-width: 1px;
 }
 
 .app-container {
@@ -83,7 +132,6 @@ h2 {
   display: flex;
   flex-direction: row;
   overflow: hidden;
-
   width: 100%;
 }
 
@@ -208,6 +256,12 @@ h2 {
   align-items: stretch;
 }
 
+#table-and-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
 #download-subjects, #download-nodes{
 dispay: none;
 width: 0.1px;
@@ -258,7 +312,9 @@ z-index: -1;
 }
 
 #table {
-  height: 300px;
+  height: 1px;
+  flex-grow: 1;
+  flex-shrink: 1;
   align: center;
 }
 
