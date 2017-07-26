@@ -3,7 +3,7 @@
 AFQ-Browser will run in any standard web browser and is designed
 to visualize AFQ results.
 
-See: [http://yeatmanlab.github.io/Sarica_2017]http://yeatmanlab.github.io/Sarica_2017 for a working example
+See: [https://yeatmanlab.github.io/AFQBrowser-demo/](https://yeatmanlab.github.io/AFQBrowser-demo/) for a working example
 
 ## Installation
 
