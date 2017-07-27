@@ -117,6 +117,8 @@ afqb.global.readSettings = function (evt) {
 			afqb.global.controls.plotsControlBox.brushTract = afqb.plots.settings.brushTract;
 			afqb.global.controls.plotsControlBox.plotKey = afqb.plots.settings.plotKey;
 			afqb.global.controls.plotsControlBox.lineOpacity = afqb.plots.settings.lineOpacity;
+            afqb.global.controls.plotsControlBox.errorType = afqb.plots.settings.errorType;
+            
 			afqb.global.updateGui(afqb.plots.gui, afqb.global.controls.plotsControlBox);
 			afqb.plots.restoreBrush();
             callback(null);
