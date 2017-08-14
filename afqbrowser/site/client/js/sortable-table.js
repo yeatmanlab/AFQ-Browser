@@ -67,6 +67,7 @@ afqb.table.buildTable = function (error, useless, data) {
 
 	var TableGuiConfigObj = function () {
 		this.groupCount = afqb.table.settings.sort.count;
+        this.splitMethod = afqb.table.settings.splitMethod;
 	};
 
 	afqb.table.gui = new dat.GUI({
@@ -83,13 +84,21 @@ afqb.table.buildTable = function (error, useless, data) {
     // Add group count controller
 	afqb.table.gui
 		.add(afqb.global.controls.tableControlBox, 'groupCount')
-		.min(2).step(1)
+		.min(1).step(1)
 		.name('Number of Groups')
 		.onFinishChange(function (value) {
 			afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
 			afqb.table.settings.sort.count = value;
 			afqb.table.refreshTable();
 		});
+    
+    afqb.table.gui
+        .add(afqb.global.controls.tableControlBox, 'splitMethod', ['Equal Size', 'Equal Interval'])
+        .name('Grouping Method')
+        .onFinishChange(function (value) {
+            afqb.table.settings.splitMethod = value;
+            afqb.table.refreshTable();
+        });
 
 	afqb.table.gui.close();
 
@@ -213,41 +222,52 @@ afqb.table.refreshTable = function () {
 		}
 		
 		if (!sameKey || !sameCount || afqb.table.settings.restoring) {
-			// Get unique, non-null values from the column `sortOn`
-			var uniqueNotNull = function (value, index, self) {
-				return (self.indexOf(value) === index) && (value !== null);
-			};
+            console.assert(afqb.table.settings.splitMethod === "Equal Size" || afqb.table.settings.splitMethod === "Equal Interval", "Split method must be 'Equal Size' or 'Equal Interval'");
+            
+            // Get unique, non-null values from the column `sortOn`
+            var uniqueNotNull = function (value, index, self) {
+                return (self.indexOf(value) === index) && (value !== null);
+            };
 
-			var uniques = afqb.table.subData
-				.map(function (element) {
-					return element[sortOn];
-				})
+            var uniques = afqb.table.subData
+                .map(function (element) {
+                    return element[sortOn];
+                })
                 .filter(uniqueNotNull);
 
 			// usrGroups is the user requested number of groups
-			// numGroups may be smaller if there are not enough unique values
-			var usrGroups = afqb.table.settings.sort.count;
-			var numGroups = Math.min(usrGroups, uniques.length);
-
-			// Create groupScale to map between the unique
-			// values and the discrete group indices.
+            // numGroups may be smaller if there are not enough unique values
+            var usrGroups = afqb.table.settings.sort.count;
+            var numGroups = Math.min(usrGroups, uniques.length);
 			var groupScale;
-			// TODO: Use the datatype json instead of
-			// just testing the first element of uniques
-			if (typeof uniques[0] === 'number') {
-				groupScale = d3.scale.quantile()
-					.range(d3.range(numGroups));
-			} else {
-				var rangeOrdinal = new Array(uniques.length);
-				for (let i = 0; i < numGroups; i++) {
-					rangeOrdinal.fill(i,
-							i * uniques.length / numGroups,
-							(i + 1) * uniques.length / numGroups);
-				}
-				groupScale = d3.scale.ordinal()
-					.range(rangeOrdinal);
-			}
-			groupScale.domain(uniques);
+
+            // Create groupScale to map between the unique
+            // values and the discrete group indices.
+            // TODO: Use the datatype json instead of
+            // just testing the first element of uniques
+            if (typeof uniques[0] === 'number') {
+                if (afqb.table.settings.splitMethod === "Equal Size" || numGroups === 1) {
+                    // Split into groups of equal size
+                    groupScale = d3.scale.quantile()
+                        .range(d3.range(numGroups));
+                } else {
+                    // Split into groups of equal interval
+                    groupScale = d3.scale.quantize()
+                        .range(d3.range(numGroups));
+                }
+            } else {
+                var rangeOrdinal = new Array(uniques.length);
+                for (let i = 0; i < numGroups; i++) {
+                    rangeOrdinal.fill(i,
+                            i * uniques.length / numGroups,
+                            (i + 1) * uniques.length / numGroups);
+                }
+                groupScale = d3.scale.ordinal()
+                    .range(rangeOrdinal);
+            }
+
+            groupScale.domain(uniques);
+            
 
 			// Assign group index to each element of afqb.table.subData
 			afqb.table.subData.forEach(function(element) {

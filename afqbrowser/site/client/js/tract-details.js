@@ -377,12 +377,12 @@ afqb.plots.ready = function (error, data) {
             return {
                 mean: d3.mean(v, function (d) {
                         return +d[plotKey];}),
-                stderr: d3.deviation(v, function (d) {
+                stderr: (d3.deviation(v, function (d) {
                         return +d[plotKey];
-                })/Math.sqrt(v.length),
-                std: d3.deviation(v, function (d) {
+                }) || 0.0)/Math.sqrt(v.length),
+                std: (d3.deviation(v, function (d) {
                         return +d[plotKey];
-                })
+                }) || 0.0)
             };
         })
         .entries(data);
@@ -525,11 +525,12 @@ afqb.plots.changePlots = function (error, data) {
 				return{
 					mean: d3.mean(v, function (d) {
                         return +d[plotKey];}),
-					stderr: d3.deviation(v, function (d,i) {
-                        return +d[plotKey];})/Math.sqrt(v.length),
-					std: d3.deviation(v, function (d) {
+					stderr: (d3.deviation(v, function (d,i) {
                         return +d[plotKey];
-                    })
+                    }) || 0.0)/Math.sqrt(v.length),
+					std: (d3.deviation(v, function (d) {
+                        return +d[plotKey];
+                    }) || 0.0)
                 };
             })
 			.entries(data);
@@ -549,12 +550,12 @@ afqb.plots.changePlots = function (error, data) {
                 return{
                     mean: d3.mean(v, function (d) {
                         return +d[plotKey];}),
-                    stderr: d3.deviation(v, function (d) {
+                    stderr: (d3.deviation(v, function (d) {
  						 return +d[plotKey];
-                    })/Math.sqrt(v.length),
-                    std: d3.deviation(v, function (d) {
+                    }) || 0.0)/Math.sqrt(v.length),
+                    std: (d3.deviation(v, function (d) {
  						 return +d[plotKey];
-                    })
+                    }) || 0.0)
 				 };
 			 })
 			.entries(data);
