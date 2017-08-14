@@ -154,7 +154,7 @@ afqb.three.init = function () {
 		this.lhOpacity = afqb.three.settings.lHOpacity;
 		this.rhOpacity = afqb.three.settings.rHOpacity;
 		this.fiberOpacity = afqb.three.settings.fiberOpacity;
-		this.highlight = true;
+		this.highlight = afqb.three.settings.mouseoverHighlight;
 	};
 
 	afqb.three.gui = new dat.GUI({
