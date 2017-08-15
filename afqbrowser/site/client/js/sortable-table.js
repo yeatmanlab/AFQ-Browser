@@ -36,18 +36,34 @@ afqb.table.buildTable = function (error, useless, data) {
 
 	afqb.table.ramp = null;
 
-	var tableSvg = d3.select("#table").append("svg")
+    var headerSvg = d3.select("#header-div").append("svg")
 		.attr("width", d3.keys(afqb.table.subData[0]).length * afqb.table.fieldWidth)
-		.attr("height", "100%")
-		.attr("display", "flex")
-		.attr("flex-direction", "column");
-		// .attr("height", (afqb.table.subData.length + 1) * (afqb.table.fieldHeight + afqb.table.rowPadding));
+		.attr("height", afqb.table.fieldHeight + afqb.table.rowPadding);
 
-	afqb.table.headerGrp = tableSvg.append("g").attr("class", "headerGrp")
-		.attr("flex", "0 1 auto");
-	afqb.table.rowsGrp = tableSvg.append("g").attr("class", "rowsGrp")
-		.attr("flex", "1 1 auto");
-		//.attr("height", afqb.table.subData.length * (afqb.table.fieldHeight + afqb.table.rowPadding));
+	afqb.table.headerGrp = headerSvg.append("g").attr("class", "headerGrp")
+		// .attr("flex", "0 0 auto");
+		.attr("height", afqb.table.fieldHeight + afqb.table.rowPadding);
+
+	var rowsSvg = d3.select("#rows-div").append("svg")
+		.attr("width", d3.keys(afqb.table.subData[0]).length * afqb.table.fieldWidth)
+		// .attr("height", "100%")
+        // .attr("overflow-y", "auto")
+		// .attr("display", "flex")
+		// .attr("flex-direction", "column")
+		.attr("height", afqb.table.subData.length * (afqb.table.fieldHeight + afqb.table.rowPadding));
+
+	afqb.table.rowsGrp = rowsSvg.append("g").attr("class", "rowsGrp")
+		// .attr("flex", "1 1 auto")
+        // .attr("overflow-y", "auto")
+		.attr("height", afqb.table.subData.length * (afqb.table.fieldHeight + afqb.table.rowPadding));
+
+    var tableElement = document.getElementById("table");
+    var headerDiv = document.getElementById("header-div");
+
+    tableElement.addEventListener("scroll", function() {
+        headerDiv.style.position = "relative";
+        headerDiv.style.top = this.scrollTop + "px";
+    }, false);
 
 	var TableGuiConfigObj = function () {
 		this.groupCount = afqb.table.settings.sort.count;
@@ -121,7 +137,7 @@ afqb.table.refreshTable = function () {
         .attr("class", "row")
         .attr("id", function (d) { return d.subjectID; })
         .attr("transform", function (d, i) {
-            return "translate(0," + (i + 1) * (afqb.table.fieldHeight + afqb.table.rowPadding) + ")";
+            return "translate(0," + i * (afqb.table.fieldHeight + afqb.table.rowPadding) + ")";
         })
         //.on('click', afqb.table.rowSelect )
         .on('mouseover', afqb.table.tableMouseDown)
