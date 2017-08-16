@@ -2,27 +2,6 @@
 /* global afqb, THREE, THREEx, dat, d3, d3_queue, Stats, $, Float32Array */
 
 // =========== three js part
-// Set initial opacitites here
-//afqb.three.settings.lHOpacity = 0.01;
-//afqb.three.settings.rHOpacity = 0.70;
-//afqb.three.settings.fiberOpacity = 0.25;
-//afqb.three.settings.colorOpacity = 0.75;
-//afqb.three.settings.highlightOpacity = 0.75;
-
-// Set initial line widths here
-//afqb.three.settings.fiberLineWidth = 1.0;
-//afqb.three.settings.colorLineWidth = 2.0;
-//afqb.three.settings.highlightLineWidth = 2.5;
-
-// Set boolean value to show rendering stats
-//afqb.three.settings.showStats = false;
-
-// Set the initial camera position
-//afqb.three.settings.cameraPosition = {
-//	x: -15,
-//	y: 0,
-//	z: 0
-//};
 
 // init requires afqb.plots.faPlotLength to be defined.
 // afqb.plots.faPlotLength is defined in afqb.plots.buildTractCheckboxes in

@@ -3,8 +3,6 @@
 /* eslint experimentalObjectRestSpread: true */
 
 //tractlist js
-//afqb.plots.settings.checkboxes = {};
-//afqb.plots.settings.zoom = {};
 afqb.plots.yzooms = {};
 afqb.plots.zoomable = true;
 
@@ -130,7 +128,6 @@ afqb.plots.line = d3.svg.line()
         }
     });
 
-       
 afqb.plots.area = d3.svg.area()
     .x(function(d) { return afqb.plots.xScale(+d.key) })
     .y0(function (d) {
@@ -148,16 +145,9 @@ afqb.plots.area = d3.svg.area()
 		}
 	});
 
-//afqb.plots.settings.bundleBrush = {};
-
 afqb.plots.buildPlotGui = function (error, data) {
     "use strict";
 	if (error) { throw error; }
-
-    // afqb.plots.settings.brushTract = false;
-    // afqb.plots.settings.plotKey = null;
-    // afqb.plots.settings.lineOpacity = 0.3;
-    // afqb.plots.settings.errorType = 'std';
 
 	var plotsGuiConfigObj = function () {
 		this.brushTract = afqb.plots.settings.brushTract;
@@ -248,7 +238,6 @@ afqb.plots.ready = function (error, data) {
 	});
 
 	var plotKey = afqb.global.controls.plotsControlBox.plotKey;
-//	afqb.plots.settings.zoom[plotKey] = {};
 
 	data = data.filter(function (d) {
 		return Boolean(d[plotKey]);
@@ -359,15 +348,6 @@ afqb.plots.ready = function (error, data) {
 		.attr("d", function (d) { return afqb.plots.line(d.values); })
 		.style("opacity", afqb.global.controls.plotsControlBox.lineOpacity)
 		.style("stroke-width", "1px");
-
-	// Populate budleBrush
-//	d3.select("#tractdetails").selectAll("svg")[0]
-//		.forEach(function (d) {
-//			afqb.plots.settings.bundleBrush[d.id] = {
-//				brushOn: false,
-//				brushExtent: [0, 100]
-//			};
-//		});
 
     // compute mean line
     afqb.plots.tractMean = d3.nest()
