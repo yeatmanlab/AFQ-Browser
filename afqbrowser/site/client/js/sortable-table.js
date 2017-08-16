@@ -181,7 +181,7 @@ afqb.table.refreshTable = function () {
             rows//.transition()
                 //.duration(500)
                 .attr("transform", function (d, i) {
-                    return "translate(0," + (i + 1) * (afqb.table.fieldHeight + 1) + ")";
+                    return "translate(0," + i * (afqb.table.fieldHeight + 1) + ")";
                 });
         }
 		
@@ -199,7 +199,7 @@ afqb.table.refreshTable = function () {
             rows//.transition()
                 //.duration(500)
                 .attr("transform", function (d, i) {
-                    return "translate(0," + (i + 1) * (afqb.table.fieldHeight + 1) + ")";
+                    return "translate(0," + i * (afqb.table.fieldHeight + 1) + ")";
                 });
 		}
 		
@@ -281,7 +281,7 @@ afqb.table.refreshTable = function () {
                 rows//.transition()
                     //.duration(500)
                     .attr("transform", function (d, i) {
-                        return "translate(0," + (i + 1) * (afqb.table.fieldHeight + 1) + ")";
+                        return "translate(0," + i * (afqb.table.fieldHeight + 1) + ")";
                     });
             }
 			afqb.table.settings.restoring = false;
