@@ -240,7 +240,7 @@ afqb.table.refreshTable = function () {
             var usrGroups = afqb.table.settings.sort.count;
             var numGroups = Math.min(usrGroups, uniques.length);
 			var groupScale;
-
+            
             // Create groupScale to map between the unique
             // values and the discrete group indices.
             // TODO: Use the datatype json instead of
@@ -250,10 +250,14 @@ afqb.table.refreshTable = function () {
                     // Split into groups of equal size
                     groupScale = d3.scale.quantile()
                         .range(d3.range(numGroups));
+                    
+                    groupScale.domain(uniques);
                 } else {
                     // Split into groups of equal interval
                     groupScale = d3.scale.quantize()
                         .range(d3.range(numGroups));
+                    
+                    groupScale.domain([d3.min(uniques), d3.max(uniques)]);
                 }
             } else {
                 var rangeOrdinal = new Array(uniques.length);
@@ -264,10 +268,9 @@ afqb.table.refreshTable = function () {
                 }
                 groupScale = d3.scale.ordinal()
                     .range(rangeOrdinal);
+                
+                groupScale.domain(uniques);
             }
-
-            groupScale.domain(uniques);
-            
 
 			// Assign group index to each element of afqb.table.subData
 			afqb.table.subData.forEach(function(element) {
