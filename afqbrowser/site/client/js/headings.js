@@ -1,10 +1,10 @@
 // Tell jslint that afqb is a global variable
 /* global afqb */
 
-// Change the title in the html header
-document.title = afqb.global.settings.html.title || "AFQ Browser";
-
 afqb.global.updateHeadings = function () {
+    // Change the title in the html header
+    document.title = afqb.global.settings.html.title || "AFQ Browser";
+    
     // Get the h1 title
     var title = document.getElementById("title-bar");
     // If user specified a link, then create an "a" tag and fill it appropriately
@@ -37,7 +37,10 @@ afqb.global.updateHeadings = function () {
         }
         title.appendChild(subtitle);
     }
+    
+    afqb.global.settings.html.title = document.title;
 }
 
-afqb.global.updateHeadings();
-afqb.global.settings.html.title = document.title;
+afqb.global.queues.headingsQ = d3_queue.queue();
+afqb.global.queues.headingsQ.defer(afqb.global.waitForSettings);
+afqb.global.queues.headingsQ.await(afqb.global.updateHeadings);
