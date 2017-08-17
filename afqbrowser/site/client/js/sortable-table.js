@@ -331,7 +331,7 @@ afqb.table.descendingWithNull = function (a, b) {
 // onclick function to toggle on and off rows
 afqb.table.rowSelect = function () {
     "use strict";
-    if($('g',this).css("opacity") === 0.3) {
+    if($('g',this).css("opacity") == 0.3) {
 		afqb.table.settings.selectedRows[this.id] = true;
 		//uses the opacity of the row for selection and deselection
         d3.selectAll('#' + this.id)
@@ -371,7 +371,7 @@ $(document).mousedown(function() {
 afqb.table.tableMouseDown = function () {
     "use strict";
 	if(afqb.global.mouse.isDown) {
-		if($('g',this).css("opacity") === 0.3) {
+		if($('g',this).css("opacity") == 0.3) {
 			//uses the opacity of the row for selection and deselection
 			d3.selectAll('#' + this.id)
 				.selectAll('g')
