@@ -2,8 +2,7 @@ language: python
 sudo: false
 env:
   global:
-    - PIP_DEPS="pip flake8 pytest coveralls pytest-cov" MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
-
+    - PIP_DEPS="pip flake8 pytest coveralls pytest-cov" 
 python:
 - '2.7'
 - '3.6'
@@ -15,7 +14,7 @@ install:
 
 script:
 - flake8 --ignore N802,N806 `find . -name \*.py | grep -v setup.py | grep -v version.py | grep -v __init__.py | grep -v /doc/`
-- py.test --pyargs popylar --cov-report term-missing --cov=popylar
+- py.test --pyargs afqbrowser --cov-report term-missing --cov=afqbrowser
 
 after_success:
 - coveralls
