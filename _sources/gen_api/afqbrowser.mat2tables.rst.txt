@@ -1,0 +1,12 @@
+afqbrowser.mat2tables
+=====================
+
+.. currentmodule:: afqbrowser
+
+.. autofunction:: mat2tables
+
+.. include:: afqbrowser.mat2tables.examples
+
+.. raw:: html
+
+    <div style='clear:both'></div>

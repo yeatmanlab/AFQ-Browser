@@ -1,0 +1,12 @@
+afqbrowser.run
+==============
+
+.. currentmodule:: afqbrowser
+
+.. autofunction:: run
+
+.. include:: afqbrowser.run.examples
+
+.. raw:: html
+
+    <div style='clear:both'></div>

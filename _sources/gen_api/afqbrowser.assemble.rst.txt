@@ -1,0 +1,12 @@
+afqbrowser.assemble
+===================
+
+.. currentmodule:: afqbrowser
+
+.. autofunction:: assemble
+
+.. include:: afqbrowser.assemble.examples
+
+.. raw:: html
+
+    <div style='clear:both'></div>
