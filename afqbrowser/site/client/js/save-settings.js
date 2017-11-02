@@ -50,18 +50,30 @@ afqb.global.saveSettings = function () {
 	download("settings.json", settingStr);
 };
 
+function setSettings(settings){
+	afqb.three.settings = settings.three;
+	afqb.plots.settings = settings.plots;
+	afqb.table.settings = settings.table;
+	afqb.global.settings = settings.global;
+	afqb.global.settings.loaded = true;
+}
+
 afqb.global.initSettings = function () {
     "use strict";
     // replace here w/ QS
 		var params = afqb.global.qs.getAll()
-		var settings = JSON.parse(params["settings"])
-    //d3.json("settings.json", function(settings) {
-		afqb.three.settings = settings.three;
-        afqb.plots.settings = settings.plots;
-        afqb.table.settings = settings.table;
-        afqb.global.settings = settings.global;
-        afqb.global.settings.loaded = true;
-    //});
+		console.log("Parameter settings from QS are:", params.settings)
+
+		if (params["settings"]){
+			var settings = JSON.parse(params["settings"])
+			console.log("parsed settings are", settings)
+			setSettings(settings)
+		} else {
+			d3.json("settings.json", function(settings) {
+				setSettings(settings)
+			});
+		}
+
 };
 
 afqb.global.waitForSettings = function(callback) {
