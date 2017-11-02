@@ -73,7 +73,6 @@ afqb.global.initSettings = function () {
 				setSettings(settings)
 			});
 		}
-
 };
 
 afqb.global.waitForSettings = function(callback) {

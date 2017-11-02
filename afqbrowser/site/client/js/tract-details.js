@@ -25,6 +25,7 @@ afqb.plots.buildFromNodes = function (error, useless, data) {
     afqb.plots.buildTractCheckboxes(error, data);
 	afqb.plots.buildPlotGui(error, data);
 	afqb.plots.ready(error, data);
+    afqb.plots.draw();
 };
 
 afqb.plots.brushes = [];
@@ -68,7 +69,6 @@ afqb.plots.buildTractCheckboxes = function (error, data) {
 			afqb.plots.showHideTractDetails(state, name);
 			afqb.three.highlightBundle(state, name);
 		});
-
 
 	// all select/un-select all checkbox
 	d3.selectAll("#selectAllTracts")
@@ -783,6 +783,17 @@ afqb.plots.showHideTractDetails = function (state, name) {
 			.style("color","#111111");
 	}
 };
+
+afqb.plots.initCheckboxes = function (error) {
+    "use strict";
+    if (error) { throw error; }
+    d3.selectAll("input.tracts").each(function() {
+        var name = d3.select(this).attr("name");
+        var state = afqb.plots.settings.checkboxes[name];
+        afqb.plots.showHideTractDetails(state, name);
+        afqb.three.highlightBundle(state, name);
+    });
+}
 
 afqb.global.queues.nodeQ = d3_queue.queue();
 afqb.global.queues.nodeQ.defer(afqb.global.waitForSettings);

@@ -24,7 +24,7 @@ afqb.three.waitForPlotLength = function (callback) {
 afqb.three.initAndAnimate = function (error) {
     "use strict";
     if (error) { throw error; }
-    afqb.three.init();
+    afqb.three.init(afqb.plots.initCheckboxes);
 	afqb.three.animate();
 };
 
@@ -35,7 +35,7 @@ if (afqb.three.settings.showStats) {
 	afqb.three.container.appendChild(afqb.three.stats.dom);
 }
 
-afqb.three.init = function () {
+afqb.three.init = function (callback) {
     "use strict";
     afqb.three.colorGroups = new THREE.Object3D();
     afqb.three.greyGroups = new THREE.Object3D();
@@ -342,6 +342,8 @@ afqb.three.init = function () {
 		// Finally add fiber bundle group to the afqb.three.scene.
   		afqb.three.scene.add(afqb.three.colorGroups);
 		afqb.three.scene.add(afqb.three.greyGroups);
+        
+        if (callback) { callback(null) };
     });
 
     window.addEventListener('resize', afqb.three.onWindowResize, false);
