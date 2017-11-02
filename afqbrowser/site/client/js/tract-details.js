@@ -25,6 +25,8 @@ afqb.plots.buildFromNodes = function (error, useless, data) {
     afqb.plots.buildTractCheckboxes(error, data);
 	afqb.plots.buildPlotGui(error, data);
 	afqb.plots.ready(error, data);
+    afqb.plots.updateBrush();
+    afqb.plots.restoreBrush();
     afqb.plots.draw();
 };
 
