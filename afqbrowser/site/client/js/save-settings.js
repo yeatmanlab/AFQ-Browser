@@ -22,6 +22,14 @@ afqb.global.saveSettings = function () {
 
 	// Convert to a json string
 	var settingStr = JSON.stringify(settings);
+	afqb.global.qs.set("settings", settingStr)
+	//Object.keys(settings).forEach(function(key, idx, arr){
+	//		afqb.global.qs.set(key, settings[key])
+	//})
+
+	window.history.pushState({
+        path: afqb.global.qs.url
+      }, '', afqb.global.qs.url);
 
 	// Download a string to a file
 	function download(filename, text) {
@@ -44,17 +52,20 @@ afqb.global.saveSettings = function () {
 
 afqb.global.initSettings = function () {
     "use strict";
-    
-    d3.json("settings.json", function(settings) {
+    // replace here w/ QS
+		var params = afqb.global.qs.getAll()
+		var settings = JSON.parse(params["settings"])
+    //d3.json("settings.json", function(settings) {
 		afqb.three.settings = settings.three;
         afqb.plots.settings = settings.plots;
         afqb.table.settings = settings.table;
         afqb.global.settings = settings.global;
         afqb.global.settings.loaded = true;
-    });
+    //});
 };
 
 afqb.global.waitForSettings = function(callback) {
+	  // questionable func
     "use strict";
     if (afqb.global.settings.loaded !== true) {
         setTimeout(function () {
@@ -118,7 +129,7 @@ afqb.global.readSettings = function (evt) {
 			afqb.global.controls.plotsControlBox.plotKey = afqb.plots.settings.plotKey;
 			afqb.global.controls.plotsControlBox.lineOpacity = afqb.plots.settings.lineOpacity;
             afqb.global.controls.plotsControlBox.errorType = afqb.plots.settings.errorType;
-            
+
 			afqb.global.updateGui(afqb.plots.gui, afqb.global.controls.plotsControlBox);
 			afqb.plots.restoreBrush();
             callback(null);
@@ -155,7 +166,7 @@ afqb.global.readSettings = function (evt) {
 	};
 
 	reader.readAsText(f);
-    
+
     // We want the user to be able to reload the same settings file
     // So we scrub the input element's fileList by setting its value to ""
     document.getElementById('load-settings').value = "";

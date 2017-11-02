@@ -16,7 +16,8 @@ var afqb = {
 		mouse: {},
 		queues: {},
 		controls: {},
-		settings: {
+		qs: new QS(),
+		settings: { //query string will manipulate settings
 			html: {}
 		},
 		colors: {}
