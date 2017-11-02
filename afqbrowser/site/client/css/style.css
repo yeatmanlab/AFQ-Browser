@@ -439,3 +439,7 @@ fill: #404040;
   fill-opacity: .125;
   shape-rendering: crispEdges;
 }
+
+.brushExt {
+  font-size: 0.85em;
+}

@@ -186,7 +186,7 @@ afqb.plots.buildPlotGui = function (error, data) {
                 .attr("class", "y label")
                 .style("stroke", "#888888;")
                 .text(function (d,i) { return afqb.global.controls.plotsControlBox.plotKey});
-            
+
             // This next line is so embarassingly hacky.
             // Without it, the call to zoomAxis happens before some
             // other drawing functions. Try as I might, I cannot figure
@@ -242,7 +242,7 @@ afqb.plots.ready = function (error, data) {
 	data = data.filter(function (d) {
 		return Boolean(d[plotKey]);
 	});
-    
+
     afqb.plots.yzooms[plotKey] = d3.behavior.zoom()
         .y(afqb.plots.yScale)
         .on("zoom", afqb.plots.zoomable ? afqb.plots.zoomAxis : null)
@@ -260,7 +260,7 @@ afqb.plots.ready = function (error, data) {
 		return +d[plotKey];
 	}));
 	afqb.plots.xScale.domain([0, 100]).nice();
-    
+
     afqb.plots.yAxis.scale(afqb.plots.yScale);
 
 	//initialize panels for each tract - and attach tract data with them
@@ -330,6 +330,15 @@ afqb.plots.ready = function (error, data) {
 		.style("stroke", function(d,i){return afqb.global.d3colors[i];} )
 		.style("fill", function(d,i){return afqb.global.d3colors[i];} )
 		.text(function(d,i) { return afqb.plots.tracts[i]; });
+
+		trPanels.append("text")
+			.attr("class", "brushExt")
+			.attr("text-anchor", "end")
+			.attr("transform", "translate("+ (afqb.plots.w + afqb.plots.m.right + 30)
+								+","+(afqb.plots.m.top+15)+")")
+			.style("stroke", function(d,i){return afqb.global.d3colors[i];} )
+			.style("fill", function(d,i){return afqb.global.d3colors[i];} )
+
 
 	// associate tractsline with each subject
 	var tractLines = trPanels.selectAll(".tracts")
@@ -554,7 +563,7 @@ afqb.plots.changePlots = function (error, data) {
 		return +d[plotKey];
 	}));
 	afqb.plots.xScale.domain([0, 100]).nice();
-    
+
     afqb.plots.yAxis.scale(afqb.plots.yScale);
 
 	// Select the section we want to apply our changes to
@@ -619,7 +628,7 @@ afqb.plots.draw = function() {
                     return element.key === d.key;
                 })[0].values;
             });
-			
+
         // Enter and update. Merge entered elements and apply operations
         meanLines.enter().append("g")
             .attr("class", "tracts means")
@@ -635,7 +644,7 @@ afqb.plots.draw = function() {
             .attr("d", function(d) {return afqb.plots.line(d.values); })
             .style("opacity", 0.99)
             .style("stroke-width", "3px");
-            
+
         // set mean colors
         d3.select("#tractdetails").selectAll("svg").selectAll(".means").select(".area")
             .style("fill", function (d, i) { return afqb.table.ramp(i); });
@@ -664,7 +673,7 @@ afqb.plots.draw = function() {
             .style("opacity", 0.99)
             .style("stroke-width", "3px");
     }
-    
+
     afqb.plots.zoomAxis();
 };
 
@@ -680,7 +689,7 @@ afqb.plots.newBrush = function (id) {
         .on("brush", brushed)
 		.on("brushstart", brushStart)
 		.on("brushend", brushEnd);
-    
+
     function brushed() {
         var targetId = this.parentElement.id;
         var targetBrush = afqb.plots.brushes.filter(function (b) {
@@ -689,8 +698,23 @@ afqb.plots.newBrush = function (id) {
 		afqb.plots.settings.bundleBrush[targetId].brushOn = !targetBrush.empty();
 		if (targetBrush.empty()) {
 			afqb.plots.settings.bundleBrush[targetId].brushExtent = [0, 100];
+
+			d3.selectAll(".brushExt").each(function(d, i){
+				if (i==parseInt(targetId.replace("tract", "")) ){
+					d3.select(this).text("")
+				}
+			})
+			
 		} else {
 		    afqb.plots.settings.bundleBrush[targetId].brushExtent = targetBrush.extent();
+				var formatter = d3.format(".1f")
+				var ext = targetBrush.extent();
+				console.log("brush extent", targetBrush.extent(), targetId)
+				d3.selectAll(".brushExt").each(function(d, i){
+					if (i==parseInt(targetId.replace("tract", "")) ){
+						d3.select(this).text("(" + formatter(ext[0]) + " - " + formatter(ext[1]) + ")")
+					}
+				})
 		}
 	}
 
@@ -700,8 +724,9 @@ afqb.plots.newBrush = function (id) {
 
 	function brushEnd() {
 		afqb.global.mouse.brushing = false;
+
 	}
-    
+
     afqb.plots.brushes.push({id: id, brush: brush});
 };
 
@@ -719,7 +744,7 @@ afqb.plots.updateBrush = function () {
             })[0].brush;
             d3.select(this).call(targetBrush);
         };
-        
+
 		var brushg = d3.select("#tractdetails").selectAll("svg")
 			.append("g")
 			.attr("class", "brush")
