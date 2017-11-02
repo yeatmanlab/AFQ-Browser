@@ -50,7 +50,12 @@
 
           <div id="tractlist-with-title"
               class="w3-container title-and-content panel-left ew-resize">
-            <div id="list-title" class="title"><h2>Bundles</h2></div>
+            <div id="list-title" class="title">
+              <h2>Bundles</h2>
+            </div>
+            <div class="tractlist-explanation">
+            <small>Select a tract to view profile</small>
+            </div>
             <div id="tractlist" class="content scrollable">
               <div id="selectAllBox">
                 <input type="checkbox" id="selectAllTracts">
@@ -62,6 +67,9 @@
           <div id="threejsbrain-with-title"
               class="w3-container title-and-content panel-right">
             <div id="subject-title" class="title"><h2>Anatomy</h2></div>
+            <div class="tractlist-explanation">
+            <small>Rotate, zoom and select tracts</small>
+            </div>
             <div id="three-and-controls" class="content">
               <div id="threejsbrain" class="canvasloader-container"></div>
               <div id="three-gui-container" class="gui-container"></div>
@@ -73,6 +81,9 @@
           class="w3-container title-and-content panel-bottom">
           <div id="table-title" class="title">
             <h2>Subject Metadata</h2><br>
+          </div>
+          <div class="tractlist-explanation">
+          <small>Select subjects to view profile</small>
           </div>
           <div id="table-and-controls" class="content">
             <div id="table" class="scrollable">
@@ -88,6 +99,9 @@
       <div id="container-plots"
           class="w3-container title-and-content panel-right">
         <div id="plots-title" class="title"><h2>Bundle Details</h2></div>
+        <div class="tractlist-explanation">
+          <small>AFQ tract profile outputs</small>
+        </div>
         <div id="plots-and-controls" class="content">
           <div id="tractdetails" class="scrollable"></div>
           <div id="plots-gui-container" class="gui-container"></div>
