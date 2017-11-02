@@ -213,7 +213,7 @@ h2 {
    * I hereby bequeath this bug, this comment, and this hacky fix to
    * the flexbox ninja brave enough to give it a legitimate solution. */
   width: 30%;
-  /*height: 50%;*/
+  height: 50%;
 }
 
 #three-and-controls {
@@ -451,4 +451,12 @@ fill: #404040;
   stroke: #f09f8c;
   fill-opacity: .125;
   shape-rendering: crispEdges;
+}
+
+
+#three-gui-container {
+  position: absolute;
+  display: block;
+  right: 5px;
+  bottom: 0;
 }
