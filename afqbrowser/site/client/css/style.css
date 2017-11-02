@@ -34,7 +34,7 @@ h2 {
 }
 
 .title{
-  height: 35px; 
+  height: 35px;
   flex: 0 0 auto;
   display: flex;
   justify-content: center;
@@ -210,10 +210,10 @@ h2 {
   /* There was an issue where this div would not shrink when the user
    * shortened the main left panel. This next line fixes that issue. It
    * makes absolutely no sense to me why this works. But it works.
-   * I hereby bequeash this bug, this comment, and this hacky fix to
+   * I hereby bequeath this bug, this comment, and this hacky fix to
    * the flexbox ninja brave enough to give it a legitimate solution. */
   width: 30%;
-  height: 50%;
+  /*height: 50%;*/
 }
 
 #three-and-controls {
