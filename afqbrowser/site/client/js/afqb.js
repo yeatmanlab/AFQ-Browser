@@ -23,3 +23,10 @@ var afqb = {
 		colors: {}
 	}
 };
+
+WatchJS.watch(afqb.plots.settings, function(prop, action, newvalue, oldvalue){
+    console.log("prop: ", prop);
+    console.log("action: ", action);
+    console.log("newvalue: ", newvalue);
+    console.log("oldvalue: ", oldvalue);
+}, 0, true);
