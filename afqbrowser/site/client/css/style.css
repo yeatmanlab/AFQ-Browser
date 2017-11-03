@@ -461,6 +461,20 @@ fill: #404040;
   bottom: 5px;
 }
 
+#table-gui-container {
+  position: absolute;
+  display: block;
+  right: 5px;
+  bottom: 5px;
+}
+
+#plots-gui-container {
+  position: absolute;
+  display: block;
+  right: 5px;
+  bottom: 5px;
+}
+
 /*
 Special hover stuff
 */
