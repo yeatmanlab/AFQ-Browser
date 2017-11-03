@@ -704,15 +704,15 @@ afqb.plots.newBrush = function (id) {
 					d3.select(this).text("")
 				}
 			})
-			
+
 		} else {
 		    afqb.plots.settings.bundleBrush[targetId].brushExtent = targetBrush.extent();
-				var formatter = d3.format(".1f")
+				var formatter = d3.format(".0f")
 				var ext = targetBrush.extent();
 				console.log("brush extent", targetBrush.extent(), targetId)
 				d3.selectAll(".brushExt").each(function(d, i){
 					if (i==parseInt(targetId.replace("tract", "")) ){
-						d3.select(this).text("(" + formatter(ext[0]) + " - " + formatter(ext[1]) + ")")
+						d3.select(this).text("(" + formatter(ext[0]) + ", " + formatter(ext[1]) + ")")
 					}
 				})
 		}
