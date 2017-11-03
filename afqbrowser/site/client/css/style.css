@@ -212,7 +212,7 @@ h2 {
    * makes absolutely no sense to me why this works. But it works.
    * I hereby bequeath this bug, this comment, and this hacky fix to
    * the flexbox ninja brave enough to give it a legitimate solution. */
-  width: 40%;
+  width: 30%;
   /*height: 50%;*/
 }
 
