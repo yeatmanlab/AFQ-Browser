@@ -173,7 +173,7 @@ afqb.plots.buildPlotGui = function (error, data) {
     // Add key controller
 	afqb.plots.gui
 		.add(afqb.global.controls.plotsControlBox, 'plotKey', nodeKeys)
-		.name('Plot Type')
+		.name('Metric')
 		.onChange(function () {
             d3.csv("data/nodes.csv", afqb.plots.changePlots);
             // update y label
