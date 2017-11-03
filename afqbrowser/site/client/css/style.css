@@ -495,32 +495,3 @@ Special hover stuff
 #container-plots:hover .tractlist-explanation  {
   visibility: visible;
 }
-
-/* No mobile devices */
-
-.mobile-only {
-  visibility: hidden !important;
-  height: 0px !important;
-  position: fixed;
-  padding: 0;
-  margin: 0;
-}
-
-
-@media screen and (max-width: 700px) {
-    .page-container {
-      visibility: hidden;
-    }
-    .mobile-only {
-      visibility: visible;
-      height: auto;
-      padding: 10px;
-      margin: 10px;
-      top: 0px;
-    }
-
-    .mobile-only h1 {
-      visibility: visible;
-    }
-
-}
