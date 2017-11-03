@@ -30,7 +30,7 @@ h1 {
 h2 {
   text-align: center;
   text-transform: uppercase;
-  font-size: 1.2em !important;
+  font-size: 1.5em !important;
 }
 
 .title{
@@ -459,4 +459,39 @@ fill: #404040;
   display: block;
   right: 5px;
   bottom: 5px;
+}
+
+/*
+Special hover stuff
+*/
+
+#tractlist-with-title .tractlist-explanation {
+  visibility: hidden;
+}
+
+#tractlist-with-title:hover .tractlist-explanation  {
+  visibility: visible;
+}
+
+#threejsbrain-with-title .tractlist-explanation {
+  visibility: hidden;
+}
+
+#threejsbrain-with-title:hover .tractlist-explanation  {
+  visibility: visible;
+}
+
+#table-with-title .tractlist-explanation {
+  visibility: hidden;
+}
+
+#table-with-title:hover .tractlist-explanation  {
+  visibility: visible;
+}
+#container-plots .tractlist-explanation {
+  visibility: hidden;
+}
+
+#container-plots:hover .tractlist-explanation  {
+  visibility: visible;
 }
