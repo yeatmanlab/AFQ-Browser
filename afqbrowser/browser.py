@@ -1,5 +1,6 @@
 import os
 import os.path as op
+from glob import glob
 import shutil
 import scipy.io as sio
 import pandas as pd
@@ -15,10 +16,85 @@ except ImportError:
     import SocketServer as socketserver
 
 
-def mat2tables(mat_file_name, subject_ids=None, stats=None,
-               out_path=None):
+def tracula2nodes(stats_dir, out_path=None):
     """
-    Create a nodes table and a subjects table from an AFQ `.mat` file
+    Create a nodes table from a TRACULA `stats` directory.
+
+    Read data processed with TRACULA [1]_ and generate an AFQ-browser compliant
+    nodes table.
+
+    Parameters
+    ----------
+    stats_dir : str
+        Full path to a directory containing stats results from TRACULA
+        processing.
+
+    out_path : str, optional
+        Full path to directory where the nodes table will be saved.
+
+    Notes
+    -----
+    .. [1] Automated probabilistic reconstruction of white-matter pathways in
+           health and disease using an atlas of the underlying anatomy. Yendiki
+           A, Panneck P, Srinivasan P, Stevens A, Zöllei L, Augustinack J, Wang
+           R, Salat D, Ehrlich S, Behrens T, Jbabdi S, Gollub R and Fischl B
+           (2011). Front. Neuroinform. 5:23. doi: 10.3389/fninf.2011.00023
+    """
+    ll = glob(op.join(stats_dir, '*.txt'))
+
+    tracks = []
+    for l in ll:
+        tt = '.'.join(op.split(l)[-1].split('.')[:2])
+        if not (tt.startswith('rh') or tt.startswith('lh')):
+            tt = tt.split('.')[0]
+        tracks.append(tt)
+
+    tracks = list(set(tracks))
+
+    metrics = []
+    for l in ll:
+        metrics.append((op.splitext(op.split(l)[-1])[0]).split('.')[-1])
+    metrics = [l for l in list(set(metrics)) if l not in ['mean', 'inputs']]
+
+    for t in tracks:
+        first_metric = True
+        for m in metrics:
+            if first_metric:
+                fname = op.join(stats_dir, t + '.avg33_mni_bbr.' + m + '.txt')
+                df_nodes = pd.read_csv(fname, delimiter=' ')
+                df_nodes = df_nodes.drop(
+                    filter(lambda x: x.startswith('Unnamed'),
+                           df_nodes.columns),
+                    axis=1)
+                n_nodes, n_subs = df_nodes.shape
+                re_data = df_nodes.as_matrix().T.reshape(n_nodes * n_subs)
+                re_nodes = np.tile(np.arange(n_nodes), n_subs)
+                re_subs = np.concatenate(
+                    [[s for i in range(n_nodes)] for s in df_nodes.columns])
+                re_track = np.repeat(t, n_subs * n_nodes)
+                re_df = pd.DataFrame({'subjectID': re_subs,
+                                      'tractID': re_track,
+                                      'nodeID': re_nodes,
+                                      m: re_data})
+                first_metric = False
+            else:
+                fname = op.join(stats_dir, t + '.avg33_mni_bbr.' + m + '.txt')
+                re_data = df_nodes.as_matrix().T.reshape(n_nodes * n_subs)
+                re_df[m] = re_data
+
+    if out_path is None:
+        out_path = '.'
+
+    nodes_fname = op.join(out_path, 'nodes.csv')
+    re_df.to_csv(nodes_fname, index=False)
+
+    return nodes_fname
+
+
+def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
+                   out_path=None):
+    """
+    Create a nodes table and a subjects table from an AFQ `.mat` file.
 
     Parameters
     ----------
@@ -33,8 +109,8 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
         List of keys for statistics to pull from the AFQ data.
         Default: pull out all of the statistics that are in the mat file.
 
-    out_file : str
-        Full path to the CSV file to be saved as output
+    out_path : str, optional
+        Full path to the CSV file to be saved as output. Default: pwd.
 
     Returns
     -------
@@ -122,23 +198,32 @@ def mat2tables(mat_file_name, subject_ids=None, stats=None,
 
 
 def copy_and_overwrite(from_path, to_path):
+    """Helper function to copy and overwrite."""
     if op.exists(to_path):
         shutil.rmtree(to_path)
     shutil.copytree(from_path, to_path)
 
 
-def assemble(source, target=None):
+def assemble(source, target=None, metadata=None):
     """
-    Spin up an instance of the AFQ-Browser with data provided as a mat file
+    Spin up an instance of the AFQ-Browser with data provided as a mat file.
 
     Parameters
     ----------
     source : str
-        Path to a mat-file containing the AFQ data structure.
+        Path to a mat-file containing the AFQ data structure or to a TRACULA
+        stats folder.
 
-    target : str
+    target : str, optional.
         Path to a file-system location to create this instance of the
-        browser in
+        browser in. Default: pwd.
+
+    metadata : str, optional.
+        Path to an input csv metadata file. This file requires a "subjectID"
+        column to work. If a file is provided, it will overwrite metadata
+        provided through other. Default: read metadata from AFQ struct, or
+        generate a metadata table with just a "subjectID" column (e.g., for
+        TRACULA).
     """
     if target is None:
         target = '.'
@@ -146,15 +231,31 @@ def assemble(source, target=None):
     # This is where the template is stored:
     data_path = op.join(afqb.__path__[0], 'site')
     copy_and_overwrite(data_path, site_dir)
-    # Take in a mat-file as input and create the file
-    nodes_fname, meta_fname = mat2tables(
-        source,
-        out_path=op.join(site_dir, 'client', 'data'))
+    if source.endswith('.mat'):
+        # We have an AFQ-generated mat-file on our hands:
+        nodes_fname, meta_fname = afq_mat2tables(
+            source,
+            out_path=op.join(site_dir, 'client', 'data'))
+    else:
+        # Assume we got a TRACULA stats path:
+        nodes_fname = tracula2nodes(source)
+        if metadata is None:
+            nodes = pd.read_csv(nodes_fname)
+            subjects = nodes["subjectID"].unique()
+            meta_df = pd.DataFrame(dict(subjectID=subjects))
+            out_path = op.join(site_dir, 'client', 'data')
+            meta_csv_fname = op.join(out_path, 'subjects.csv')
+            meta_df.to_csv(meta_csv_fname)
+
+    if metadata is not None:
+        # Provided metadata should overwrite the metadata in the mat file
+        # when it is provided:
+        shutil.copyfile(metadata, meta_fname)
 
 
 def run(target=None, port=8080):
     """
-    Run a webserver for AFQ-browser
+    Run a webserver for AFQ-browser.
 
     Parameters
     ----------
