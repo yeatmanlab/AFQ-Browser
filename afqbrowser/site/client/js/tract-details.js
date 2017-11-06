@@ -331,6 +331,15 @@ afqb.plots.ready = function (error, data) {
 		.style("fill", function(d,i){return afqb.global.d3colors[i];} )
 		.text(function(d,i) { return afqb.plots.tracts[i]; });
 
+		trPanels.append("text")
+			.attr("class", "brushExt")
+			.attr("text-anchor", "end")
+			.attr("transform", "translate("+ (afqb.plots.w + afqb.plots.m.right + 30)
+								+","+(afqb.plots.m.top+15)+")")
+			.style("stroke", function(d,i){return afqb.global.d3colors[i];} )
+			.style("fill", function(d,i){return afqb.global.d3colors[i];} )
+
+
 	// associate tractsline with each subject
 	var tractLines = trPanels.selectAll(".tracts")
 		.data(function(d){ return d.values; })
@@ -689,8 +698,23 @@ afqb.plots.newBrush = function (id) {
 		afqb.plots.settings.bundleBrush[targetId].brushOn = !targetBrush.empty();
 		if (targetBrush.empty()) {
 			afqb.plots.settings.bundleBrush[targetId].brushExtent = [0, 100];
+
+			d3.selectAll(".brushExt").each(function(d, i){
+				if (i==parseInt(targetId.replace("tract", "")) ){
+					d3.select(this).text("")
+				}
+			})
+
 		} else {
 		    afqb.plots.settings.bundleBrush[targetId].brushExtent = targetBrush.extent();
+				var formatter = d3.format(".0f")
+				var ext = targetBrush.extent();
+				console.log("brush extent", targetBrush.extent(), targetId)
+				d3.selectAll(".brushExt").each(function(d, i){
+					if (i==parseInt(targetId.replace("tract", "")) ){
+						d3.select(this).text("(" + formatter(ext[0]) + ", " + formatter(ext[1]) + ")")
+					}
+				})
 		}
 	}
 
@@ -700,6 +724,7 @@ afqb.plots.newBrush = function (id) {
 
 	function brushEnd() {
 		afqb.global.mouse.brushing = false;
+
 	}
 
     afqb.plots.brushes.push({id: id, brush: brush});

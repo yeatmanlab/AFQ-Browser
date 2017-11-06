@@ -453,6 +453,8 @@ fill: #404040;
   shape-rendering: crispEdges;
 }
 
+.brushExt {
+  font-size: 0.85em;
 
 #three-gui-container {
   position: absolute;
