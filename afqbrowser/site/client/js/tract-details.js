@@ -127,7 +127,13 @@ afqb.plots.line = d3.svg.line()
             return afqb.plots.yScale(+d.values.mean);
         }
     })
-	.defined(function (d) { return !isNaN(d[afqb.global.controls.plotsControlBox.plotKey]); });
+	.defined(function (d) {
+        if (d[afqb.global.controls.plotsControlBox.plotKey]) {
+            return !isNaN(d[afqb.global.controls.plotsControlBox.plotKey]);
+		} else {
+    		return !isNaN(d.values.mean);
+		}
+	});
 
 afqb.plots.area = d3.svg.area()
     .x(function(d) { return afqb.plots.xScale(+d.key) })
