@@ -1,44 +1,6 @@
 // Tell jslint that certain variables are global
 /* global afqb, FileReader, d3, d3_queue, THREE */
 
-afqb.global.saveSettings = function () {
-	"use strict";
-    // Save the three settings
-	afqb.three.settings.cameraPosition = afqb.three.camera.position.clone();
-	afqb.three.settings.lHOpacity = afqb.global.controls.threeControlBox.lhOpacity;
-	afqb.three.settings.rHOpacity = afqb.global.controls.threeControlBox.rhOpacity;
-	afqb.three.settings.fiberOpacity = afqb.global.controls.threeControlBox.fiberOpacity;
-	afqb.three.settings.mouseoverHighlight = afqb.global.controls.threeControlBox.highlight;
-
-	afqb.plots.settings.brushTract = afqb.global.controls.plotsControlBox.brushTract;
-	afqb.plots.settings.plotKey = afqb.global.controls.plotsControlBox.plotKey;
-	afqb.plots.settings.lineOpacity = afqb.global.controls.plotsControlBox.lineOpacity;
-
-	var settings = {};
-	settings.three = afqb.three.settings;
-	settings.plots = afqb.plots.settings;
-	settings.table = afqb.table.settings;
-    settings.global = afqb.global.settings;
-
-	// Download a string to a file
-	function download(filename, text) {
-		var pom = document.createElement('a');
-		pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-		pom.setAttribute('download', filename);
-
-		if (document.createEvent) {
-			var event = document.createEvent('MouseEvents');
-			event.initEvent('click', true, true);
-			pom.dispatchEvent(event);
-		} else {
-			pom.click();
-		}
-	}
-
-	// Download the settings string to settings.json
-	download("settings.json", settingStr);
-};
-
 afqb.global.updateQueryString = function(queryObj) {
     "use strict";
 
@@ -85,6 +47,21 @@ afqb.global.initSettings = function (callback) {
                 afqb.plots.settings.brushTract = (afqb.plots.settings.brushTract.toLowerCase() === 'true');
             }
 
+            // Parse the brushes
+            if (afqb.plots.settings.hasOwnProperty("brushes")) {
+                Object.keys(afqb.plots.settings.brushes).forEach(function (bundle) {
+                    if (afqb.plots.settings.brushes[bundle].hasOwnProperty("brushOn")
+                        && typeof afqb.plots.settings.brushes[bundle].brushOn !== "boolean") {
+                        afqb.plots.settings.brushes[bundle].brushOn = (
+                            afqb.plots.settings.brushes[bundle].brushOn.toLowerCase() === "true"
+                        );
+                    }
+                    if (afqb.plots.settings.brushes[bundle].hasOwnProperty("brushExtent")) {
+                        afqb.plots.settings.brushes[bundle].brushExtent = afqb.plots.settings.brushes[bundle].brushExtent.map(parseFloat);
+                    }
+                });
+            }
+
             // Parse the zoom params as floats
             if (afqb.plots.settings.hasOwnProperty("zoom")) {
                 Object.keys(afqb.plots.settings.zoom).forEach(function (key) {
@@ -104,6 +81,16 @@ afqb.global.initSettings = function (callback) {
 			// Parse table sorting counts as ints
 			afqb.table.settings.sort.count = parseInt(afqb.table.settings.sort.count);
             afqb.table.settings.prevSort.count = parseInt(afqb.table.settings.prevSort.count);
+
+            if (afqb.table.settings.selectedRows) {
+                Object.keys(afqb.table.settings.selectedRows).forEach(function (subject) {
+                    if (typeof afqb.table.settings.selectedRows[subject] !== "boolean") {
+                        afqb.table.settings.selectedRows[subject] = (
+                            afqb.table.settings.selectedRows[subject].toLowerCase() === "true"
+                        );
+                    }
+                });
+            }
 
             // Parse three.js opacities as floats
 			afqb.three.settings.rHOpacity = parseFloat(afqb.three.settings.rHOpacity);
@@ -129,6 +116,7 @@ afqb.global.initSettings = function (callback) {
             }
 
             afqb.global.settings.loaded = true;
+
             if (callback) { callback(null); }
         });
 	}
@@ -235,7 +223,7 @@ afqb.plots.restoreBrush = function () {
                 return b.name === tract;
             })[0].brush;
 
-            d3.selectAll("#" + tract)
+            d3.selectAll("#tract-" + tract)
                 .selectAll(".brush")
                 .call(targetBrush.extent(
                     afqb.plots.settings.brushes[tract].brushExtent
@@ -267,6 +255,3 @@ afqb.global.updateGui = function (gui, controlBox) {
 		controller.updateDisplay();
 	});
 };
-
-document.getElementById('load-settings')
-	.addEventListener('change', afqb.global.readSettings, false);

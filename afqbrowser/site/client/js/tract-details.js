@@ -654,8 +654,9 @@ afqb.plots.changePlots = function (error, data) {
 	var svg = d3.select("#tractdetails").selectAll("svg")
 		.data(afqb.plots.tractData).transition();
 
-	svg.selectAll(".y.axis") // change the y axis
-		.call(afqb.plots.yAxis);
+	// Culprit
+	// svg.selectAll(".y.axis") // change the y axis
+	// 	.call(afqb.plots.yAxis);
 
 	// update y zoom for new axis
 	afqb.plots.yzooms[plotKey] = d3.behavior.zoom()

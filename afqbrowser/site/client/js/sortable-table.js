@@ -102,6 +102,7 @@ afqb.table.buildTable = function (error, useless, data) {
     afqb.table.gui.close();
 
 	afqb.table.refreshTable();
+    afqb.table.restoreRowSelection();
 };
 
 afqb.table.refreshTable = function () {
@@ -376,7 +377,7 @@ afqb.table.rowSelect = function () {
     selectedRows[this.id] = afqb.table.settings.selectedRows[this.id];
 
     afqb.global.updateQueryString(
-        {plots: {selectedRows: selectedRows}}
+        {table: {selectedRows: selectedRows}}
     );
 };
 

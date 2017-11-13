@@ -80,46 +80,6 @@ h2 {
   align-items: center;
 }
 
-#save-and-load-settings {
-  float: right;
-  display: flex;
-  flex-direction: row;
-}
-
-#load-settings, #save-settings {
-  display: none;
-  width: 0.1px;
-  height: 0.1px;
-  opacity: 0;
-  overflow: hidden;
-  position: absolute;
-  z-index: -1;
-}
-
-.save-and-load-button + label {
-  border-radius: 5px;
-  color: #404040;
-  background: #d9d9d9;
-  padding: 5px;
-  margin: 2px 2px 0px 2px;
-  border-style: solid;
-  border-color: #d9d9d9;
-  border-width: 1px;
-  /* font-size: 1.25em; */
-  /* font-weight: 700; */
-  display: inline-block;
-  cursor: pointer; /* "hand" cursor */
-}
-
-.save-and-load-button:focus + label,
-.save-and-load-button + label:hover {
-  color: #d9d9d9;
-  background: #404040;
-  border-style: solid;
-  border-color: white;
-  border-width: 1px;
-}
-
 .app-container {
   flex: 1 1 auto;
 
