@@ -331,8 +331,6 @@ afqb.plots.ready = function (error, data) {
 
 	afqb.plots.lastPlotKey = plotKey;
 
-	console.log(data)
-
 	afqb.plots.tractData = d3.nest()
 		.key(function (d) { return d.tractID; })
 		.key(function (d) { return d.subjectID; })
