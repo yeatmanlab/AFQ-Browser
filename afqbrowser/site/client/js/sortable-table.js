@@ -57,7 +57,7 @@ afqb.table.buildTable = function (error, useless, data) {
     }, false);
 
 	var TableGuiConfigObj = function () {
-		this.groupCount = afqb.table.settings.sort.count;
+		this.groupCount = parseInt(afqb.table.settings.sort.count);
         this.splitMethod = afqb.table.settings.splitMethod;
 	};
 
@@ -72,26 +72,34 @@ afqb.table.buildTable = function (error, useless, data) {
 
 	afqb.global.controls.tableControlBox = new TableGuiConfigObj();
 
-    // Add group count controller
-	afqb.table.gui
-		.add(afqb.global.controls.tableControlBox, 'groupCount')
-		.min(1).step(1)
-		.name('Number of Groups')
-		.onFinishChange(function (value) {
-			afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
-			afqb.table.settings.sort.count = value;
-			afqb.table.refreshTable();
-		});
-    
+	// Add split method controller
     afqb.table.gui
         .add(afqb.global.controls.tableControlBox, 'splitMethod', ['Equal Size', 'Equal Interval'])
         .name('Grouping Method')
         .onFinishChange(function (value) {
             afqb.table.settings.splitMethod = value;
+
+            // Update the query string
+            afqb.global.updateQueryString(
+                {table: {splitMethod: value.toLowerCase().replace(/\s+/g, "-")}}
+            );
+
             afqb.table.refreshTable();
         });
 
-	afqb.table.gui.close();
+    // Add group count controller
+    var groupCountController = afqb.table.gui
+        .add(afqb.global.controls.tableControlBox, 'groupCount')
+		.min(1).step(1)
+        .name('Number of Groups');
+
+    groupCountController.onFinishChange(function (value) {
+        afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
+        afqb.table.settings.sort.count = value;
+        afqb.table.refreshTable();
+    });
+
+    afqb.table.gui.close();
 
 	afqb.table.refreshTable();
 };
@@ -310,6 +318,15 @@ afqb.table.refreshTable = function () {
 			afqb.table.settings.restoring = false;
 		}
     }
+
+    // Update the query string
+    var table = {
+        prevSort: afqb.table.settings.prevSort,
+        sort: afqb.table.settings.sort
+    };
+    afqb.global.updateQueryString(
+        {table: table}
+    );
 };
 
 afqb.table.ascendingWithNull = function (a, b) {
@@ -353,6 +370,14 @@ afqb.table.rowSelect = function () {
             .style("opacity", afqb.global.controls.plotsControlBox.lineOpacity)
             .style("stroke-width", "1.1px");
 	}
+
+	// Update the query string
+    var selectedRows = {};
+    selectedRows[this.id] = afqb.table.settings.selectedRows[this.id];
+
+    afqb.global.updateQueryString(
+        {plots: {selectedRows: selectedRows}}
+    );
 };
 
 afqb.global.mouse.isDown = false;   // Tracks status of mouse button
@@ -395,6 +420,6 @@ afqb.table.tableMouseDown = function () {
 };
 
 afqb.global.queues.subjectQ = d3_queue.queue();
-afqb.global.queues.subjectQ.defer(afqb.global.waitForSettings);
+afqb.global.queues.subjectQ.defer(afqb.global.initSettings);
 afqb.global.queues.subjectQ.defer(d3.json, "data/subjects.json");
 afqb.global.queues.subjectQ.await(afqb.table.buildTable);

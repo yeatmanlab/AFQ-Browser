@@ -20,17 +20,6 @@ afqb.global.saveSettings = function () {
 	settings.table = afqb.table.settings;
     settings.global = afqb.global.settings;
 
-	// Convert to a json string
-	var settingStr = JSON.stringify(settings);
-	afqb.global.qs.set("settings", settingStr)
-	//Object.keys(settings).forEach(function(key, idx, arr){
-	//		afqb.global.qs.set(key, settings[key])
-	//})
-
-	window.history.pushState({
-        path: afqb.global.qs.url
-      }, '', afqb.global.qs.url);
-
 	// Download a string to a file
 	function download(filename, text) {
 		var pom = document.createElement('a');
@@ -50,43 +39,99 @@ afqb.global.saveSettings = function () {
 	download("settings.json", settingStr);
 };
 
-function setSettings(settings){
-	afqb.three.settings = settings.three;
-	afqb.plots.settings = settings.plots;
-	afqb.table.settings = settings.table;
-	afqb.global.settings = settings.global;
-	afqb.global.settings.loaded = true;
-}
-
-afqb.global.initSettings = function () {
+afqb.global.updateQueryString = function(queryObj) {
     "use strict";
-    // replace here w/ QS
-		var params = afqb.global.qs.getAll()
-		console.log("Parameter settings from QS are:", params.settings)
 
-		if (params["settings"]){
-			var settings = JSON.parse(params["settings"])
-			console.log("parsed settings are", settings)
-			setSettings(settings)
-		} else {
-			d3.json("settings.json", function(settings) {
-				setSettings(settings)
-			});
-		}
+    var urlSettings = Qs.parse(location.search.slice(1));
+    var updatedSettings = $.extend(true, {}, urlSettings, queryObj);
+
+    var settingsStr = "?" + Qs.stringify(updatedSettings, {encode: false});
+
+    window.history.pushState({search: settingsStr}, '', settingsStr);
 };
 
-afqb.global.waitForSettings = function(callback) {
-	  // questionable func
+afqb.global.initSettings = function (callback) {
     "use strict";
-    if (afqb.global.settings.loaded !== true) {
-        setTimeout(function () {
-            console.log("Waiting for settings to load...");
-            afqb.global.waitForSettings(callback);
-        }, 250);
-    } else {
-        callback(null);
-        console.log("Settings loaded!");
-    }
+    if (afqb.global.settings.loaded) {
+        if (callback) { callback(null); }
+	} else {
+        // Load default settings from settings.json
+        d3.json("settings.json", function(settings) {
+            // Update with values from query string
+            "use strict";
+            var qsSettings = Qs.parse(location.search.slice(1));
+            var updatedSettings = $.extend(true, {}, settings, qsSettings);
+
+            afqb.three.settings = $.extend(true, {}, afqb.three.settings, updatedSettings.three);
+            afqb.plots.settings = $.extend(true, {}, afqb.plots.settings, updatedSettings.plots);
+            afqb.table.settings = $.extend(true, {}, afqb.table.settings, updatedSettings.table);
+            afqb.global.settings = $.extend(true, {}, afqb.global.settings, updatedSettings.global);
+
+            // Restore spaces and capitalized words in splitMethod
+            afqb.table.settings.splitMethod = afqb.table.settings.splitMethod
+                .split("-").map(function (word) {
+                    return word.charAt(0).toUpperCase() + word.slice(1);
+                }).join(" ");
+
+            // Parse all the checkbox strings as booleans
+            Object.keys(afqb.plots.settings.checkboxes).forEach(function (bundle) {
+                afqb.plots.settings.checkboxes[bundle] = (
+                	afqb.plots.settings.checkboxes[bundle].toLowerCase() === 'true'
+				);
+            });
+
+            // Parse the brushTract checkbox as boolean
+            if (typeof afqb.plots.settings.brushTract !== 'boolean') {
+                afqb.plots.settings.brushTract = (afqb.plots.settings.brushTract.toLowerCase() === 'true');
+            }
+
+            // Parse the zoom params as floats
+            if (afqb.plots.settings.hasOwnProperty("zoom")) {
+                Object.keys(afqb.plots.settings.zoom).forEach(function (key) {
+                    if (afqb.plots.settings.zoom[key].hasOwnProperty("scale")) {
+                        afqb.plots.settings.zoom[key].scale = parseFloat(afqb.plots.settings.zoom[key].scale);
+                    }
+                    if (afqb.plots.settings.zoom[key].hasOwnProperty("translate")) {
+                        afqb.plots.settings.zoom[key].translate = afqb.plots
+							.settings.zoom[key].translate.map(parseFloat);
+                    }
+                });
+            }
+
+			// Parse lineOpacity as float
+			afqb.plots.settings.lineOpacity = parseFloat(afqb.plots.settings.lineOpacity);
+
+			// Parse table sorting counts as ints
+			afqb.table.settings.sort.count = parseInt(afqb.table.settings.sort.count);
+            afqb.table.settings.prevSort.count = parseInt(afqb.table.settings.prevSort.count);
+
+            // Parse three.js opacities as floats
+			afqb.three.settings.rHOpacity = parseFloat(afqb.three.settings.rHOpacity);
+            afqb.three.settings.lHOpacity = parseFloat(afqb.three.settings.lHOpacity);
+            afqb.three.settings.fiberOpacity = parseFloat(afqb.three.settings.fiberOpacity);
+
+            // Parse mouseoverHighlight as boolean
+			if (afqb.three.settings.hasOwnProperty("mouseoverHighlight")) {
+                if (typeof afqb.three.settings.mouseoverHighlight !== 'boolean') {
+                    afqb.three.settings.mouseoverHighlight = (
+                        afqb.three.settings.mouseoverHighlight.toLowerCase() === 'true'
+                    );
+                }
+            }
+
+            // Parse camera position as floats
+			if (afqb.three.settings.hasOwnProperty("cameraPosition")) {
+                Object.keys(afqb.three.settings.cameraPosition).forEach(function (coord) {
+                    afqb.three.settings.cameraPosition[coord] = parseFloat(
+                        afqb.three.settings.cameraPosition[coord]
+                    )
+                });
+            }
+
+            afqb.global.settings.loaded = true;
+            if (callback) { callback(null); }
+        });
+	}
 };
 
 afqb.global.readSettings = function (evt) {
@@ -104,7 +149,7 @@ afqb.global.readSettings = function (evt) {
 
 		function loadThree(callback) {
 			// Restore 3D settings
-			afqb.three.settings = settings.three;
+			Object.assign(afqb.three.settings, settings.three);
 			afqb.three.camera.position.copy(new THREE.Vector3(
 				afqb.three.settings.cameraPosition.x,
 				afqb.three.settings.cameraPosition.y,
@@ -127,14 +172,13 @@ afqb.global.readSettings = function (evt) {
             // Remove the old brush groups
             d3.selectAll(".brush").data([]).exit().remove();
             // Transfer settings
-			afqb.plots.settings = settings.plots;
+			Object.assign(afqb.plots.settings, settings.plots);
             // Check all the right boxes
             Object.keys(afqb.plots.settings.checkboxes).forEach(function (bundle) {
                 var myBundle = d3.selectAll("input.tracts")[0][bundle];
 				myBundle.checked = afqb.plots.settings.checkboxes[bundle];
 				afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name);
 				afqb.three.highlightBundle(myBundle.checked, myBundle.name);
-
             });
 			afqb.global.controls.plotsControlBox.brushTract = afqb.plots.settings.brushTract;
 			afqb.global.controls.plotsControlBox.plotKey = afqb.plots.settings.plotKey;
@@ -148,7 +192,7 @@ afqb.global.readSettings = function (evt) {
 
 		function loadTable(callback) {
 			// Restore table settings
-			afqb.table.settings = settings.table;
+			Object.assign(afqb.table.settings, settings.table);
 			afqb.global.controls.tableControlBox.groupCount = afqb.table.settings.sort.count;
 			afqb.table.settings.prevSort.key = afqb.table.settings.sort.key;
 			afqb.table.settings.prevSort.count = afqb.table.settings.sort.count;
@@ -185,15 +229,16 @@ afqb.global.readSettings = function (evt) {
 
 afqb.plots.restoreBrush = function () {
 	"use strict";
-    Object.keys(afqb.plots.settings.bundleBrush).forEach(function (tract) {
-        if (afqb.plots.settings.bundleBrush[tract].brushOn) {
+    Object.keys(afqb.plots.settings.brushes).forEach(function (tract) {
+        if (afqb.plots.settings.brushes[tract].brushOn) {
             var targetBrush = afqb.plots.brushes.filter(function (b) {
-                return b.id === tract;
+                return b.name === tract;
             })[0].brush;
+
             d3.selectAll("#" + tract)
                 .selectAll(".brush")
                 .call(targetBrush.extent(
-                    afqb.plots.settings.bundleBrush[tract].brushExtent
+                    afqb.plots.settings.brushes[tract].brushExtent
                 ));
         }
     });
@@ -225,5 +270,3 @@ afqb.global.updateGui = function (gui, controlBox) {
 
 document.getElementById('load-settings')
 	.addEventListener('change', afqb.global.readSettings, false);
-
-afqb.global.initSettings();
