@@ -36,7 +36,7 @@ def tracula2nodes(stats_dir, out_path=None):
     -----
     .. [1] Automated probabilistic reconstruction of white-matter pathways in
            health and disease using an atlas of the underlying anatomy. Yendiki
-           A, Panneck P, Srinivasan P, Stevens A, Zöllei L, Augustinack J, Wang
+           A, Panneck P, Srinivasan P, Stevens A, Zollei L, Augustinack J, Wang
            R, Salat D, Ehrlich S, Behrens T, Jbabdi S, Gollub R and Fischl B
            (2011). Front. Neuroinform. 5:23. doi: 10.3389/fninf.2011.00023
     """
