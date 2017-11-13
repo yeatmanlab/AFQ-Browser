@@ -315,9 +315,11 @@ afqb.plots.ready = function (error, data) {
         .on("zoomend",afqb.plots.zoomable ? afqb.plots.draw : null);
 
     // If we've already stored this type of plot's zoom settings, recover them
-    if (afqb.plots.settings.zoom[plotKey]) {
+    if (afqb.plots.settings.zoom[plotKey]
+		&& afqb.plots.settings.zoom[plotKey].hasOwnProperty("scale")
+        && afqb.plots.settings.zoom[plotKey].hasOwnProperty("translate")) {
         afqb.plots.yzooms[plotKey].scale(
-            parseFloat(afqb.plots.settings.zoom[plotKey].scale) || 1);
+                parseFloat(afqb.plots.settings.zoom[plotKey].scale) || 1);
         afqb.plots.yzooms[plotKey].translate(
             afqb.plots.settings.zoom[plotKey].translate.map(parseFloat) || [0, 0]);
     } else {
