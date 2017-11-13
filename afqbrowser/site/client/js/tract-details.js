@@ -126,7 +126,14 @@ afqb.plots.line = d3.svg.line()
         } else {
             return afqb.plots.yScale(+d.values.mean);
         }
-    });
+    })
+	.defined(function (d) {
+        if (d[afqb.global.controls.plotsControlBox.plotKey]) {
+            return !isNaN(d[afqb.global.controls.plotsControlBox.plotKey]);
+		} else {
+    		return !isNaN(d.values.mean);
+		}
+	});
 
 afqb.plots.area = d3.svg.area()
     .x(function(d) { return afqb.plots.xScale(+d.key) })
@@ -249,6 +256,8 @@ afqb.plots.ready = function (error, data) {
         .on("zoomend",afqb.plots.zoomable ? afqb.plots.draw : null);
 
 	afqb.plots.lastPlotKey = plotKey;
+
+	console.log(data)
 
 	afqb.plots.tractData = d3.nest()
 		.key(function (d) { return d.tractID; })
