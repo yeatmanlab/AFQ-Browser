@@ -1,6 +1,6 @@
 """
 
-afqbrowser.browser :
+afqbrowser.browser: data munging for AFQ-Browser
 
 """
 import os
