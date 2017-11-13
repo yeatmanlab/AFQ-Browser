@@ -7,7 +7,7 @@ visualizing and sharing Automated Fiber Quantification results
 
 This software generates a browser-based visualization of data processed with
 the `Automated Fiber Quantification (AFQ) <https://github.com/yeatmanlab/AFQ>`_
-software.
+software. For `example <https://yeatmanlab.github.io/AFQBrowser-demo/>`_.
 
 Tractography based on diffusion weighted MRI (dMRI) is used to find  the major
 white matter fascicles (tracts) in the living human brain. The health of these
@@ -18,6 +18,7 @@ tissue properties within the tracts (`Yeatman et al. 2012 <http://journals.plos.
 
 This software package allows researchers to interactively query the data
 processed with `AFQ` to explore patterns in the data.
+
 
     .. toctree::
        :maxdepth: 2
