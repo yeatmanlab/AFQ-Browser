@@ -1,3 +1,8 @@
+"""
+
+afqbrowser.browser :
+
+"""
 import os
 import os.path as op
 from glob import glob
@@ -198,7 +203,7 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
 
 
 def copy_and_overwrite(from_path, to_path):
-    """Helper function to copy and overwrite."""
+    """Helper function: copies and overwrites."""
     if op.exists(to_path):
         shutil.rmtree(to_path)
     shutil.copytree(from_path, to_path)
