@@ -236,7 +236,7 @@ afqb.three.init = function (callback) {
 	var greyGeometry = new THREE.Geometry();
 
 	var bundleIdx = 0;
-    $.getJSON("data/data_partial.json", function (json) {
+    $.getJSON("data/afq_streamlines.json", function (json) {
         Object.keys(json).forEach(function (key) {
             var oneBundle = json[key];
             var nFibers = 0;
