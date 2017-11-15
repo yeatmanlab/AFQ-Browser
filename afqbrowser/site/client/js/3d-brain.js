@@ -3,23 +3,6 @@
 
 // =========== three js part
 
-// init requires afqb.plots.faPlotLength to be defined.
-// afqb.plots.faPlotLength is defined in afqb.plots.buildTractCheckboxes in
-// tract-details.js but it is async, deferred until d3 reads nodes.csv.
-// So we have to wait until afqb.plots.faPlotLength is defined
-// Define a function to wait until afqb.plots.faPlotLength is defined.
-afqb.three.waitForPlotLength = function (callback) {
-	"use strict";
-    if (afqb.plots.faPlotLength === undefined) {
-		setTimeout(function () {
-			console.log("waiting for plot length");
-			afqb.three.waitForPlotLength(callback);
-		}, 250);
-	} else {
-		callback(null);
-	}
-};
-
 // Combine the init and animate function calls for use in d3.queue()
 afqb.three.initAndAnimate = function (error) {
     "use strict";
@@ -248,12 +231,14 @@ afqb.three.init = function (callback) {
             //
             // First loop simply counts the number of fibers in this bundle
             // and asserts that each individual fiber has been resampled to
-            // the size of the FA plot data.
+            // the same size.
+			var firstKey = Object.keys(oneBundle)[0];
+            var referenceLength = oneBundle[firstKey].length;
             Object.keys(oneBundle).forEach(function (fiberKey) {
                 ++nFibers;
                 var oneFiber = oneBundle[fiberKey];
-                if (oneFiber.length !== afqb.plots.faPlotLength) {
-                    var errMessage = 'Streamlines have unexpected length. faPlotLength = ' + afqb.plots.faPlotLength + ", but oneFiber.length = " + oneFiber.length;
+                if (oneFiber.length !== referenceLength) {
+                    var errMessage = 'Streamlines have unexpected length. referenceLength = ' + referenceLength + ", but oneFiber.length = " + oneFiber.length;
                     if (typeof Error !== 'undefined') {
                         throw new Error(errMessage);
                     }
@@ -263,7 +248,7 @@ afqb.three.init = function (callback) {
 
             // Positions will hold x,y,z vertices for each fiber
             var positions = new Float32Array(
-                nFibers * (afqb.plots.faPlotLength - 1) * 3 * 2
+                nFibers * (referenceLength - 1) * 3 * 2
             );
 
             // Outer loop is along the length of each fiber.
@@ -272,7 +257,7 @@ afqb.three.init = function (callback) {
             // be preserved in index locality. This will make brushing
             // much easier in the end.
             Object.keys(oneBundle).forEach(function (fiberKey, iFiber) {
-                for (var i = 0; i < afqb.plots.faPlotLength - 1; i++) {
+                for (var i = 0; i < referenceLength - 1; i++) {
                     var oneFiber = oneBundle[fiberKey];
 
                     // Vertices must be added in pairs. Later a
@@ -512,10 +497,8 @@ afqb.three.mouseoverBundle = function (idx) {
 	}
 };
 
-// Use d3.queue() to wait for afqb.plots.faPlotLength before calling init and animate
 afqb.global.queues.threeQ = d3_queue.queue();
 afqb.global.queues.threeQ.defer(afqb.global.initSettings);
-afqb.global.queues.threeQ.defer(afqb.three.waitForPlotLength);
 afqb.global.queues.threeQ.await(afqb.three.initAndAnimate);
 
 

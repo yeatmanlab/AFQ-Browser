@@ -56,12 +56,6 @@ afqb.plots.buildTractCheckboxes = function (error, data) {
         }
     });
 
-	// Also read the length of each line in the FA plots
-	// Determine length by filtering on the first subject and first tractID.
-	afqb.plots.faPlotLength = data.filter(function(obj) {
-		return (obj.subjectID === data[0].subjectID && obj.tractID === data[0].tractID);
-	}).length;
-
 	//insert tractname checkboxes in the tractlist panel
 	var svg = d3.select('#tractlist').selectAll(".input")
 		.data(afqb.plots.tracts).enter().append('div');
