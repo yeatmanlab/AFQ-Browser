@@ -790,20 +790,20 @@ afqb.plots.newBrush = function (name) {
 		if (targetBrush.empty()) {
 			afqb.plots.settings.brushes[targetName].brushExtent = [0, 100];
 
-			d3.selectAll(".brushExt").each(function(d, i){
-				if (i==parseInt(targetId.replace("tract", ""))) {
-					d3.select(this).text("")
+			d3.selectAll(".brushExt").each(function(d) {
+                if (d.key.toLowerCase().replace(/\s+/g, "-") === targetName) {
+					d3.select(this).text("");
 				}
-			})
+			});
 		} else {
 		    afqb.plots.settings.brushes[targetName].brushExtent = targetBrush.extent();
-				var formatter = d3.format(".0f")
-				var ext = targetBrush.extent();
-				d3.selectAll(".brushExt").each(function(d, i){
-					if (i==parseInt(targetId.replace("tract", ""))) {
-						d3.select(this).text("(" + formatter(ext[0]) + ", " + formatter(ext[1]) + ")")
-					}
-				})
+            var formatter = d3.format(".0f");
+            var ext = targetBrush.extent();
+            d3.selectAll(".brushExt").each(function(d) {
+                if (d.key.toLowerCase().replace(/\s+/g, "-") === targetName) {
+                    d3.select(this).text("(" + formatter(ext[0]) + ", " + formatter(ext[1]) + ")");
+                }
+            });
 		}
 	}
 

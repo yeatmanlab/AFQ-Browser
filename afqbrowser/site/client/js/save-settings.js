@@ -135,6 +135,14 @@ afqb.plots.restoreBrush = function () {
                 .call(targetBrush.extent(
                     afqb.plots.settings.brushes[tract].brushExtent
                 ));
+
+            var formatter = d3.format(".0f");
+            var ext = targetBrush.extent();
+            d3.selectAll(".brushExt").each(function(d) {
+                if (d.key.toLowerCase().replace(/\s+/g, "-") === tract) {
+                    d3.select(this).text("(" + formatter(ext[0]) + ", " + formatter(ext[1]) + ")");
+                }
+            });
         }
     });
 };
