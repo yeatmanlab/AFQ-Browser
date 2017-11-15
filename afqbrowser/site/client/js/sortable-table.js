@@ -34,6 +34,37 @@ afqb.table.buildTable = function (error, useless, data) {
 		afqb.table.subData.push(d);
 	});
 
+	afqb.table.subFormats = {}
+    Object.keys(afqb.table.subData[0]).forEach(function (key) {
+        var column = afqb.table.subData.map( function (row) {
+            return row[key];
+        });
+
+        column = column.filter(function (element) {
+            return element !== undefined && element !== null;
+        });
+
+        function isBinary (e) {
+            return e === 1 || e === 0;
+        }
+
+        function isNum (e) {
+            return !isNaN(+e);
+        }
+
+        function identity (arg) {
+            return arg;
+        }
+
+        if (column.every(isBinary)) {
+            afqb.table.subFormats[key] = d3.format("0b");
+        } else if (column.every(isNum)) {
+            afqb.table.subFormats[key] = d3.format(".7g");
+        } else {
+            afqb.table.subFormats[key] = identity;
+        }
+    });
+
 	afqb.table.ramp = null;
 
     var headerSvg = d3.select("#header-div").append("svg")
@@ -130,7 +161,7 @@ afqb.table.refreshTable = function () {
 
     var header = afqb.table.headerGrp.selectAll("g")
         .data(sortedKeys)
-		.enter().append("g")
+        .enter().append("g")
         .attr("class", "t_header")
         .attr("transform", function (d, i) {
             return "translate(" + i * afqb.table.fieldWidth + ",0)";
@@ -176,8 +207,12 @@ afqb.table.refreshTable = function () {
     var cells = rows.selectAll("g.cell")
 		.data(function (d) {
 			return d3.entries(d)
-				.sort(function (x,y) { return x.key === firstCol ? -1 : y.key === firstCol ? 1 : 0; })
-				.map(function (entry) { return entry.value; });
+				.sort(function (x,y) {
+					return x.key === firstCol ? -1 : y.key === firstCol ? 1 : 0;
+				})
+				.map(function (entry) {
+					return afqb.table.subFormats[entry.key](entry.value);
+				});
 		});
 
     // create cells
