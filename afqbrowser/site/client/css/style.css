@@ -1,9 +1,9 @@
 * {
-    box-sizing: border-box;
-    font-family: "Helvetica Neue";
-    margin: 0;
-    padding: 0;
-    /*border: 0;*/
+  box-sizing: border-box;
+  font-family: "Helvetica Neue";
+  margin: 0;
+  padding: 0;
+  /*border: 0;*/
 }
 
 .w3-container {
@@ -16,11 +16,11 @@
   color: #404040;
   background: #fff;
   /* Get rid of accidental text selection on drag */
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none;   /* Chrome/Safari/Opera */
-    -khtml-user-select: none;    /* Konqueror */
-    -moz-user-select: none;      /* Firefox */
-    -ms-user-select: none;       /* Internet Explorer/Edge */
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
 }
 
 h1 {
@@ -74,7 +74,6 @@ h2 {
 
 #title-bar {
   margin: auto;
-  flex: 1
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -228,13 +227,13 @@ h2 {
 }
 
 #download-subjects, #download-nodes{
-dispay: none;
-width: 0.1px;
-height: 0.1px;
-opacity: 0;
-overflow: hidden;
-position: absolute;
-z-index: -1;
+  dispay: none;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
 }
 
 .download-file-button + label{
@@ -255,12 +254,12 @@ z-index: -1;
 
 .download-file-button:focus + label,
 .download-file-button + label:hover {
-    color: #d9d9d9 ;
-    background: #404040 ;
-    border-style: solid;
-    border-color: white;
-    border-width: 1px;
-  }
+  color: #d9d9d9 ;
+  background: #404040 ;
+  border-style: solid;
+  border-color: white;
+  border-width: 1px;
+}
 
 #tractlist {
   /* Set a height restriction for the tract list. We can use a
@@ -299,7 +298,7 @@ z-index: -1;
 
 /*change label hover effect for checkbox*/
 input[type=checkbox] {
-    display:none;
+  display:none;
 }
 
 input[type=checkbox]+label{
@@ -308,18 +307,18 @@ input[type=checkbox]+label{
 }
 
 input[type=checkbox]:hover {
-    -webkit-box-shadow: inset 0 0 2px 2px rgba(82,168,236,.6);
+  -webkit-box-shadow: inset 0 0 2px 2px rgba(82,168,236,.6);
 }
 
 label, input[type=checkbox] {
-    -moz-transition: all .2s ease-in;
-    -o-transition: all .2s ease-in;
-    -webkit-transition: all .2s ease-in;
-    transition: all .2s ease-in;
+  -moz-transition: all .2s ease-in;
+  -o-transition: all .2s ease-in;
+  -webkit-transition: all .2s ease-in;
+  transition: all .2s ease-in;
 }
 
 label:hover, label:active, input:hover+label, input:active+label {
-    background:#ffffcc;
+  background:#ffffcc;
 }
 
 .row::after {
@@ -349,35 +348,35 @@ label:hover, label:active, input:hover+label, input:active+label {
 
 .row
 {
-    float: left;
-    clear: none;
-    display: table;
-    width: 100%; /*Optional*/
-    table-layout: fixed; /*Optional*/
-    border-spacing: 10px; /*Optional*/
+  float: left;
+  clear: none;
+  display: table;
+  width: 100%; /*Optional*/
+  table-layout: fixed; /*Optional*/
+  border-spacing: 10px; /*Optional*/
 }
 
 /*------------------------*/
 /* Begin table formatting */
 /*------------------------*/
 .t_header rect {
-fill: #404040;
+  fill: #404040;
 }
 
 .t_header text {
-    font: 13px;
-    fill: #eeeeee;
-    font-weight: bold;
-    text-anchor: middle;
+  font: 13px;
+  fill: #eeeeee;
+  font-weight: bold;
+  text-anchor: middle;
 }
 
 .cell rect {
- fill: #dddddd;
- cursor: pointer;
+  fill: #dddddd;
+  cursor: pointer;
 }
 
 .cell text {
-  font: 13px ;
+  font: 13px;
   text-anchor: middle;
   cursor: pointer;
 }
@@ -387,12 +386,12 @@ fill: #404040;
 /*------------------------*/
 .axis path,
 .axis line {
-    fill: none;
-    stroke: #AFBABF;
-    shape-rendering: crispEdges;
+  fill: none;
+  stroke: #AFBABF;
+  shape-rendering: crispEdges;
 }
 .axis text {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .area {
@@ -401,10 +400,10 @@ fill: #404040;
 }
 
 .x.axis path {
-    display: none;
+  display: none;
 }
 .y.axis path {
-    display: none;
+  display: none;
 }
 
 .brush .extent {
@@ -415,6 +414,7 @@ fill: #404040;
 
 .brushExt {
   font-size: 0.85em;
+}
 
 #three-gui-container {
   position: absolute;
@@ -464,6 +464,7 @@ Special hover stuff
 #table-with-title:hover .tractlist-explanation  {
   visibility: visible;
 }
+
 #container-plots .tractlist-explanation {
   visibility: hidden;
 }
