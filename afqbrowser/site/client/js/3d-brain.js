@@ -125,11 +125,12 @@ afqb.three.init = function (callback) {
 		this.rhOpacity = parseFloat(afqb.three.settings.rHOpacity);
 		this.fiberOpacity = parseFloat(afqb.three.settings.fiberOpacity);
 		this.highlight = afqb.three.settings.mouseoverHighlight;
+		this.fiberRepresentation = afqb.three.settings.fiberRepresentation;
 	};
 
 	afqb.three.gui = new dat.GUI({
 		autoplace: false,
-		width: 250,
+		width: 350,
 		scrollable: false
 	});
 
@@ -208,6 +209,11 @@ afqb.three.init = function (callback) {
             {three: {mouseoverHighlight: value.toString()}}
         );
 	});
+
+    // Add fiber representation controller
+    afqb.three.gui
+        .add(afqb.global.controls.threeControlBox, 'fiberRepresentation', ['all fibers', 'core fiber'])
+        .name('Fiber Representation');
 
 	var guiContainer = document.getElementById('three-gui-container');
 	guiContainer.appendChild(afqb.three.gui.domElement);
