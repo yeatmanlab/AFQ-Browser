@@ -230,6 +230,10 @@ afqb.three.init = function (callback) {
             var oneBundle = json[key];
             var nFibers = 0;
 
+            // Retrieve the core fiber and then delete it from the bundle object
+            // var coreFiber = oneBundle['coreFiber'];
+            // delete oneBundle['coreFiber'];
+
             // fiberKeys correspond to individual fibers in each fiber bundle
             // They may not be consecutive keys depending on the
             // downsampling of the input data, hence the need for `nFibers`
@@ -257,9 +261,13 @@ afqb.three.init = function (callback) {
                 nFibers * (referenceLength - 1) * 3 * 2
             );
 
+            // var corePositions = new Float32Array(
+            	// (coreFiber.length - 1) * 3 * 2
+			// );
+
             // Outer loop is along the length of each fiber.
             // Inner loop cycles through each fiber group.
-            // This is counterintuitive but we want spatial locality to
+            // This is counter-intuitive but we want spatial locality to
             // be preserved in index locality. This will make brushing
             // much easier in the end.
             Object.keys(oneBundle).forEach(function (fiberKey, iFiber) {
@@ -272,37 +280,32 @@ afqb.three.init = function (callback) {
                     // continuous line but will allow us to avoid
                     // having the beginning and end of the fiber
                     // connect.
-                    var x1 = oneFiber[i][0],
-                        y1 = oneFiber[i][1],
-                        z1 = oneFiber[i][2];
-
-                    var x2 = oneFiber[i+1][0],
-                        y2 = oneFiber[i+1][1],
-                        z2 = oneFiber[i+1][2];
-
-                    positions[i * nFibers * 6 + iFiber * 6 + 0] = x1;
-                    positions[i * nFibers * 6 + iFiber * 6 + 1] = y1;
-                    positions[i * nFibers * 6 + iFiber * 6 + 2] = z1;
-
-                    positions[i * nFibers * 6 + iFiber * 6 + 3] = x2;
-                    positions[i * nFibers * 6 + iFiber * 6 + 4] = y2;
-                    positions[i * nFibers * 6 + iFiber * 6 + 5] = z2;
+                    var offset = i * nFibers * 6 + iFiber * 6;
+                    positions.set(oneFiber[i].concat(oneFiber[i+1]), offset);
                 }
             });
+
+            // for (var i = 0; i < coreFiber.length - 1; i++) {
+            //     var offset = 6 * i;
+            //     corePositions.set(oneFiber[i].concat(oneFiber[i+1]), offset);
+            // }
 
             // Create a buffered geometry and line segments from these
             // positions. Buffered Geometry is slightly more performant
             // and necessary to interact with d3 brushing later on.
             var bundleGeometry = new THREE.BufferGeometry();
-            bundleGeometry.addAttribute('position',
-                    new THREE.BufferAttribute(positions, 3));
+
+            bundleGeometry.addAttribute(
+            	'position', new THREE.BufferAttribute(positions, 3)
+			);
 
             greyGeometry.merge(
-                    new THREE.Geometry()
-                    .fromBufferGeometry(bundleGeometry));
+                new THREE.Geometry().fromBufferGeometry(bundleGeometry)
+			);
 
-            var colorBundleLine = new THREE.LineSegments(bundleGeometry,
-                    afqb.three.colorLineMaterial);
+            var colorBundleLine = new THREE.LineSegments(
+            	bundleGeometry, afqb.three.colorLineMaterial
+			);
 
             // Set scale to match the brain surface,
             // (determined by trial and error)
@@ -310,7 +313,7 @@ afqb.three.init = function (callback) {
             colorBundleLine.position.set(0, 0.8, -0.5);
 
             // Record some useful info for later
-            colorBundleLine.name = afqb.plots.tracts[ bundleIdx ];
+            colorBundleLine.name = afqb.plots.tracts[bundleIdx];
             colorBundleLine.nFibers = nFibers;
             colorBundleLine.idx = bundleIdx;
 
