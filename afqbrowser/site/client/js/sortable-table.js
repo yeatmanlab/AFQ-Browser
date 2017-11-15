@@ -17,6 +17,17 @@ afqb.table.ramp = null;
 
 afqb.table.buildTable = function (error, useless, data) {
 	"use strict";
+	console.log(data);
+
+	data.forEach(function (d) {
+	    delete d[""];
+		Object.keys(d).forEach(function (key) {
+			d[key] = +d[key] || d[key];
+			if (d[key] === "0") {
+				d[key] = +d[key];
+			}
+		})
+	});
 
 	data.forEach(function (d) {
         if (typeof d.subjectID === 'number') {
@@ -422,5 +433,5 @@ afqb.table.tableMouseDown = function () {
 
 afqb.global.queues.subjectQ = d3_queue.queue();
 afqb.global.queues.subjectQ.defer(afqb.global.initSettings);
-afqb.global.queues.subjectQ.defer(d3.json, "data/subjects.json");
+afqb.global.queues.subjectQ.defer(d3.csv, "data/subjects.csv");
 afqb.global.queues.subjectQ.await(afqb.table.buildTable);
