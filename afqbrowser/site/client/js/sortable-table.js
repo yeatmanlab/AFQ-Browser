@@ -17,8 +17,6 @@ afqb.table.ramp = null;
 
 afqb.table.buildTable = function (error, useless, data) {
 	"use strict";
-	console.log(data);
-
 	data.forEach(function (d) {
 	    delete d[""];
 		Object.keys(d).forEach(function (key) {
@@ -119,9 +117,20 @@ afqb.table.buildTable = function (error, useless, data) {
 afqb.table.refreshTable = function () {
     "use strict";
     // create the table header
+	// We want subjectId to be the first column, so sort the keys using a sort function that puts
+	// subjectId before all other values, settings all other values to be equal
+    // Use d3.entries followed by sort followed by a map that gets the keys
+	// because d3.[keys, values, entries] all have an undefined order. We use d3.entries below to sort
+	// the values so we use the same method here for the keys to ensure that the header row has the same
+	// order as the body rows.
+    var firstCol = "subjectID";
+    var sortedKeys = d3.entries(afqb.table.subData[0])
+        .sort(function (x,y) { return x.key === firstCol ? -1 : y.key === firstCol ? 1 : 0; })
+        .map(function (entry) { return entry.key; });
+
     var header = afqb.table.headerGrp.selectAll("g")
-        .data(d3.keys(afqb.table.subData[0]))
-        .enter().append("g")
+        .data(sortedKeys)
+		.enter().append("g")
         .attr("class", "t_header")
         .attr("transform", function (d, i) {
             return "translate(" + i * afqb.table.fieldWidth + ",0)";
@@ -165,7 +174,11 @@ afqb.table.refreshTable = function () {
 
     // select cells
     var cells = rows.selectAll("g.cell")
-		.data(function (d) { return d3.values(d); });
+		.data(function (d) {
+			return d3.entries(d)
+				.sort(function (x,y) { return x.key === firstCol ? -1 : y.key === firstCol ? 1 : 0; })
+				.map(function (entry) { return entry.value; });
+		});
 
     // create cells
     var cellsEnter = cells.enter().append("svg:g")
