@@ -68,13 +68,13 @@ afqb.plots.buildTractCheckboxes = function (error, data) {
 	svg.append('input')
 		.attr("type", "checkbox")
 		.attr("class", "tracts")
-		.attr("id", function (d, i) { return "input" + i; })
-		.attr("name", function (d) { return d.toLowerCase().replace(/\s+/g, "-"); })
+		.attr("id", function (d) { return "input-" + d.toLowerCase().replace(/\s+/g, "-"); })
+		.attr("name", function (d) { return d.toLowerCase().replace(/\s+/g, "-"); });
 	// add label to the checkboxes
 	svg.append('label')
 		.text(function (d) { return d; })
-		.attr("for", function (d, i) { return "input" + i; })
-		.attr("id", function (d, i) { return "label-" + d.toLowerCase().replace(/\s+/g, "-"); });
+		.attr("for", function (d) { return "input-" + d.toLowerCase().replace(/\s+/g, "-"); })
+		.attr("id", function (d) { return "label-" + d.toLowerCase().replace(/\s+/g, "-"); });
 
 	//add event handler to the checkbox
 	d3.selectAll(".tracts")
@@ -93,6 +93,11 @@ afqb.plots.buildTractCheckboxes = function (error, data) {
 				{plots: {checkboxes: checkboxes}}
 			);
 		});
+
+	Object.keys(afqb.plots.settings.checkboxes).forEach(function (key) {
+		var checked = afqb.plots.settings.checkboxes[key];
+        document.getElementById('input-' + key).checked = checked;
+	});
 
 	// all select/un-select all checkbox
 	d3.selectAll("#selectAllTracts")
@@ -884,6 +889,8 @@ afqb.plots.initCheckboxes = function (error) {
         afqb.plots.showHideTractDetails(state, name);
         afqb.three.highlightBundle(state, name);
     });
+
+    $('body').addClass('loaded');
 };
 
 afqb.global.queues.nodeQ = d3_queue.queue();
