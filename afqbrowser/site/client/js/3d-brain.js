@@ -247,8 +247,10 @@ afqb.three.init = function (callback) {
             Object.keys(oneBundle).forEach(function (fiberKey) {
                 ++nFibers;
                 var oneFiber = oneBundle[fiberKey];
-                if (oneFiber.length !== referenceLength) {
-                    var errMessage = 'Streamlines have unexpected length. referenceLength = ' + referenceLength + ", but oneFiber.length = " + oneFiber.length;
+                if (oneFiber.length !== afqb.plots.faPlotLength) {
+                    var errMessage = ('Streamlines have unexpected length. ' +
+						'faPlotLength = ' + afqb.plots.faPlotLength + ', ' +
+						'but oneFiber.length = ' + oneFiber.length);
                     if (typeof Error !== 'undefined') {
                         throw new Error(errMessage);
                     }
@@ -303,6 +305,16 @@ afqb.three.init = function (callback) {
                 new THREE.Geometry().fromBufferGeometry(bundleGeometry)
 			);
 
+            // var coreBundleGeometry = new THREE.BufferGeometry();
+            //
+            // coreBundleGeometry.addAttribute(
+            //     'position', new THREE.BufferAttribute(corePositions, 3)
+            // );
+            //
+            // greyGeometry.merge(
+            //     new THREE.Geometry().fromBufferGeometry(coreBundleGeometry)
+            // );
+
             var colorBundleLine = new THREE.LineSegments(
             	bundleGeometry, afqb.three.colorLineMaterial
 			);
@@ -320,6 +332,24 @@ afqb.three.init = function (callback) {
             ++bundleIdx;
 
             afqb.three.colorGroups.add(colorBundleLine);
+
+            // var coreColorBundleLine = new THREE.LineSegments(
+            //     coreBundleGeometry, afqb.three.colorLineMaterial
+            // );
+            //
+            // // Set scale to match the brain surface,
+            // // (determined by trial and error)
+            // coreColorBundleLine.scale.set(0.05,0.05,0.05);
+            // coreColorBundleLine.position.set(0, 0.8, -0.5);
+            //
+            // // Record some useful info for later
+            // coreColorBundleLine.name = afqb.plots.tracts[bundleIdx];
+            // coreColorBundleLine.nFibers = nFibers;
+            // coreColorBundleLine.idx = bundleIdx;
+            //
+            // ++bundleIdx;
+            //
+            // afqb.three.colorGroups.add(coreColorBundleLine);
         });
 
 		// Set material properties for each fiber bundle
