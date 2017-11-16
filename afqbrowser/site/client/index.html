@@ -26,18 +26,16 @@
 </head>
 
 <body id="body">
+<div id="loader-wrapper">
+  <div id="loader"></div>
+  <div class="loader-section section-left"></div>
+  <div class="loader-section section-right"></div>
+</div>
 <div class="page-container">
   <header id="header">
     <h1 id="title-bar" style="color:white;">
       AFQ Browser
     </h1>
-    <div id="save-and-load-settings">
-      <button type="button" id="save-settings" class="save-and-load-button"
-          onclick="afqb.global.saveSettings()">Save Settings</button>
-      <label for="save-settings">Save Settings</label>
-      <input type="file" id="load-settings" name="Load Settings" class="save-and-load-button"/>
-      <label for="load-settings">Load Settings</label>
-    </div>
   </header>
 
   <div class="app-container">
@@ -134,13 +132,16 @@
     src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script type="text/javascript" src="js/dat.gui.min.js"></script>
 <link type="text/css" rel="stylesheet" href="css/dat-gui-afq.css">
+<script type="text/javascript" src="js/qs.js"></script>
 
-<!--custom JS code -->
+<!-- THREE.js add ons-->
 
 <script type="text/javascript" src="js/Projector.js"></script>
 <script type="text/javascript" src="js/threex.domevent.js"></script>
 <script type="text/javascript" src="js/OrbitControls.js"></script>
 <script type="text/javascript" src="js/OBJLoader.js"></script>
+
+<!--custom JS code -->
 
 <script type="text/javascript" src="js/afqb.js"></script>
 <script type="text/javascript" src="js/save-settings.js"></script>

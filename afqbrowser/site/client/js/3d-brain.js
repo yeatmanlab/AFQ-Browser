@@ -24,7 +24,7 @@ afqb.three.waitForPlotLength = function (callback) {
 afqb.three.initAndAnimate = function (error) {
     "use strict";
     if (error) { throw error; }
-    afqb.three.init();
+    afqb.three.init(afqb.plots.initCheckboxes);
 	afqb.three.animate();
 };
 
@@ -35,7 +35,7 @@ if (afqb.three.settings.showStats) {
 	afqb.three.container.appendChild(afqb.three.stats.dom);
 }
 
-afqb.three.init = function () {
+afqb.three.init = function (callback) {
     "use strict";
     afqb.three.colorGroups = new THREE.Object3D();
     afqb.three.greyGroups = new THREE.Object3D();
@@ -130,9 +130,9 @@ afqb.three.init = function () {
     });
 
 	var ThreeGuiConfigObj = function () {
-		this.lhOpacity = afqb.three.settings.lHOpacity;
-		this.rhOpacity = afqb.three.settings.rHOpacity;
-		this.fiberOpacity = afqb.three.settings.fiberOpacity;
+		this.lhOpacity = parseFloat(afqb.three.settings.lHOpacity);
+		this.rhOpacity = parseFloat(afqb.three.settings.rHOpacity);
+		this.fiberOpacity = parseFloat(afqb.three.settings.fiberOpacity);
 		this.highlight = afqb.three.settings.mouseoverHighlight;
 	};
 
@@ -156,6 +156,13 @@ afqb.three.init = function () {
 		});
 	});
 
+    lhOpacityController.onFinishChange(function(value) {
+        // Update the query string
+    	afqb.global.updateQueryString(
+            {three: {lHOpacity: value.toString()}}
+		);
+    });
+
 	var rhOpacityController = afqb.three.gui
 		.add(afqb.global.controls.threeControlBox, 'rhOpacity')
 		.min(0).max(1).step(0.01).name('Right Hemi Opacity');
@@ -167,6 +174,13 @@ afqb.three.init = function () {
 			}
 		});
 	});
+
+    rhOpacityController.onFinishChange(function(value) {
+        // Update the query string
+        afqb.global.updateQueryString(
+            {three: {rHOpacity: value.toString()}}
+        );
+    });
 
 	var fiberOpacityController = afqb.three.gui
 		.add(afqb.global.controls.threeControlBox, 'fiberOpacity')
@@ -185,10 +199,24 @@ afqb.three.init = function () {
 		});
 	});
 
+    fiberOpacityController.onFinishChange(function(value) {
+        // Update the query string
+        afqb.global.updateQueryString(
+            {three: {fiberOpacity: value.toString()}}
+        );
+    });
+
     // Add highlight controller
-	afqb.three.gui
+	var mouseoverHighlightController = afqb.three.gui
 		.add(afqb.global.controls.threeControlBox, 'highlight')
 		.name('Mouseover Highlight');
+
+	mouseoverHighlightController.onFinishChange(function(value) {
+        // Update the query string
+        afqb.global.updateQueryString(
+            {three: {mouseoverHighlight: value.toString()}}
+        );
+	});
 
 	var guiContainer = document.getElementById('three-gui-container');
 	guiContainer.appendChild(afqb.three.gui.domElement);
@@ -342,12 +370,22 @@ afqb.three.init = function () {
 		// Finally add fiber bundle group to the afqb.three.scene.
   		afqb.three.scene.add(afqb.three.colorGroups);
 		afqb.three.scene.add(afqb.three.greyGroups);
+        
+        if (callback) { callback(null); }
     });
 
     window.addEventListener('resize', afqb.three.onWindowResize, false);
     afqb.three.orbitControls = new THREE.OrbitControls(afqb.three.camera, afqb.three.renderer.domElement);
     afqb.three.orbitControls.addEventListener('change', afqb.three.lightUpdate);
     afqb.three.orbitControls.enableKeys = false;
+
+    afqb.three.renderer.domElement.addEventListener('click', function() {
+		// Update the query string
+		var cameraPosition = afqb.three.camera.position.clone();
+        afqb.global.updateQueryString(
+            {three: {cameraPosition: cameraPosition}}
+        );
+    }, false);
 };
 
 // Resize the three.js window on full window resize.
@@ -372,11 +410,11 @@ afqb.three.animate = function () {
     }
 
 	// For each fiber bundle update the length of fiber to be plotted
-	// based on the d3 brushes in the FA plots
+	// based on the d3 brushes in the 2D plots
 	for (var i = 0; i < afqb.three.colorGroups.children.length; i++) {
-		var tract = 'tract' + i;
-		var lo = Math.floor(afqb.plots.settings.bundleBrush[tract].brushExtent[0]);
-		var hi = Math.ceil(afqb.plots.settings.bundleBrush[tract].brushExtent[1]) - 1;
+		var tract = afqb.plots.tracts[i].toLowerCase().replace(/\s+/g, "-");
+		var lo = Math.floor(afqb.plots.settings.brushes[tract].brushExtent[0]);
+		var hi = Math.ceil(afqb.plots.settings.brushes[tract].brushExtent[1]) - 1;
 
 		// loIdx is the low index and count is the number of indices
 		// This is a little sloppy and sometimes the count will be too high
@@ -409,11 +447,16 @@ afqb.three.highlightBundle = function (state, name) {
 		depthWrite: true
 	});
 
-	var bundle = afqb.three.colorGroups.children[name];
+    var names = afqb.plots.tracts.map(function(name) {
+        return name.toLowerCase().replace(/\s+/g, "-");
+    });
+    var index = names.indexOf(name);
+
+	var bundle = afqb.three.colorGroups.children[index];
 
 	if (bundle !== undefined) {
 		if (state === true) {
-			tmpLineMaterial.color.setHex( afqb.global.colors[name] );
+			tmpLineMaterial.color.setHex( afqb.global.colors[index] );
 			bundle.material = tmpLineMaterial;
 			return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 
@@ -425,7 +468,7 @@ afqb.three.highlightBundle = function (state, name) {
 };
 
 // Highlight specified bundle based on mouseover
-afqb.three.mouseoverBundle = function (name) {
+afqb.three.mouseoverBundle = function (idx) {
     "use strict";
 	if (afqb.global.controls.threeControlBox.highlight) {
 		// Temporary line material for moused-over bundles
@@ -435,11 +478,12 @@ afqb.three.mouseoverBundle = function (name) {
 			transparent: true
 		});
 
-		var bundle = afqb.three.colorGroups.children[name];
+		var bundle = afqb.three.colorGroups.children[idx];
 
 		if (bundle !== undefined) {
-			tmpLineMaterial.color.setHex( afqb.global.highlightColors[name] );
-			if (afqb.plots.settings.bundleBrush['tract' + name].brushOn) {
+            var name = afqb.plots.tracts[idx].toLowerCase().replace(/\s+/g, "-");
+			tmpLineMaterial.color.setHex( afqb.global.highlightColors[idx] );
+			if (afqb.plots.settings.brushes[name].brushOn) {
 				tmpLineMaterial.color.setHex( 0x000000 );
 			}
 			bundle.material = tmpLineMaterial;
@@ -450,7 +494,7 @@ afqb.three.mouseoverBundle = function (name) {
 
 // Use d3.queue() to wait for afqb.plots.faPlotLength before calling init and animate
 afqb.global.queues.threeQ = d3_queue.queue();
-afqb.global.queues.threeQ.defer(afqb.global.waitForSettings);
+afqb.global.queues.threeQ.defer(afqb.global.initSettings);
 afqb.global.queues.threeQ.defer(afqb.three.waitForPlotLength);
 afqb.global.queues.threeQ.await(afqb.three.initAndAnimate);
 

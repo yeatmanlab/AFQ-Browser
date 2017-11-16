@@ -42,5 +42,5 @@ afqb.global.updateHeadings = function () {
 }
 
 afqb.global.queues.headingsQ = d3_queue.queue();
-afqb.global.queues.headingsQ.defer(afqb.global.waitForSettings);
+afqb.global.queues.headingsQ.defer(afqb.global.initSettings);
 afqb.global.queues.headingsQ.await(afqb.global.updateHeadings);
