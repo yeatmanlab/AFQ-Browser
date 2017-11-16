@@ -343,6 +343,14 @@ afqb.three.init = function (callback) {
 						afqb.plots.settings.checkboxes[myBundle.name] = myBundle.checked;
 						afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name);
 						afqb.three.highlightBundle(myBundle.checked, myBundle.name);
+
+                        // Update the query string
+                        var checkboxes = {};
+                        checkboxes[myBundle.name] = myBundle.checked;
+                        afqb.global.updateQueryString(
+                            {plots: {checkboxes: checkboxes}}
+                        );
+
 						return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 					} else {
 						afqb.global.mouse.mouseMove = false;
