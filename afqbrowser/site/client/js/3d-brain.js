@@ -96,6 +96,14 @@ afqb.three.init = function (callback) {
     afqb.three.renderer.setSize(width, height);
     afqb.three.container.appendChild(afqb.three.renderer.domElement);
 
+    afqb.three.renderer.domElement.addEventListener("mouseout", function () {
+        afqb.three.colorGroups.traverse(function (child) {
+            if (child instanceof THREE.LineSegments) {
+                afqb.three.mouseoutBundle(child.idx);
+            }
+        });
+    });
+
     // dom event
     var domEvents = new THREEx.DomEvents(afqb.three.camera, afqb.three.renderer.domElement);
 
@@ -349,9 +357,7 @@ afqb.three.init = function (callback) {
 					}
 				});
 				domEvents.addEventListener(child, 'mouseout', function() {
-					var myBundle = d3.selectAll("input.tracts")[0][child.idx];
-					afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name);
-					afqb.three.highlightBundle(myBundle.checked, myBundle.name);
+				    afqb.three.mouseoutBundle(child.idx);
 					return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 				});
             }
@@ -465,6 +471,12 @@ afqb.three.highlightBundle = function (state, name) {
 			return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 		}
 	}
+};
+
+afqb.three.mouseoutBundle = function (idx) {
+    var myBundle = d3.selectAll("input.tracts")[0][idx];
+    afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name);
+    afqb.three.highlightBundle(myBundle.checked, myBundle.name);
 };
 
 // Highlight specified bundle based on mouseover
