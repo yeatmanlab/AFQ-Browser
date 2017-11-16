@@ -123,7 +123,7 @@ afqb.global.initSettings = function (callback) {
 };
 
 afqb.plots.restoreBrush = function () {
-	"use strict";
+    "use strict";
     Object.keys(afqb.plots.settings.brushes).forEach(function (tract) {
         if (afqb.plots.settings.brushes[tract].brushOn) {
             var targetBrush = afqb.plots.brushes.filter(function (b) {
@@ -138,11 +138,7 @@ afqb.plots.restoreBrush = function () {
 
             var formatter = d3.format(".0f");
             var ext = targetBrush.extent();
-            d3.selectAll(".brushExt").each(function(d) {
-                if (d.key.toLowerCase().replace(/\s+/g, "-") === tract) {
-                    d3.select(this).text("(" + formatter(ext[0]) + ", " + formatter(ext[1]) + ")");
-                }
-            });
+            d3.select("#brush-ext-" + tract).text("(" + formatter(ext[0]) + ", " + formatter(ext[1]) + ")");
         }
     });
 };
