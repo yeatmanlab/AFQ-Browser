@@ -423,14 +423,14 @@ afqb.plots.ready = function (error, data) {
 		.style("fill", function(d,i){return afqb.global.d3colors[i];} )
 		.text(function(d,i) { return afqb.plots.tracts[i]; });
 
-		trPanels.append("text")
-			.attr("class", "brushExt")
-			.attr("text-anchor", "end")
-			.attr("transform", "translate("+ (afqb.plots.w + afqb.plots.m.right + 30)
-								+","+(afqb.plots.m.top+15)+")")
-			.style("stroke", function(d,i){return afqb.global.d3colors[i];} )
-			.style("fill", function(d,i){return afqb.global.d3colors[i];} )
-
+    trPanels.append("text")
+        .attr("id", function (d,i) { return "brush-ext-" + afqb.plots.tracts[i].toLowerCase().replace(/\s+/g, "-"); })
+        .attr("class", "brushExt")
+        .attr("text-anchor", "end")
+        .attr("transform", "translate("+ (afqb.plots.w + afqb.plots.m.right + 30)
+            +","+(afqb.plots.m.top+15)+")")
+        .style("stroke", function(d,i){return afqb.global.d3colors[i];} )
+        .style("fill", function(d,i){return afqb.global.d3colors[i];} )
 
 	// associate tractsline with each subject
 	var tractLines = trPanels.selectAll(".tracts")
@@ -572,6 +572,10 @@ afqb.plots.ready = function (error, data) {
 			}
 		}
 	}
+
+    d3.select("#tractdetails").selectAll("svg").each(function (d) {
+        afqb.plots.newBrush(d.key.toLowerCase().replace(/\s+/g, "-"));
+    });
 };
 
 afqb.plots.changePlots = function (error, data) {
@@ -800,20 +804,13 @@ afqb.plots.newBrush = function (name) {
 		if (targetBrush.empty()) {
 			afqb.plots.settings.brushes[targetName].brushExtent = [0, 100];
 
-			d3.selectAll(".brushExt").each(function(d) {
-                if (d.key.toLowerCase().replace(/\s+/g, "-") === targetName) {
-					d3.select(this).text("");
-				}
-			});
+			d3.select("#brush-ext-" + targetName).text("");
 		} else {
 		    afqb.plots.settings.brushes[targetName].brushExtent = targetBrush.extent();
+
             var formatter = d3.format(".0f");
             var ext = targetBrush.extent();
-            d3.selectAll(".brushExt").each(function(d) {
-                if (d.key.toLowerCase().replace(/\s+/g, "-") === targetName) {
-                    d3.select(this).text("(" + formatter(ext[0]) + ", " + formatter(ext[1]) + ")");
-                }
-            });
+            d3.select("#brush-ext-" + targetName).text("(" + formatter(ext[0]) + ", " + formatter(ext[1]) + ")");
 		}
 	}
 
@@ -838,10 +835,6 @@ afqb.plots.newBrush = function (name) {
 
 afqb.plots.updateBrush = function () {
     "use strict";
-    d3.select("#tractdetails").selectAll("svg").each(function (d) {
-        afqb.plots.newBrush(d.key.toLowerCase().replace(/\s+/g, "-"));
-    });
-
 	if (afqb.global.controls.plotsControlBox.brushTract) {
         var callBrush = function () {
             var targetName = this.parentElement.getAttribute("name");
