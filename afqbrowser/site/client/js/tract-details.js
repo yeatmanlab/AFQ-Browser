@@ -103,37 +103,42 @@ afqb.plots.buildTractCheckboxes = function (error, data) {
 	d3.selectAll("#selectAllTracts")
 		.on("change", function () {
 			var state = this.checked;
-			var name = this.name;
 			if (state) {
-				d3.selectAll(".tracts").each(function () {
+				d3.selectAll("input.tracts").each(function () {
 					this.checked = true;
-					afqb.plots.settings.checkboxes[name] = this.checked;
-					afqb.plots.showHideTractDetails(this.checked, name);
-					afqb.three.highlightBundle(this.checked, name);
+					afqb.plots.settings.checkboxes[this.name] = this.checked;
+					afqb.plots.showHideTractDetails(this.checked, this.name);
+					afqb.three.highlightBundle(this.checked, this.name);
 
                     // Update the query string
                     var checkboxes = {};
-                    checkboxes[name] = this.checked;
+                    checkboxes[this.name] = this.checked;
                     afqb.global.updateQueryString(
                         {plots: {checkboxes: checkboxes}}
                     );
 				});
 			} else {
-				d3.selectAll(".tracts").each(function () {
+				d3.selectAll("input.tracts").each(function () {
 					this.checked = false;
-					afqb.plots.settings.checkboxes[name] = this.checked;
-					afqb.plots.showHideTractDetails(this.checked, name);
-					afqb.three.highlightBundle(this.checked, name);
+					afqb.plots.settings.checkboxes[this.name] = this.checked;
+					afqb.plots.showHideTractDetails(this.checked, this.name);
+					afqb.three.highlightBundle(this.checked, this.name);
 
                     // Update the query string
                     var checkboxes = {};
-                    checkboxes[name] = this.checked;
+                    checkboxes[this.name] = this.checked;
                     afqb.global.updateQueryString(
                         {plots: {checkboxes: checkboxes}}
                     );
 				});
 			}
 		});
+
+	var checked = true;
+    d3.selectAll('input.tracts').each(function () {
+        checked = checked && this.checked;
+    });
+    document.getElementById('selectAllTracts').checked = checked;
 };
 
 afqb.plots.xScale = d3.scale.linear()
