@@ -558,9 +558,10 @@ Special hover stuff
 #loader-wrapper .loader-section {
   position: fixed;
   top: 0;
-  width: 51%;
+  width: 50%;
   height: 100%;
   background: #404040;
+  opacity: 0.90;
   z-index: 1000;
 }
 
