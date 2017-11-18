@@ -17,6 +17,15 @@ afqb.table.ramp = null;
 
 afqb.table.buildTable = function (error, useless, data) {
 	"use strict";
+	data.forEach(function (d) {
+	    delete d[""];
+		Object.keys(d).forEach(function (key) {
+			d[key] = +d[key] || d[key];
+			if (d[key] === "0") {
+				d[key] = +d[key];
+			}
+		})
+	});
 
 	data.forEach(function (d) {
         if (typeof d.subjectID === 'number') {
@@ -24,6 +33,37 @@ afqb.table.buildTable = function (error, useless, data) {
         }
 		afqb.table.subData.push(d);
 	});
+
+	afqb.table.subFormats = {}
+    Object.keys(afqb.table.subData[0]).forEach(function (key) {
+        var column = afqb.table.subData.map( function (row) {
+            return row[key];
+        });
+
+        column = column.filter(function (element) {
+            return element !== undefined && element !== null;
+        });
+
+        function isBinary (e) {
+            return e === 1 || e === 0;
+        }
+
+        function isNum (e) {
+            return !isNaN(+e);
+        }
+
+        function identity (arg) {
+            return arg;
+        }
+
+        if (column.every(isBinary)) {
+            afqb.table.subFormats[key] = d3.format("0b");
+        } else if (column.every(isNum)) {
+            afqb.table.subFormats[key] = d3.format(".7g");
+        } else {
+            afqb.table.subFormats[key] = identity;
+        }
+    });
 
 	afqb.table.ramp = null;
 
@@ -108,8 +148,19 @@ afqb.table.buildTable = function (error, useless, data) {
 afqb.table.refreshTable = function () {
     "use strict";
     // create the table header
+	// We want subjectId to be the first column, so sort the keys using a sort function that puts
+	// subjectId before all other values, settings all other values to be equal
+    // Use d3.entries followed by sort followed by a map that gets the keys
+	// because d3.[keys, values, entries] all have an undefined order. We use d3.entries below to sort
+	// the values so we use the same method here for the keys to ensure that the header row has the same
+	// order as the body rows.
+    var firstCol = "subjectID";
+    var sortedKeys = d3.entries(afqb.table.subData[0])
+        .sort(function (x,y) { return x.key === firstCol ? -1 : y.key === firstCol ? 1 : 0; })
+        .map(function (entry) { return entry.key; });
+
     var header = afqb.table.headerGrp.selectAll("g")
-        .data(d3.keys(afqb.table.subData[0]))
+        .data(sortedKeys)
         .enter().append("g")
         .attr("class", "t_header")
         .attr("transform", function (d, i) {
@@ -154,7 +205,15 @@ afqb.table.refreshTable = function () {
 
     // select cells
     var cells = rows.selectAll("g.cell")
-		.data(function (d) { return d3.values(d); });
+		.data(function (d) {
+			return d3.entries(d)
+				.sort(function (x,y) {
+					return x.key === firstCol ? -1 : y.key === firstCol ? 1 : 0;
+				})
+				.map(function (entry) {
+					return afqb.table.subFormats[entry.key](entry.value);
+				});
+		});
 
     // create cells
     var cellsEnter = cells.enter().append("svg:g")
@@ -422,5 +481,5 @@ afqb.table.tableMouseDown = function () {
 
 afqb.global.queues.subjectQ = d3_queue.queue();
 afqb.global.queues.subjectQ.defer(afqb.global.initSettings);
-afqb.global.queues.subjectQ.defer(d3.json, "data/subjects.json");
+afqb.global.queues.subjectQ.defer(d3.csv, "data/subjects.csv");
 afqb.global.queues.subjectQ.await(afqb.table.buildTable);
