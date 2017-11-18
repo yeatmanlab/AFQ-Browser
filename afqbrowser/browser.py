@@ -47,7 +47,8 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
     metadata : str, optional
         Full path to a file with user-supplied metadata. This has to be a csv
         file with column headers in the first row, including a column named
-        "subjectID". For an example, see https://github.com/yeatmanlab/AFQ-Browser/blob/master/afqbrowser/site/client/data/subjects.csv
+        "subjectID". For an example, see the 'data/subjects.csv' that comes
+        with the software.
 
 
     Notes
@@ -152,7 +153,8 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
     metadata : str, optional
         Full path to a file with user-supplied metadata. This has to be a csv
         file with column headers in the first row, including a column named
-        "subjectID". For an example, see https://github.com/yeatmanlab/AFQ-Browser/blob/master/afqbrowser/site/client/data/subjects.csv. Defaults to use the metadata stored in the afq
+        "subjectID". For an example, see the 'data/subjects.csv' that comes
+        with the software. Defaults to use the metadata stored in the afq
         mat file. If no metadata provided and there is no meadata in the afq
         mat file, create a minimal metadata table.
 
