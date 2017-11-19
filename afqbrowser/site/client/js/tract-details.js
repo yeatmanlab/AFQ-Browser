@@ -136,8 +136,14 @@ afqb.plots.buildTractCheckboxes = function (error, data) {
     document.getElementById('selectAllTracts').checked = checked;
 };
 
-afqb.plots.xScale = d3.scale.linear()
-	.range([afqb.plots.m.left + 25, afqb.plots.w + afqb.plots.m.left + 20]);
+afqb.plots.xScale = [
+    d3.scale.linear()
+        .range([afqb.plots.m.left + 25, afqb.plots.w + afqb.plots.m.left + 20])
+        .domain([0, 20]),
+    d3.scale.linear()
+        .range([afqb.plots.m.left + 25, afqb.plots.w + afqb.plots.m.left + 20])
+        .domain([0, 20])
+];
 
 afqb.plots.yScale = d3.scale.linear()
 	.range([afqb.plots.h - afqb.plots.axisOffset.bottom, 0]);
@@ -150,7 +156,7 @@ afqb.plots.yAxis = d3.svg.axis()
 	.ticks(5);
 
 afqb.plots.xAxis = d3.svg.axis()
-	.scale(afqb.plots.xScale)
+	.scale(afqb.plots.xScale[0])
 	.orient("bottom")
 	.tickPadding(8)
 	.ticks(5);
@@ -159,9 +165,9 @@ afqb.plots.line = d3.svg.line()
     .interpolate("basis")
     .x(function (d) {
         if (d.nodeID) {
-            return afqb.plots.xScale(+d.nodeID);
+            return afqb.plots.xScale[0](+d.nodeID);
         } else {
-            return afqb.plots.xScale(+d.key);
+            return afqb.plots.xScale[0](+d.key);
         }
     })
     .y(function (d) {
@@ -180,7 +186,7 @@ afqb.plots.line = d3.svg.line()
 	});
 
 afqb.plots.area = d3.svg.area()
-    .x(function(d) { return afqb.plots.xScale(+d.key) })
+    .x(function(d) { return afqb.plots.xScale[0](+d.key) })
     .y0(function (d) {
         if (afqb.global.controls.plotsControlBox.errorType === 'stderr') {
             return afqb.plots.yScale(+d.values.mean - +d.values.stderr);
@@ -352,10 +358,17 @@ afqb.plots.ready = function (error, data) {
 		.entries(data);
 
 	// set x and y domains for the tract plots
+    afqb.plots.tractData.forEach(function (d,i) {
+        //var id = "tract-" + afqb.plots.tracts[i].toLowerCase().replace(/\s+/g, "-"); // Subject to ordering errors since we call
+        afqb.plots.xScale[i] = d3.scale.linear()
+            .range([afqb.plots.m.left + 25, afqb.plots.w + afqb.plots.m.left + 20])
+            .domain([0, d.values[0].values.length]);
+        //.attr("id", function (d,i) { return "tract-" + afqb.plots.tracts[i].toLowerCase().replace(/\s+/g, "-"); })
+    });
+
 	afqb.plots.yScale.domain(d3.extent(data, function (d) {
 		return +d[plotKey];
 	}));
-	afqb.plots.xScale.domain([0, 100]).nice();
 
     afqb.plots.yAxis.scale(afqb.plots.yScale);
 
@@ -374,7 +387,7 @@ afqb.plots.ready = function (error, data) {
 		.attr("class", "y axis")
 		.attr("transform", "translate(" + afqb.plots.m.left + ",0)")
 		.call(afqb.plots.yAxis);
-
+	
     // y axis label
     trPanels.append("text")
         .attr("text-anchor", "middle")
@@ -665,7 +678,7 @@ afqb.plots.changePlots = function (error, data) {
 	afqb.plots.yScale.domain(d3.extent(data, function (d) {
 		return +d[plotKey];
 	}));
-	afqb.plots.xScale.domain([0, 100]).nice();
+	afqb.plots.xScale[0].domain([0, 100]).nice();
 
     afqb.plots.yAxis.scale(afqb.plots.yScale);
 
@@ -796,7 +809,7 @@ afqb.plots.zoomAxis = function () {
 afqb.plots.newBrush = function (name) {
     "use strict";
     var brush = d3.svg.brush()
-        .x(afqb.plots.xScale)
+        .x(afqb.plots.xScale[0])
         .on("brush", brushed)
 		.on("brushstart", brushStart)
 		.on("brushend", brushEnd);
