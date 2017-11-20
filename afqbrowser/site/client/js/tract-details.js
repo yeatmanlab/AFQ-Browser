@@ -139,7 +139,7 @@ afqb.plots.buildTractCheckboxes = function (error, data) {
 afqb.plots.xScale = [
     d3.scale.linear()
         .range([afqb.plots.m.left + 25, afqb.plots.w + afqb.plots.m.left + 20])
-        .domain([0, 20]),
+        .domain([0, 10]),
     d3.scale.linear()
         .range([afqb.plots.m.left + 25, afqb.plots.w + afqb.plots.m.left + 20])
         .domain([0, 20])
@@ -410,7 +410,15 @@ afqb.plots.ready = function (error, data) {
 	trPanels.select("g").append("g")
 		.attr("class", "x axis")
 		.attr("transform", "translate(-20," + (afqb.plots.h - afqb.plots.axisOffset.bottom) + ")")
-		.call(afqb.plots.xAxis);
+		.call(afqb.plots.xAxis);/*.each(function () {
+
+            d3.svg.axis()
+				.scale(afqb.plots.xScale[0])
+				.orient("bottom")
+				.tickPadding(8)
+				.ticks(5);
+
+        });*/
 
 	trPanels.append("rect")
 		.attr("class", "plot")
