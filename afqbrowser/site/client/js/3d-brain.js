@@ -82,7 +82,7 @@ afqb.three.init = function (callback) {
     afqb.three.renderer.domElement.addEventListener("mouseout", function () {
         afqb.three.colorGroups.traverse(function (child) {
             if (child instanceof THREE.LineSegments) {
-                afqb.three.mouseoutBundle(child.idx);
+                afqb.three.mouseoutBundle(child.name);
             }
         });
     });
@@ -224,15 +224,14 @@ afqb.three.init = function (callback) {
     // load fiber bundle using jQuery
 	var greyGeometry = new THREE.Geometry();
 
-	var bundleIdx = 0;
     $.getJSON("data/afq_streamlines.json", function (json) {
-        Object.keys(json).forEach(function (key) {
-            var oneBundle = json[key];
+        Object.keys(json).forEach(function (bundleKey) {
+            var oneBundle = json[bundleKey];
             var nFibers = 0;
 
             // Retrieve the core fiber and then delete it from the bundle object
-            // var coreFiber = oneBundle['coreFiber'];
-            // delete oneBundle['coreFiber'];
+            var coreFiber = oneBundle['coreFiber'];
+            delete oneBundle['coreFiber'];
 
             // fiberKeys correspond to individual fibers in each fiber bundle
             // They may not be consecutive keys depending on the
@@ -247,9 +246,9 @@ afqb.three.init = function (callback) {
             Object.keys(oneBundle).forEach(function (fiberKey) {
                 ++nFibers;
                 var oneFiber = oneBundle[fiberKey];
-                if (oneFiber.length !== afqb.plots.faPlotLength) {
+                if (oneFiber.length !== referenceLength) {
                     var errMessage = ('Streamlines have unexpected length. ' +
-						'faPlotLength = ' + afqb.plots.faPlotLength + ', ' +
+						'faPlotLength = ' + referenceLength + ', ' +
 						'but oneFiber.length = ' + oneFiber.length);
                     if (typeof Error !== 'undefined') {
                         throw new Error(errMessage);
@@ -325,11 +324,8 @@ afqb.three.init = function (callback) {
             colorBundleLine.position.set(0, 0.8, -0.5);
 
             // Record some useful info for later
-            colorBundleLine.name = afqb.plots.tracts[bundleIdx];
+            colorBundleLine.name = bundleKey.toLowerCase().replace(/\s+/g, "-");
             colorBundleLine.nFibers = nFibers;
-            colorBundleLine.idx = bundleIdx;
-
-            ++bundleIdx;
 
             afqb.three.colorGroups.add(colorBundleLine);
 
@@ -343,11 +339,8 @@ afqb.three.init = function (callback) {
             // coreColorBundleLine.position.set(0, 0.8, -0.5);
             //
             // // Record some useful info for later
-            // coreColorBundleLine.name = afqb.plots.tracts[bundleIdx];
-            // coreColorBundleLine.nFibers = nFibers;
-            // coreColorBundleLine.idx = bundleIdx;
-            //
-            // ++bundleIdx;
+            // coreColorBundleLine.name = bundleKey;
+            // coreColorBundleLine.nFibers = 1;
             //
             // afqb.three.colorGroups.add(coreColorBundleLine);
         });
@@ -358,7 +351,7 @@ afqb.three.init = function (callback) {
 			if (child instanceof THREE.LineSegments) {
 				domEvents.addEventListener(child, 'mouseover', function() {
 					if(!afqb.global.mouse.isDown) {
-						afqb.three.mouseoverBundle(child.idx);
+						afqb.three.mouseoverBundle(child.name);
 						return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 					}
 				});
@@ -370,7 +363,9 @@ afqb.three.init = function (callback) {
 				});
 				domEvents.addEventListener(child, 'mouseup', function() {
 					if(!afqb.global.mouse.mouseMove) {
-						var myBundle = d3.selectAll("input.tracts")[0][child.idx];
+                        var myBundle = d3.selectAll("input.tracts").filter(function (d) {
+                            return d.toLowerCase().replace(/\s+/g, "-") === child.name;
+                        })[0][0];
 						myBundle.checked = !myBundle.checked;
 						afqb.plots.settings.checkboxes[myBundle.name] = myBundle.checked;
 						afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name);
@@ -389,7 +384,7 @@ afqb.three.init = function (callback) {
 					}
 				});
 				domEvents.addEventListener(child, 'mouseout', function() {
-				    afqb.three.mouseoutBundle(child.idx);
+				    afqb.three.mouseoutBundle(child.name);
 					return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 				});
             }
@@ -449,23 +444,22 @@ afqb.three.animate = function () {
 
 	// For each fiber bundle update the length of fiber to be plotted
 	// based on the d3 brushes in the 2D plots
-	for (var i = 0; i < afqb.three.colorGroups.children.length; i++) {
-		var tract = afqb.plots.tracts[i].toLowerCase().replace(/\s+/g, "-");
-		var lo = Math.floor(afqb.plots.settings.brushes[tract].brushExtent[0]);
-		var hi = Math.ceil(afqb.plots.settings.brushes[tract].brushExtent[1]) - 1;
+    afqb.three.colorGroups.children.forEach(function (element) {
+        var lo = Math.floor(afqb.plots.settings.brushes[element.name].brushExtent[0]);
+        var hi = Math.ceil(afqb.plots.settings.brushes[element.name].brushExtent[1]) - 1;
 
-		// loIdx is the low index and count is the number of indices
-		// This is a little sloppy and sometimes the count will be too high
-		// but the visual offset should be minimal.
-		// TODO: Positions come in pairs, with all vertices except the first
-		// and last being repeated. Take this into account to make loIdx and
-		// count correct (not just good enough).
-		var loIdx = lo * afqb.three.colorGroups.children[i].nFibers * 2;
-		var count = (hi - lo) * afqb.three.colorGroups.children[i].nFibers * 2;
+        // loIdx is the low index and count is the number of indices
+        // This is a little sloppy and sometimes the count will be too high
+        // but the visual offset should be minimal.
+        // TODO: Positions come in pairs, with all vertices except the first
+        // and last being repeated. Take this into account to make loIdx and
+        // count correct (not just good enough).
+        var loIdx = lo * element.nFibers * 2;
+        var count = (hi - lo) * element.nFibers * 2;
 
-		// Set the drawing range based on the brush extent.
-		afqb.three.colorGroups.children[i].geometry.setDrawRange(loIdx, count);
-	}
+        // Set the drawing range based on the brush extent.
+        element.geometry.setDrawRange(loIdx, count);
+	});
 };
 
 afqb.three.lightUpdate = function () {
@@ -490,7 +484,9 @@ afqb.three.highlightBundle = function (state, name) {
     });
     var index = names.indexOf(name);
 
-	var bundle = afqb.three.colorGroups.children[index];
+    var bundle = afqb.three.colorGroups.children.filter(function (element) {
+        return element.name === name;
+    })[0];
 
 	if (bundle !== undefined) {
 		if (state === true) {
@@ -505,14 +501,15 @@ afqb.three.highlightBundle = function (state, name) {
 	}
 };
 
-afqb.three.mouseoutBundle = function (idx) {
-    var myBundle = d3.selectAll("input.tracts")[0][idx];
-    afqb.plots.showHideTractDetails(myBundle.checked, myBundle.name);
+afqb.three.mouseoutBundle = function (name) {
+    var myBundle = d3.selectAll("input.tracts").filter(function (d) {
+    	return d.toLowerCase().replace(/\s+/g, "-") === name;
+    })[0][0];
     afqb.three.highlightBundle(myBundle.checked, myBundle.name);
 };
 
 // Highlight specified bundle based on mouseover
-afqb.three.mouseoverBundle = function (idx) {
+afqb.three.mouseoverBundle = function (name) {
     "use strict";
 	if (afqb.global.controls.threeControlBox.highlight) {
 		// Temporary line material for moused-over bundles
@@ -522,10 +519,15 @@ afqb.three.mouseoverBundle = function (idx) {
 			transparent: true
 		});
 
-		var bundle = afqb.three.colorGroups.children[idx];
+		var bundle = afqb.three.colorGroups.children.filter(function (element) {
+			return element.name === name;
+        })[0];
 
 		if (bundle !== undefined) {
-            var name = afqb.plots.tracts[idx].toLowerCase().replace(/\s+/g, "-");
+			var tracts = afqb.plots.tracts.map(function (element) {
+				return element.toLowerCase().replace(/\s+/g, "-");
+			});
+            var idx = tracts.indexOf(name);
 			tmpLineMaterial.color.setHex( afqb.global.highlightColors[idx] );
 			if (afqb.plots.settings.brushes[name].brushOn) {
 				tmpLineMaterial.color.setHex( 0x000000 );
