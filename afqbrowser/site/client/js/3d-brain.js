@@ -479,6 +479,7 @@ afqb.three.init = function (callback) {
         afqb.three.scene.add(afqb.three.greyCoreGroup);
 
         if (callback) { callback(null); }
+        afqb.three.brushOn3D();
     });
 
     window.addEventListener('resize', afqb.three.onWindowResize, false);
@@ -516,8 +517,14 @@ afqb.three.animate = function () {
 		afqb.three.stats.update();
     }
 
-	// For each fiber bundle update the length of fiber to be plotted
-	// based on the d3 brushes in the 2D plots
+    if (afqb.global.mouse.brushing) {
+        afqb.three.brushOn3D();
+    }
+};
+
+afqb.three.brushOn3D = function () {
+// For each fiber bundle update the length of fiber to be plotted
+// based on the d3 brushes in the 2D plots
     afqb.three.colorGroup.children.forEach(function (element) {
         var lo = Math.floor(afqb.plots.settings.brushes[element.name].brushExtent[0]);
         var hi = Math.ceil(afqb.plots.settings.brushes[element.name].brushExtent[1]) - 1;
@@ -532,8 +539,12 @@ afqb.three.animate = function () {
         var count = (hi - lo) * element.nFibers * 2;
 
         // Set the drawing range based on the brush extent.
-        element.geometry.setDrawRange(loIdx, count);
-	});
+        if (afqb.global.controls.plotsControlBox.brushTract) {
+            element.geometry.setDrawRange(loIdx, count);
+        } else {
+            element.geometry.setDrawRange(0, Infinity);
+        }
+    });
 
     afqb.three.colorCoreGroup.children.forEach(function (element) {
         var lo = Math.floor(afqb.plots.settings.brushes[element.name].brushExtent[0]);
@@ -554,7 +565,11 @@ afqb.three.animate = function () {
         var count = parseInt((hi - lo) * totalLength / 100.0);
 
         // Set the drawing range based on the brush extent.
-        element.geometry.setDrawRange(loIdx, count);
+        if (afqb.global.controls.plotsControlBox.brushTract) {
+            element.geometry.setDrawRange(loIdx, count);
+        } else {
+            element.geometry.setDrawRange(0, Infinity);
+        }
     });
 };
 
