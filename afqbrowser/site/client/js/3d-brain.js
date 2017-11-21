@@ -439,9 +439,13 @@ afqb.three.init = function (callback) {
         afqb.three.greyCoreGroup.add(greyCoreMesh);
 
         afqb.three.greyCoreGroup.renderOrder = 1;
-        afqb.three.greyGroup.renderOrder = 2;
-        afqb.three.colorCoreGroup.renderOrder = 3;
-        afqb.three.colorGroup.renderOrder = 4;
+        afqb.three.greyGroup.traverse(function (object) {
+            object.renderOrder = 1;
+        });
+
+        afqb.three.greyGroup.renderOrder = 1;
+        afqb.three.colorCoreGroup.renderOrder = 2;
+        afqb.three.colorGroup.renderOrder = 2;
 
         if (afqb.global.controls.threeControlBox.fiberRepresentation === "all fibers") {
             afqb.three.colorGroup.traverse(afqb.three.make_visible);
