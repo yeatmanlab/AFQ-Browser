@@ -244,15 +244,15 @@ afqb.three.init = function (callback) {
 
     fiberRepController.onFinishChange(function (value) {
         if (value === "all fibers") {
-            afqb.three.colorGroup.traverse(afqb.three.make_visible);
-            afqb.three.greyGroup.traverse(afqb.three.make_visible);
-            afqb.three.colorCoreGroup.traverse(afqb.three.make_invisible);
-            afqb.three.greyCoreGroup.traverse(afqb.three.make_invisible);
+            afqb.three.colorGroup.traverse(afqb.three.makeVisible);
+            afqb.three.greyGroup.traverse(afqb.three.makeVisible);
+            afqb.three.colorCoreGroup.traverse(afqb.three.makeInvisible);
+            afqb.three.greyCoreGroup.traverse(afqb.three.makeInvisible);
         } else {
-            afqb.three.colorGroup.traverse(afqb.three.make_invisible);
-            afqb.three.greyGroup.traverse(afqb.three.make_invisible);
-            afqb.three.colorCoreGroup.traverse(afqb.three.make_visible);
-            afqb.three.greyCoreGroup.traverse(afqb.three.make_visible);
+            afqb.three.colorGroup.traverse(afqb.three.makeInvisible);
+            afqb.three.greyGroup.traverse(afqb.three.makeInvisible);
+            afqb.three.colorCoreGroup.traverse(afqb.three.makeVisible);
+            afqb.three.greyCoreGroup.traverse(afqb.three.makeVisible);
         }
 
         // Update the query string
@@ -439,24 +439,35 @@ afqb.three.init = function (callback) {
         afqb.three.greyCoreGroup.add(greyCoreMesh);
 
         afqb.three.greyCoreGroup.renderOrder = 1;
-        afqb.three.greyGroup.traverse(function (object) {
+        afqb.three.greyCoreGroup.traverse(function (object) {
             object.renderOrder = 1;
         });
 
         afqb.three.greyGroup.renderOrder = 1;
+        afqb.three.greyGroup.traverse(function (object) {
+            object.renderOrder = 1;
+        });
+
         afqb.three.colorCoreGroup.renderOrder = 2;
+        afqb.three.colorCoreGroup.traverse(function (object) {
+            object.renderOrder = 2;
+        });
+
         afqb.three.colorGroup.renderOrder = 2;
+        afqb.three.colorGroup.traverse(function (object) {
+            object.renderOrder = 2;
+        });
 
         if (afqb.global.controls.threeControlBox.fiberRepresentation === "all fibers") {
-            afqb.three.colorGroup.traverse(afqb.three.make_visible);
-            afqb.three.greyGroup.traverse(afqb.three.make_visible);
-            afqb.three.colorCoreGroup.traverse(afqb.three.make_invisible);
-            afqb.three.greyCoreGroup.traverse(afqb.three.make_invisible);
+            afqb.three.colorGroup.traverse(afqb.three.makeVisible);
+            afqb.three.greyGroup.traverse(afqb.three.makeVisible);
+            afqb.three.colorCoreGroup.traverse(afqb.three.makeInvisible);
+            afqb.three.greyCoreGroup.traverse(afqb.three.makeInvisible);
         } else {
-            afqb.three.colorGroup.traverse(afqb.three.make_invisible);
-            afqb.three.greyGroup.traverse(afqb.three.make_invisible);
-            afqb.three.colorCoreGroup.traverse(afqb.three.make_visible);
-            afqb.three.greyCoreGroup.traverse(afqb.three.make_visible);
+            afqb.three.colorGroup.traverse(afqb.three.makeInvisible);
+            afqb.three.greyGroup.traverse(afqb.three.makeInvisible);
+            afqb.three.colorCoreGroup.traverse(afqb.three.makeVisible);
+            afqb.three.greyCoreGroup.traverse(afqb.three.makeVisible);
         }
 
 		// Finally add fiber bundle group to the afqb.three.scene.
@@ -551,12 +562,12 @@ afqb.three.lightUpdate = function () {
 };
 
 // Visibility toggle function to show/hide core fibers vs streamlines
-afqb.three.make_visible = function (object) {
+afqb.three.makeVisible = function (object) {
     object.visible = true;
 };
 
 // Visibility toggle function to show/hide core fibers vs streamlines
-afqb.three.make_invisible = function (object) {
+afqb.three.makeInvisible = function (object) {
     object.visible = false;
 };
 
@@ -602,7 +613,7 @@ afqb.three.highlightBundle = function (state, name) {
                         return bundle.name === name;
                     })[0];
 
-                    greyBundle.traverse(afqb.three.make_invisible);
+                    greyBundle.traverse(afqb.three.makeInvisible);
                 }
             } else {
                 bundle.material = afqb.three.colorLineMaterial;
@@ -612,7 +623,7 @@ afqb.three.highlightBundle = function (state, name) {
                         return bundle.name === name;
                     })[0];
 
-                    greyBundle.traverse(afqb.three.make_visible);
+                    greyBundle.traverse(afqb.three.makeVisible);
                 }
             }
         }
@@ -672,7 +683,7 @@ afqb.three.mouseoverBundle = function (group, child) {
                     return bundle.name === name;
                 })[0];
 
-                greyBundle.traverse(afqb.three.make_invisible);
+                greyBundle.traverse(afqb.three.makeInvisible);
             }
 
 			return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
