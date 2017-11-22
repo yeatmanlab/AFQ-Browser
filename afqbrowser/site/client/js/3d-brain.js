@@ -192,7 +192,7 @@ afqb.three.init = function (callback) {
 
 	var fiberOpacityController = afqb.three.gui
 		.add(afqb.global.controls.threeControlBox, 'fiberOpacity')
-		.min(0.0).max(1.0).name('Fiber Opacity');
+		.min(0.0).max(1.0).step(0.01).name('Fiber Opacity');
 
 	fiberOpacityController.onChange(function (value) {
         afqb.three.greyGroup.traverse(function (child) {
@@ -269,6 +269,7 @@ afqb.three.init = function (callback) {
     // each bundle is represented by an Object3D
     // load fiber bundle using jQuery
 	var greyCoreGeometry = new THREE.Geometry();
+    var greyGeometry = new THREE.Geometry();
 
     $.getJSON("data/afq_streamlines.json", function (json) {
         Object.keys(json).forEach(function (bundleKey) {
@@ -335,14 +336,9 @@ afqb.three.init = function (callback) {
             bundleGeometry.addAttribute(
             	'position', new THREE.BufferAttribute(positions, 3)
 			);
-            var greyBundleLine = new THREE.LineSegments(bundleGeometry, afqb.three.greyLineMaterial);
-            greyBundleLine.scale.set(0.05,0.05,0.05);
-            greyBundleLine.position.set(0, 0.8, -0.5);
-
-            greyBundleLine.name = bundleKey.toLowerCase().replace(/\s+/g, "-");
-            greyBundleLine.nFibers = nFibers;
-
-            afqb.three.greyGroup.add(greyBundleLine);
+            greyGeometry.merge(
+                new THREE.Geometry().fromBufferGeometry(bundleGeometry)
+            );
 
             var coreBundlePath = coreFiber.map(function (element) {
                 return new THREE.Vector3(element[0], element[1], element[2]);
@@ -432,6 +428,12 @@ afqb.three.init = function (callback) {
                 }
             });
         });
+
+        var greyBundleLine = new THREE.LineSegments(greyGeometry, afqb.three.greyLineMaterial);
+        greyBundleLine.scale.set(0.05,0.05,0.05);
+        greyBundleLine.position.set(0, 0.8, -0.5);
+
+        afqb.three.greyGroup.add(greyBundleLine);
 
         var greyCoreMesh = new THREE.Mesh(greyCoreGeometry, afqb.three.greyCoreMaterial);
         greyCoreMesh.scale.set(0.05,0.05,0.05);
@@ -607,24 +609,8 @@ afqb.three.highlightBundle = function (state, name) {
             if (state === true) {
                 tmpMaterial.color.setHex(afqb.global.colors[index]);
                 bundle.material = tmpMaterial;
-
-                if (group === afqb.three.colorGroup) {
-                    var greyBundle = afqb.three.greyGroup.children.filter(function (bundle) {
-                        return bundle.name === name;
-                    })[0];
-
-                    greyBundle.traverse(afqb.three.makeInvisible);
-                }
             } else {
                 bundle.material = afqb.three.colorLineMaterial;
-
-                if (group === afqb.three.colorGroup) {
-                    var greyBundle = afqb.three.greyGroup.children.filter(function (bundle) {
-                        return bundle.name === name;
-                    })[0];
-
-                    greyBundle.traverse(afqb.three.makeVisible);
-                }
             }
         }
     });
@@ -677,14 +663,6 @@ afqb.three.mouseoverBundle = function (group, child) {
             }
 
             bundle.material = tmpMaterial;
-
-            if (child instanceof THREE.LineSegments) {
-                var greyBundle = afqb.three.greyGroup.children.filter(function (bundle) {
-                    return bundle.name === name;
-                })[0];
-
-                greyBundle.traverse(afqb.three.makeInvisible);
-            }
 
 			return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 		}
