@@ -11,13 +11,6 @@ afqb.three.initAndAnimate = function (error) {
 	afqb.three.animate();
 };
 
-afqb.three.stats = {};
-
-if (afqb.three.settings.showStats) {
-	afqb.three.stats = new Stats();
-	afqb.three.container.appendChild(afqb.three.stats.dom);
-}
-
 afqb.three.init = function (callback) {
     "use strict";
     afqb.three.colorGroup = new THREE.Group();
@@ -60,6 +53,13 @@ afqb.three.init = function (callback) {
 
     var width = afqb.three.container.clientWidth;
 	var height = afqb.three.container.clientHeight;
+
+    afqb.three.stats = {};
+
+    if (afqb.three.settings.showStats) {
+        afqb.three.stats = new Stats();
+        afqb.three.container.appendChild(afqb.three.stats.dom);
+    }
 
     afqb.three.camera = new THREE.PerspectiveCamera(45, width / height, 1, 2000);
     afqb.three.camera.position.copy(new THREE.Vector3(
