@@ -7,7 +7,7 @@ afqb.plots.yzooms = {};
 afqb.plots.zoomable = true;
 
 afqb.plots.m = {top: 20, right: 10, bottom: 10, left: 25};
-afqb.plots.w = 400 - afqb.plots.m.left - afqb.plots.m.right,
+afqb.plots.w = 400 - afqb.plots.m.left - afqb.plots.m.right;
 afqb.plots.h = 350 - afqb.plots.m.top - afqb.plots.m.bottom;
 afqb.plots.axisOffset = {bottom: 40};
 
@@ -136,14 +136,10 @@ afqb.plots.buildTractCheckboxes = function (error, data) {
     document.getElementById('selectAllTracts').checked = checked;
 };
 
-// initialize xScale dict
-afqb.plots.xScale = {};
-afqb.plots.xAxis = {};
-
+// initialize yScale and yAxis
 afqb.plots.yScale = d3.scale.linear()
 	.range([afqb.plots.h - afqb.plots.axisOffset.bottom, 0]);
 
-//create axes
 afqb.plots.yAxis = d3.svg.axis()
 	.scale(afqb.plots.yScale)
 	.orient("left")
@@ -346,12 +342,15 @@ afqb.plots.ready = function (error, data) {
 		.key(function (d) { return d.subjectID; })
 		.entries(data);
 
+    // initialize xScale dict
+    afqb.plots.xScale = {};
+
 	// set x and y domains for the tract plots
     afqb.plots.tractData.forEach(function (d,i) {
         var id = afqb.plots.tracts[i].toLowerCase().replace(/\s+/g, "-"); // Subject to ordering errors since we call
         afqb.plots.xScale[id] = d3.scale.linear()
             .range([afqb.plots.m.left + 25, afqb.plots.w + afqb.plots.m.left + 20])
-            .domain([0, d.values[0].values.length-20]);
+            .domain([0, d.values[0].values.length]);
 
     });
 
@@ -397,8 +396,7 @@ afqb.plots.ready = function (error, data) {
 
 	//x-axis
 	trPanels.select("g").each(function (d) {
-        console.log(this);
-        console.log(d);
+
         var g = d3.select(this);
 		var id = d.key.toLowerCase().replace(/\s+/g, "-");
 
@@ -408,7 +406,6 @@ afqb.plots.ready = function (error, data) {
                 .tickPadding(8)
                 .ticks(5);
 
-		console.log(afqb.plots.xScale[id]);
         g.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(-20," + (afqb.plots.h - afqb.plots.axisOffset.bottom) + ")")
@@ -451,25 +448,57 @@ afqb.plots.ready = function (error, data) {
         .attr("transform", "translate("+ (afqb.plots.w + afqb.plots.m.right + 30)
             +","+(afqb.plots.m.top+15)+")")
         .style("stroke", function(d,i){return afqb.global.d3colors[i];} )
-        .style("fill", function(d,i){return afqb.global.d3colors[i];} )
+        .style("fill", function(d,i){return afqb.global.d3colors[i];} );
 
 	// associate tractsline with each subject
-	var tractLines = trPanels.selectAll(".tracts")
-		.data(function(d){ return d.values; })
-		.enter().append("g")
-		.attr("class", "tracts")
-		.attr("id", function (d) {
-            return d.values[0].subjectID;
-		})
-		.on("mouseover", mouseover)
-		.on("mouseout", mouseout)
-		.on("click", onclick);
+	trPanels.selectAll(".tracts").each(function (d) {
+		console.log(d);
 
-	tractLines.append("path")
-		.attr("class", "line")
-		.attr("d", function (d) { return afqb.plots.line(d.values); })
-		.style("opacity", afqb.global.controls.plotsControlBox.lineOpacity)
-		.style("stroke-width", "1px");
+		var svg = d3.select(this);
+		var id = d.key.toLowerCase().replace(/\s+/g, "-");
+
+		svg.data(function(d){ return d.values; })
+			.enter().append("g")
+            .attr("class", "tracts")
+            .attr("id", function (d) {
+                return d.values[0].subjectID;
+            })
+            .on("mouseover", mouseover)
+            .on("mouseout", mouseout)
+            .on("click", onclick);
+
+		svg.append("path")
+            .attr("class", "line")
+            .attr("d", function (d) {
+            	var line = d3.svg.line()
+                    .interpolate("basis")
+                    .x(function (d) {
+                        if (d.nodeID) {
+                            return afqb.plots.xScale["left-thalamic-radiation"](+d.nodeID);
+                        } else {
+                            return afqb.plots.xScale["left-thalamic-radiation"](+d.key);
+                        }
+                    })
+                    .y(function (d) {
+                        if (d[afqb.global.controls.plotsControlBox.plotKey]) {
+                            return afqb.plots.yScale(+d[afqb.global.controls.plotsControlBox.plotKey]);
+                        } else {
+                            return afqb.plots.yScale(+d.values.mean);
+                        }
+                    })
+                    .defined(function (d) {
+                        if (d[afqb.global.controls.plotsControlBox.plotKey]) {
+                            return !isNaN(d[afqb.global.controls.plotsControlBox.plotKey]);
+                        } else {
+                            return !isNaN(d.values.mean);
+                        }
+                    });
+            	return line(d.values)
+            })
+            .style("opacity", afqb.global.controls.plotsControlBox.lineOpacity)
+            .style("stroke-width", "1px");
+
+	});
 
     // compute mean line
     afqb.plots.tractMean = d3.nest()
