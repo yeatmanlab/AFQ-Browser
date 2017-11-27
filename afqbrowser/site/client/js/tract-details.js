@@ -28,7 +28,7 @@ afqb.plots.buildFromNodes = function (error, useless, data) {
 	afqb.plots.ready(error, data);
     afqb.plots.updateBrush();
     afqb.plots.restoreBrush();
-    afqb.plots.draw();
+    //afqb.plots.draw();
 };
 
 afqb.plots.brushes = [];
@@ -349,7 +349,7 @@ afqb.plots.ready = function (error, data) {
     afqb.plots.tractData.forEach(function (d,i) {
         var id = afqb.plots.tracts[i].toLowerCase().replace(/\s+/g, "-"); // Subject to ordering errors since we call
         afqb.plots.xScale[id] = d3.scale.linear()
-            .range([afqb.plots.m.left + 25, afqb.plots.w + afqb.plots.m.left + 20])
+            .range([afqb.plots.m.left + 30, afqb.plots.w + afqb.plots.m.left + 20])
             .domain([0, d.values[0].values.length]);
 
     });
@@ -456,9 +456,7 @@ afqb.plots.ready = function (error, data) {
 		var id = d.key.toLowerCase().replace(/\s+/g, "-");
 		var data = d;
 
-		console.log(d3.select(this).append("g"));
-
-		var tractLines = d3.select(this).append("g").selectAll(".tracts").data(data.values);
+		var tractLines = d3.select(this).selectAll(".tracts").data(data.values);
 		tractLines.enter().append("g")
 			.attr("class", "tracts")
             .attr("id", function (d) {
@@ -470,29 +468,17 @@ afqb.plots.ready = function (error, data) {
 
 		tractLines.append("path")
             .attr("class", "line")
-            .attr("d", function () {
+            .attr("d", function (d) {
             	var line = d3.svg.line()
                     .interpolate("basis")
                     .x(function (d) {
-                        if (d.nodeID) {
-                            return afqb.plots.xScale[id](+d.nodeID);
-                        } else {
-                            return afqb.plots.xScale[id](+d.key);
-                        }
+						return afqb.plots.xScale[id](+d.nodeID);
                     })
                     .y(function (d) {
-                        if (d[afqb.global.controls.plotsControlBox.plotKey]) {
-                            return afqb.plots.yScale(+d[afqb.global.controls.plotsControlBox.plotKey]);
-                        } else {
-                            return afqb.plots.yScale(+d.values.mean);
-                        }
+						return afqb.plots.yScale(+d[afqb.global.controls.plotsControlBox.plotKey]);
                     })
                     .defined(function (d) {
-                        if (d[afqb.global.controls.plotsControlBox.plotKey]) {
-                            return !isNaN(d[afqb.global.controls.plotsControlBox.plotKey]);
-                        } else {
-                            return !isNaN(d.values.mean);
-                        }
+						return !isNaN(d[afqb.global.controls.plotsControlBox.plotKey]);
                     });
             	return line(d.values)
             })
