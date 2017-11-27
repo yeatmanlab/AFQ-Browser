@@ -507,22 +507,23 @@ afqb.plots.ready = function (error, data) {
 
 	var meanLines = d3.select("#tractdetails").selectAll("svg")
 		.append("g")
-		.datum(function (d) {
-			return afqb.plots.tractMean.filter(function(element) {
-				return element.key === d.key;
-			})[0].values;
-		})
+		.datum(afqb.plots.tractMean)//function (d) {
+			//console.log(d.values); // need to preserve the key (Tract name) here
+			//return afqb.plots.tractMean.filter(function(element) {
+			//	return element.key === d.key;
+			//})[0].values;
+		//})
 		.attr("class", "tracts means")
 		.attr("id", "mean0");
 
     meanLines.append("path")
         .attr("class", "area")
-        .attr("d", function(d) { return afqb.plots.area(d); })
+        .attr("d", function(d,i) { return afqb.plots.area(d[i].values); })
         .style("opacity", 0.4);
 
     meanLines.append("path")
         .attr("class", "line")
-        .attr("d", function(d) { return afqb.plots.line(d); })
+        .attr("d", function(d,i) { return afqb.plots.line(d[i].values); })
         .style("opacity", 0.99)
         .style("stroke-width", "3px");
 
