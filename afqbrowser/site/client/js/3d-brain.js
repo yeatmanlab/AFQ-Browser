@@ -100,6 +100,9 @@ afqb.three.init = function (callback) {
 				child.rotation.x = Math.PI / 2;
 				child.scale.set(1.75, 1.75, 1.75);
 				child.renderOrder = 3;
+                child.traverse(function (object) {
+                    object.renderOrder = 3;
+                });
             }
         });
 		afqb.three.lh.translateX(-0.05);
@@ -510,24 +513,24 @@ afqb.three.init = function (callback) {
             });
         });
 
-        afqb.three.greyCoreGroup.renderOrder = 1;
+        afqb.three.greyCoreGroup.renderOrder = 2;
         afqb.three.greyCoreGroup.traverse(function (object) {
-            object.renderOrder = 1;
+            object.renderOrder = 2;
         });
 
-        afqb.three.greyGroup.renderOrder = 1;
+        afqb.three.greyGroup.renderOrder = 2;
         afqb.three.greyGroup.traverse(function (object) {
+            object.renderOrder = 2;
+        });
+
+        afqb.three.colorCoreGroup.renderOrder = 1;
+        afqb.three.colorCoreGroup.traverse(function (object) {
             object.renderOrder = 1;
         });
 
-        afqb.three.colorCoreGroup.renderOrder = 2;
-        afqb.three.colorCoreGroup.traverse(function (object) {
-            object.renderOrder = 2;
-        });
-
-        afqb.three.colorGroup.renderOrder = 2;
+        afqb.three.colorGroup.renderOrder = 1;
         afqb.three.colorGroup.traverse(function (object) {
-            object.renderOrder = 2;
+            object.renderOrder = 1;
         });
 
         if (afqb.global.controls.threeControlBox.fiberRepresentation === "all fibers") {
@@ -675,6 +678,21 @@ afqb.three.highlightBundle = function (state, name) {
                 bundle.traverse(afqb.three.makeVisible)
             } else {
                 bundle.traverse(afqb.three.makeInvisible)
+            }
+        }
+    });
+
+    var groups = [afqb.three.greyGroup, afqb.three.greyCoreGroup];
+    groups.forEach(function (group) {
+        var bundle = group.children.filter(function (element) {
+            return element.name === name;
+        })[0];
+
+        if (bundle !== undefined) {
+            if (state) {
+                bundle.traverse(afqb.three.makeInvisible)
+            } else {
+                bundle.traverse(afqb.three.makeVisible)
             }
         }
     });
