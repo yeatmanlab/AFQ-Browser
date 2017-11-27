@@ -23,6 +23,7 @@ afqb.plots.t = d3.transition().duration(750);
 afqb.plots.buildFromNodes = function (error, useless, data) {
 	"use strict";
     afqb.plots.buildTractCheckboxes(error, data);
+    afqb.three.initAndAnimate(error);
 	afqb.plots.buildPlotGui(error, data);
 	afqb.plots.ready(error, data);
     afqb.plots.updateBrush();
