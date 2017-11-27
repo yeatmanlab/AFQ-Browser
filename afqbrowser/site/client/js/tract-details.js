@@ -451,15 +451,16 @@ afqb.plots.ready = function (error, data) {
         .style("fill", function(d,i){return afqb.global.d3colors[i];} );
 
 	// associate tractsline with each subject
-	trPanels.selectAll(".tracts").each(function (d) {
-		console.log(d);
+	trPanels.each(function (d,i) {
 
-		var svg = d3.select(this);
 		var id = d.key.toLowerCase().replace(/\s+/g, "-");
+		var data = d;
 
-		svg.data(function(d){ return d.values; })
-			.enter().append("g")
-            .attr("class", "tracts")
+		console.log(d3.select(this).append("g"));
+
+		var tractLines = d3.select(this).append("g").selectAll(".tracts").data(data.values);
+		tractLines.enter().append("g")
+			.attr("class", "tracts")
             .attr("id", function (d) {
                 return d.values[0].subjectID;
             })
@@ -467,16 +468,16 @@ afqb.plots.ready = function (error, data) {
             .on("mouseout", mouseout)
             .on("click", onclick);
 
-		svg.append("path")
+		tractLines.append("path")
             .attr("class", "line")
-            .attr("d", function (d) {
+            .attr("d", function () {
             	var line = d3.svg.line()
                     .interpolate("basis")
                     .x(function (d) {
                         if (d.nodeID) {
-                            return afqb.plots.xScale["left-thalamic-radiation"](+d.nodeID);
+                            return afqb.plots.xScale[id](+d.nodeID);
                         } else {
-                            return afqb.plots.xScale["left-thalamic-radiation"](+d.key);
+                            return afqb.plots.xScale[id](+d.key);
                         }
                     })
                     .y(function (d) {
