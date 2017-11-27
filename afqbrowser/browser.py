@@ -74,7 +74,6 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
     for l in ll:
         metrics.append((op.splitext(op.split(l)[-1])[0]).split('.')[-1])
     metrics = [l for l in list(set(metrics)) if l not in ['mean', 'inputs']]
-
     for t in tracks:
         first_metric = True
         for m in metrics:
@@ -283,26 +282,17 @@ def assemble(source, target=None, metadata=None):
     # This is where the template is stored:
     data_path = op.join(afqb.__path__[0], 'site')
     copy_and_overwrite(data_path, site_dir)
+    out_path = op.join(site_dir, 'client', 'data')
     if source.endswith('.mat'):
         # We have an AFQ-generated mat-file on our hands:
         nodes_fname, meta_fname = afq_mat2tables(
             source,
-            out_path=op.join(site_dir, 'client', 'data'))
+            out_path=out_path)
     else:
         # Assume we got a TRACULA stats path:
-        nodes_fname = tracula2nodes(source)
-        if metadata is None:
-            nodes = pd.read_csv(nodes_fname)
-            subjects = nodes["subjectID"].unique()
-            meta_df = pd.DataFrame(dict(subjectID=subjects))
-            out_path = op.join(site_dir, 'client', 'data')
-            meta_csv_fname = op.join(out_path, 'subjects.csv')
-            meta_df.to_csv(meta_csv_fname)
-
-    if metadata is not None:
-        # Provided metadata should overwrite the metadata in the mat file
-        # when it is provided:
-        shutil.copyfile(metadata, meta_fname)
+        nodes_fname, meta_fname = tracula2nodes(source,
+                                                out_path=out_path,
+                                                metadata=metadata)
 
 
 def run(target=None, port=8080):

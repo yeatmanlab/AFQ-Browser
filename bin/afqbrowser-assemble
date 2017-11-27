@@ -3,11 +3,11 @@
 from argparse import ArgumentParser
 import afqbrowser as afqb
 
-description = """Spin up an instance of the AFQ-Browser with
+description = """Assembele an instance of the AFQ-Browser with
         data provided as a mat file"""
 parser = ArgumentParser(description=description)
 
-parser.add_argument("source", metavar="afq.mat",
+parser.add_argument("source", metavar="source",
         help="path to mat file containing the AFQ data structure")
 
 parser.add_argument("-t", "--target", metavar="target",
