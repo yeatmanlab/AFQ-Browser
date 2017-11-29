@@ -77,7 +77,7 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
     tracks = list(set(tracks))
     metrics = [l for l in list(set(metrics)) if l not in ['mean', 'inputs']]
     streamlines = OrderedDict()
-
+    dfs = []
     for tt in tracks:
         coords_file = tt + '.avg33_mni_bbr.coords.mean.txt'
         coords = np.loadtxt(op.join(stats_dir, coords_file))
@@ -106,12 +106,14 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
                 fname = op.join(stats_dir, tt + '.avg33_mni_bbr.' + m + '.txt')
                 re_data = df_nodes.as_matrix().T.reshape(n_nodes * n_subjects)
                 re_df[m] = re_data
+            dfs.append(re_df)
 
+    nodes_df = pd.concat(dfs)
     if out_path is None:
         out_path = '.'
 
     nodes_fname = op.join(out_path, 'nodes.csv')
-    re_df.to_csv(nodes_fname, index=False)
+    nodes_df.to_csv(nodes_fname, index=False)
 
     meta_fname = op.join(out_path, 'subjects.csv')
 
