@@ -304,10 +304,8 @@ def assemble(source, target=None, metadata=None):
             out_path=out_path)
     else:
         # Assume we got a TRACULA stats path:
-        nodes_fname, meta_fname, streamlines_fname = tracula2nodes(
-                                                        source,
-                                                        out_path=out_path,
-                                                        metadata=metadata)
+        nodes_fname, meta_fname, streamlines_fname =\
+            tracula2nodes(source, out_path=out_path, metadata=metadata)
 
 
 def run(target=None, port=8080):
