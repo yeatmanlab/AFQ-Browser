@@ -6,7 +6,9 @@ afqbrowser.browser: data munging for AFQ-Browser
 import os
 import os.path as op
 from glob import glob
+import json
 import shutil
+from collections import OrderedDict
 import scipy.io as sio
 import pandas as pd
 import numpy as np
@@ -50,6 +52,8 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
         "subjectID". For an example, see the 'data/subjects.csv' that comes
         with the software.
 
+    Returns
+    -------
 
     Notes
     -----
@@ -62,23 +66,26 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
     ll = glob(op.join(stats_dir, '*.txt'))
 
     tracks = []
+    metrics = []
     for l in ll:
         tt = '.'.join(op.split(l)[-1].split('.')[:2])
         if not (tt.startswith('rh') or tt.startswith('lh')):
             tt = tt.split('.')[0]
         tracks.append(tt)
+        metrics.append((op.splitext(op.split(l)[-1])[0]).split('.')[-1])
 
     tracks = list(set(tracks))
-
-    metrics = []
-    for l in ll:
-        metrics.append((op.splitext(op.split(l)[-1])[0]).split('.')[-1])
     metrics = [l for l in list(set(metrics)) if l not in ['mean', 'inputs']]
-    for t in tracks:
+    streamlines = OrderedDict()
+
+    for tt in tracks:
+        coords_file = tt + '.avg33_mni_bbr.coords.mean.txt'
+        coords = np.loadtxt(op.join(stats_dir, coords_file))
+        streamlines[tt] = {'coreFiber': coords.tolist()}
         first_metric = True
         for m in metrics:
             if first_metric:
-                fname = op.join(stats_dir, t + '.avg33_mni_bbr.' + m + '.txt')
+                fname = op.join(stats_dir, tt + '.avg33_mni_bbr.' + m + '.txt')
                 df_nodes = pd.read_csv(fname, delimiter=' ')
                 df_nodes = df_nodes.drop(
                     filter(lambda x: x.startswith('Unnamed'),
@@ -89,14 +96,14 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
                 re_nodes = np.tile(np.arange(n_nodes), n_subjects)
                 re_subs = np.concatenate(
                     [[s for i in range(n_nodes)] for s in df_nodes.columns])
-                re_track = np.repeat(t, n_subjects * n_nodes)
+                re_track = np.repeat(tt, n_subjects * n_nodes)
                 re_df = pd.DataFrame({'subjectID': re_subs,
                                       'tractID': re_track,
                                       'nodeID': re_nodes,
                                       m: re_data})
                 first_metric = False
             else:
-                fname = op.join(stats_dir, t + '.avg33_mni_bbr.' + m + '.txt')
+                fname = op.join(stats_dir, tt + '.avg33_mni_bbr.' + m + '.txt')
                 re_data = df_nodes.as_matrix().T.reshape(n_nodes * n_subjects)
                 re_df[m] = re_data
 
@@ -105,6 +112,7 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
 
     nodes_fname = op.join(out_path, 'nodes.csv')
     re_df.to_csv(nodes_fname, index=False)
+
     meta_fname = op.join(out_path, 'subjects.csv')
 
     if metadata is None:
@@ -113,7 +121,11 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
     else:
         shutil.copy(metadata, meta_fname)
 
-    return nodes_fname, meta_fname
+    streamlines_fname = op.join(out_path, 'streamlines.json')
+    with open(streamlines_fname, 'w') as f:
+        f.write(json.dumps(streamlines))
+
+    return nodes_fname, meta_fname, streamlines_fname
 
 
 def _create_subject_ids(n_subjects):
@@ -290,9 +302,10 @@ def assemble(source, target=None, metadata=None):
             out_path=out_path)
     else:
         # Assume we got a TRACULA stats path:
-        nodes_fname, meta_fname = tracula2nodes(source,
-                                                out_path=out_path,
-                                                metadata=metadata)
+        nodes_fname, meta_fname, streamlines_fname = tracula2nodes(
+                                                        source,
+                                                        out_path=out_path,
+                                                        metadata=metadata)
 
 
 def run(target=None, port=8080):
