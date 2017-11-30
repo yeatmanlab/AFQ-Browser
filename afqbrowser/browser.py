@@ -84,6 +84,7 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
     metrics = [l for l in list(set(metrics)) if l not in ['mean', 'inputs']]
     streamlines = OrderedDict()
     dfs = []
+
     for tt in tracks:
         coords_file = tt + '.avg33_mni_bbr.coords.mean.txt'
         cc = np.loadtxt(op.join(stats_dir, coords_file))
@@ -92,16 +93,18 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
         streamlines[tt] = {'coreFiber': coords.tolist()}
 
         first_metric = True
+
         for m in metrics:
+            fname = op.join(stats_dir, tt + '.avg33_mni_bbr.' + m + '.txt')
+            df_nodes = pd.read_csv(fname, delimiter=' ')
+            df_nodes = df_nodes.drop(
+                filter(lambda x: x.startswith('Unnamed'),
+                       df_nodes.columns),
+                axis=1)
+            n_nodes, n_subjects = df_nodes.shape
+            re_data = df_nodes.as_matrix().T.reshape(n_nodes * n_subjects)
+
             if first_metric:
-                fname = op.join(stats_dir, tt + '.avg33_mni_bbr.' + m + '.txt')
-                df_nodes = pd.read_csv(fname, delimiter=' ')
-                df_nodes = df_nodes.drop(
-                    filter(lambda x: x.startswith('Unnamed'),
-                           df_nodes.columns),
-                    axis=1)
-                n_nodes, n_subjects = df_nodes.shape
-                re_data = df_nodes.as_matrix().T.reshape(n_nodes * n_subjects)
                 re_nodes = np.tile(np.arange(n_nodes), n_subjects)
                 re_subs = np.concatenate(
                     [[s for i in range(n_nodes)] for s in df_nodes.columns])
@@ -112,12 +115,12 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
                                       m: re_data})
                 first_metric = False
             else:
-                fname = op.join(stats_dir, tt + '.avg33_mni_bbr.' + m + '.txt')
-                re_data = df_nodes.as_matrix().T.reshape(n_nodes * n_subjects)
                 re_df[m] = re_data
+
             dfs.append(re_df)
 
     nodes_df = pd.concat(dfs)
+
     if out_path is None:
         out_path = '.'
 
@@ -127,7 +130,7 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
     meta_fname = op.join(out_path, 'subjects.csv')
 
     if metadata is None:
-        _create_metadata(df_nodes.columns, meta_fname)
+        _create_metadata(nodes_df.columns, meta_fname)
 
     else:
         shutil.copy(metadata, meta_fname)
