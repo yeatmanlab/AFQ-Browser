@@ -206,13 +206,13 @@ afqb.table.refreshTable = function () {
     // select cells
     var cells = rows.selectAll("g.cell")
 		.data(function (d) {
-			return d3.entries(d)
-				.sort(function (x,y) {
-					return x.key === firstCol ? -1 : y.key === firstCol ? 1 : 0;
-				})
-				.map(function (entry) {
-					return afqb.table.subFormats[entry.key](entry.value);
-				});
+            return d3.entries(d).filter(function (entry) {
+                return entry.key !== "group";
+            }).sort(function (x,y) {
+                return x.key === firstCol ? -1 : y.key === firstCol ? 1 : 0;
+            }).map(function (entry) {
+                return afqb.table.subFormats[entry.key](entry.value);
+            });
 		});
 
     // create cells

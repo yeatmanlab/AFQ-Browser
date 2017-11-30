@@ -115,6 +115,10 @@ afqb.global.initSettings = function (callback) {
                 });
             }
 
+            // Parse fiber representation
+            afqb.three.settings.fiberRepresentation = afqb.three.settings.fiberRepresentation
+                .split("-").join(" ");
+
             afqb.global.settings.loaded = true;
 
             if (callback) { callback(null); }

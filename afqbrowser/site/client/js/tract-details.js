@@ -23,6 +23,7 @@ afqb.plots.t = d3.transition().duration(750);
 afqb.plots.buildFromNodes = function (error, useless, data) {
 	"use strict";
     afqb.plots.buildTractCheckboxes(error, data);
+    afqb.three.initAndAnimate(error);
 	afqb.plots.buildPlotGui(error, data);
 	afqb.plots.ready(error, data);
     afqb.plots.updateBrush();
@@ -286,7 +287,10 @@ afqb.plots.buildPlotGui = function (error, data) {
 	afqb.plots.gui
 		.add(afqb.global.controls.plotsControlBox, 'brushTract')
 		.name('Brushable Tracts')
-		.onChange(afqb.plots.updateBrush)
+		.onChange(function () {
+			afqb.plots.updateBrush();
+            afqb.three.brushOn3D();
+        })
 		.onFinishChange(function (value) {
             // Update the query string
             afqb.global.updateQueryString(
@@ -815,6 +819,8 @@ afqb.plots.newBrush = function (name) {
 	function brushEnd() {
 		afqb.global.mouse.brushing = false;
 
+		afqb.three.brushOn3D();
+
         // Update the query string
         var targetName = this.parentElement.getAttribute("name");
         var brushes = {};
@@ -849,9 +855,9 @@ afqb.plots.updateBrush = function () {
 
 	} else {
 		d3.selectAll(".brush").data([]).exit().remove();
-        Object.keys(afqb.plots.settings.brushes).forEach(function (bundle) {
-            afqb.plots.settings.brushes[bundle].brushExtent = [0, 100];
-        });
+        // Object.keys(afqb.plots.settings.brushes).forEach(function (bundle) {
+        //     afqb.plots.settings.brushes[bundle].brushExtent = [0, 100];
+        // });
 	}
 };
 
