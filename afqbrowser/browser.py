@@ -23,6 +23,12 @@ except ImportError:
     import SocketServer as socketserver
 
 
+MNI_AFF = np.array([[1., 0., 0., -98.],
+                    [0., 1., 0., -134.],
+                    [0., 0., 1., -72.],
+                    [0., 0., 0., 1.]])
+
+
 def _create_metadata(subject_ids, meta_fname):
     """Helper function to create a minimal metadata file."""
     meta_df = pd.DataFrame({"subjectID": subject_ids},
@@ -80,8 +86,11 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
     dfs = []
     for tt in tracks:
         coords_file = tt + '.avg33_mni_bbr.coords.mean.txt'
-        coords = np.loadtxt(op.join(stats_dir, coords_file))
+        cc = np.loadtxt(op.join(stats_dir, coords_file))
+        # We apply the MNI affine, to get back to AC/PC space in mm:
+        coords = np.dot(cc, MNI_AFF[:-1, :-1].T) + MNI_AFF[:-1, -1][None, :]
         streamlines[tt] = {'coreFiber': coords.tolist()}
+
         first_metric = True
         for m in metrics:
             if first_metric:
