@@ -96,18 +96,18 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
 
         for m in metrics:
             fname = op.join(stats_dir, tt + '.avg33_mni_bbr.' + m + '.txt')
-            df_nodes = pd.read_csv(fname, delimiter=' ')
-            df_nodes = df_nodes.drop(
+            df_metric = pd.read_csv(fname, delimiter=' ')
+            df_metric = df_metric.drop(
                 filter(lambda x: x.startswith('Unnamed'),
-                       df_nodes.columns),
+                       df_metric.columns),
                 axis=1)
-            n_nodes, n_subjects = df_nodes.shape
-            re_data = df_nodes.as_matrix().T.reshape(n_nodes * n_subjects)
+            n_nodes, n_subjects = df_metric.shape
+            re_data = df_metric.as_matrix().T.reshape(n_nodes * n_subjects)
 
             if first_metric:
                 re_nodes = np.tile(np.arange(n_nodes), n_subjects)
                 re_subs = np.concatenate(
-                    [[s for i in range(n_nodes)] for s in df_nodes.columns])
+                    [[s for i in range(n_nodes)] for s in df_metric.columns])
                 re_track = np.repeat(tt, n_subjects * n_nodes)
                 re_df = pd.DataFrame({'subjectID': re_subs,
                                       'tractID': re_track,
@@ -130,7 +130,7 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
     meta_fname = op.join(out_path, 'subjects.csv')
 
     if metadata is None:
-        _create_metadata(nodes_df.columns, meta_fname)
+        _create_metadata(df_metric.columns, meta_fname)
 
     else:
         shutil.copy(metadata, meta_fname)

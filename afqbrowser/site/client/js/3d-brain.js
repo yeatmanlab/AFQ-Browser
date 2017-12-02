@@ -269,7 +269,7 @@ afqb.three.init = function (callback) {
     });
 
     // load fiber bundle using jQuery
-    $.getJSON("data/afq_streamlines.json", function (json) {
+    $.getJSON("data/streamlines.json", function (json) {
         var names = afqb.plots.tracts.map(function(name) {
             return name.toLowerCase().replace(/\s+/g, "-");
         });
