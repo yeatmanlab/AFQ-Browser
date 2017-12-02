@@ -1,6 +1,8 @@
 import os
 import os.path as op
 import getpass
+import tempfile
+import pandas as pd
 
 import github as gh
 import git
@@ -39,7 +41,7 @@ def upload(target, repo_name, uname=None, upass=None):
     g = gh.Github(uname, upass)
     u = g.get_user()
     remote = u.create_repo(repo_name)
-    # Create the local repo
+    # Create the local repo using GitPython:
     r = git.Repo.init(client_folder)
     # Add all of the files to the repo's gh-pages branch
     r.index.add(file_list)
@@ -55,5 +57,42 @@ def upload(target, repo_name, uname=None, upass=None):
     r.create_remote("origin", remote.clone_url)
     o = r.remote("origin")
     o.push("gh-pages")
-    # Strangely, that last slash is crucial:
-    return "https://" + uname + ".github.io/" + repo_name + "/"
+
+    # Strangely, that last slash is crucial so that this works as a link:
+    site_name = "https://" + uname + ".github.io/" + repo_name + "/"
+
+    # Next, we deposit to afqvault
+    afqvault_repo = g.get_repo('afqvault/afqvault')
+    # If you already have a fork, the following gives you the fork.
+    # Otherwise, it creates the fork:
+    my_fork = u.create_fork(afqvault_repo)
+
+    # Create a local copy of your fork:
+    tdir = tempfile.TemporaryDirectory()
+    av_repo = git.Repo.init(op.join(tdir.name, 'afqvault'))
+    origin = av_repo.create_remote('origin', my_fork.clone_url)
+    origin.fetch()
+    av_repo.create_head('master', origin.refs.master)
+    av_repo.heads.master.set_tracking_branch(origin.refs.master)
+    av_repo.heads.master.checkout()
+    origin.pull()
+
+    # Edit the manifest file with your information:
+    manifest_fname = op.join(tdir.name, 'afqvault', 'manifest.csv')
+    manifest = pd.read_csv(manifest_fname,
+                           index_col=0)
+    manifest = manifest.append(pd.DataFrame(
+                                data=dict(username=[uname],
+                                          repository_name=[repo_name])))
+
+    # Commit this change:
+    av_repo.index.add([os.path.abspath(manifest_fname)])
+    av_repo.index.commit("Adds %s" % site_name)
+    # Push it to your forks master branch
+    origin.push("master")
+
+    ## Then, we create the PR:
+
+
+
+    return site_name
