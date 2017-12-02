@@ -91,8 +91,11 @@ def upload(target, repo_name, uname=None, upass=None):
     # Push it to your forks master branch
     origin.push("master")
 
-    ## Then, we create the PR:
-
-
+    # Then, we create the PR against the central repo:
+    pr = afqvault_repo.create_pull(
+                        "Adds %s" % site_name,
+                        "Created automatically by afqbrowser-publish",
+                        "master",
+                        "%s:master" % uname)
 
     return site_name
