@@ -152,7 +152,7 @@ afqb.three.buildthreeGui = function (streamlinesExist) {
 
         // Update the query string
         afqb.global.updateQueryString(
-            {three: {fiberRepresentation: value.toLowerCase().replace(/\s+/g, "-")}}
+            {three: {fiberRepresentation: afqb.global.formatKeyName(value)}}
         );
 
     });
@@ -271,7 +271,7 @@ afqb.three.init = function (callback) {
     // load fiber bundle using jQuery
     $.getJSON("data/streamlines.json", function (json) {
         var names = afqb.plots.tracts.map(function(name) {
-            return name.toLowerCase().replace(/\s+/g, "-");
+            return afqb.global.formatKeyName(name);
         });
 
         var streamlinesExist = false;
@@ -279,7 +279,7 @@ afqb.three.init = function (callback) {
         Object.keys(json).forEach(function (bundleKey) {
             var oneBundle = json[bundleKey];
 
-            var keyName = bundleKey.toLowerCase().replace(/\s+/g, "-");
+            var keyName = afqb.global.formatKeyName(bundleKey);
             var index = names.indexOf(keyName);
 
             // Retrieve the core fiber and then delete it from the bundle object
@@ -507,7 +507,7 @@ afqb.three.init = function (callback) {
                     domEvents.addEventListener(child, 'mouseup', function() {
                         if(!afqb.global.mouse.mouseMove) {
                             var myBundle = d3.selectAll("input.tracts").filter(function (d) {
-                                return d.toLowerCase().replace(/\s+/g, "-") === child.name;
+                                return afqb.global.formatKeyName(d) === child.name;
                             })[0][0];
                             myBundle.checked = !myBundle.checked;
                             afqb.plots.settings.checkboxes[myBundle.name] = myBundle.checked;
@@ -719,7 +719,7 @@ afqb.three.highlightBundle = function (state, name) {
 
 afqb.three.mouseoutBundle = function (child) {
     var myBundle = d3.selectAll("input.tracts").filter(function (d) {
-    	return d.toLowerCase().replace(/\s+/g, "-") === child.name;
+    	return afqb.global.formatKeyName(d) === child.name;
     })[0][0];
     if (afqb.global.controls.threeControlBox.fiberRepresentation === 'all fibers') {
         var groups = [afqb.three.colorGroup, afqb.three.greyGroup];

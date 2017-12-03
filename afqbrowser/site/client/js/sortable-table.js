@@ -121,7 +121,7 @@ afqb.table.buildTable = function (error, useless, data) {
 
             // Update the query string
             afqb.global.updateQueryString(
-                {table: {splitMethod: value.toLowerCase().replace(/\s+/g, "-")}}
+                {table: {splitMethod: afqb.global.formatKeyName(value)}}
             );
 
             afqb.table.refreshTable();
