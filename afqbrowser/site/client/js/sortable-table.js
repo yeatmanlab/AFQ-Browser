@@ -29,7 +29,9 @@ afqb.table.buildTable = function (error, useless, data) {
 
 	data.forEach(function (d) {
         if (typeof d.subjectID === 'number') {
-            d.subjectID = "s" + d.subjectID.toString();
+            d.subjectID = "s" + afqb.global.formatKeyName(d.subjectID.toString());
+        } else {
+            d.subjectID = afqb.global.formatKeyName(d.subjectID);
         }
 		afqb.table.subData.push(d);
 	});

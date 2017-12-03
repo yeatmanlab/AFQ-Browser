@@ -312,8 +312,10 @@ afqb.plots.ready = function (error, data) {
 
 	data.forEach(function (d) {
 		if (typeof d.subjectID === 'number') {
-			d.subjectID = "s" + d.subjectID.toString();
-        }
+			d.subjectID = "s" + afqb.global.formatKeyName(d.subjectID.toString());
+        } else {
+			d.subjectID = afqb.global.formatKeyName(d.subjectID);
+		}
 	});
 
 	var plotKey = afqb.global.controls.plotsControlBox.plotKey;
@@ -444,7 +446,7 @@ afqb.plots.ready = function (error, data) {
 		.enter().append("g")
 		.attr("class", "tracts")
 		.attr("id", function (d) {
-				return d.values[0].subjectID;
+            return d.values[0].subjectID;
 		})
 		.on("mouseover", mouseover)
 		.on("mouseout", mouseout)
@@ -594,7 +596,9 @@ afqb.plots.changePlots = function (error, data) {
 
 	data.forEach(function (d) {
 		if (typeof d.subjectID === 'number'){
-			d.subjectID = "s" + d.subjectID.toString();
+			d.subjectID = "s" + afqb.global.formatKeyName(d.subjectID.toString());
+        } else {
+            d.subjectID = afqb.global.formatKeyName(d.subjectID);
         }
 	});
 
