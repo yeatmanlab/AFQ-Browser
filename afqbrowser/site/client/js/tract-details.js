@@ -320,11 +320,9 @@ afqb.plots.ready = function (error, data) {
 
 	var plotKey = afqb.global.controls.plotsControlBox.plotKey;
 
-	console.log(data);
 	data = data.filter(function (d) {
 		return Boolean(d[plotKey]);
 	});
-    console.log(data);
 
     afqb.plots.yzooms[plotKey] = d3.behavior.zoom()
         .y(afqb.plots.yScale)
@@ -347,7 +345,6 @@ afqb.plots.ready = function (error, data) {
     }
 
 	afqb.plots.lastPlotKey = plotKey;
-    console.log(plotKey);
 
 	afqb.plots.tractData = d3.nest()
 		.key(function (d) { return d.tractID; })
@@ -882,8 +879,6 @@ afqb.plots.showHideTractDetails = function (state, name) {
 		});
 		var index = names.indexOf(name);
 		var color = afqb.global.d3colors[parseInt(index)];
-		console.log(name);
-		console.log(index);
 		d3.select("#label-" + name).style("color", color);
 	} else {
 		d3.select("#tract-" + name).style("display", "none");
