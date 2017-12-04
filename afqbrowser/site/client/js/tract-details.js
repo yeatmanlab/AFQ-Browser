@@ -542,6 +542,11 @@ afqb.plots.ready = function (error, data) {
         .style("opacity", 0.99)
         .style("stroke-width", "3px");
 
+	// Define the div for the tooltip
+	var tt = d3.select("#tractdetails").append("div")
+	    .attr("class", "tooltip")
+	    .style("opacity", 0);
+
 	function mouseover() {
 		if (!afqb.global.mouse.brushing) {
 			if ($("path",this).css("stroke-width") === "1px") {
@@ -551,7 +556,21 @@ afqb.plots.ready = function (error, data) {
 					.selectAll('path')
 					.style("opacity", 1)
 					.style("stroke-width", "1.1px");
+
 			}
+
+			if ($("path",this).css("stroke-width") === "2.1px") {
+				console.log("is highlighted")
+				d3.select("#tractdetails").select(".tooltip")
+					.style("opacity", 1)
+					.html(function(d){
+						return "hi"
+					})
+					.style("left", (d3.event.pageX) + "px")
+					.style("top", (d3.event.pageY - 28) + "px");
+				}
+
+
 			if (afqb.global.mouse.isDown) {
 				if ($("path",this).css("stroke-width") === "2.1px") {
 					//uses the opacity of the row for selection and deselection
@@ -635,7 +654,10 @@ afqb.plots.ready = function (error, data) {
 					.selectAll('path')
 					.style("opacity", afqb.global.controls.plotsControlBox.lineOpacity)
 					.style("stroke-width", "1px");
+
 			}
+			d3.select("#tractdetails").select(".tooltip")
+				.style("opacity", 0);
 		}
 	}
 
