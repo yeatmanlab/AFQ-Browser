@@ -146,46 +146,53 @@ afqb.plots.yAxis = d3.svg.axis()
 	.tickSize(0 - afqb.plots.w - 5)
 	.ticks(5);
 
-afqb.plots.line = d3.svg.line()
-    .interpolate("basis")
-    .x(function (d) {
-        if (d.nodeID) {
-            return afqb.plots.xScale["left-thalamic-radiation"](+d.nodeID);
-        } else {
-            return afqb.plots.xScale["left-thalamic-radiation"](+d.key);
-        }
-    })
-    .y(function (d) {
-        if (d[afqb.global.controls.plotsControlBox.plotKey]) {
-            return afqb.plots.yScale(+d[afqb.global.controls.plotsControlBox.plotKey]);
-        } else {
-            return afqb.plots.yScale(+d.values.mean);
-        }
-    })
-	.defined(function (d) {
-        if (d[afqb.global.controls.plotsControlBox.plotKey]) {
-            return !isNaN(d[afqb.global.controls.plotsControlBox.plotKey]);
-		} else {
-    		return !isNaN(d.values.mean);
-		}
-	});
+afqb.plots.line = function (d, id){
 
-afqb.plots.area = d3.svg.area()
-    .x(function(d) { return afqb.plots.xScale["left-thalamic-radiation"](+d.key) })
-    .y0(function (d) {
-        if (afqb.global.controls.plotsControlBox.errorType === 'stderr') {
-            return afqb.plots.yScale(+d.values.mean - +d.values.stderr);
-        } else {
-            return afqb.plots.yScale(+d.values.mean - +d.values.std);
-        }
-    })
-    .y1(function (d) {
-		if (afqb.global.controls.plotsControlBox.errorType === 'stderr') {
-            return afqb.plots.yScale(+d.values.mean + +d.values.stderr);
-        } else {
-			return afqb.plots.yScale(+d.values.mean + +d.values.std);
-		}
-	});
+	var line = d3.svg.line()
+        .interpolate("basis")
+        .x(function (d) {
+            if (d.nodeID) {
+                return afqb.plots.xScale[id](+d.nodeID);
+            } else {
+                return afqb.plots.xScale[id](+d.key);
+            }
+        })
+        .y(function (d) {
+            if (d[afqb.global.controls.plotsControlBox.plotKey]) {
+                return afqb.plots.yScale(+d[afqb.global.controls.plotsControlBox.plotKey]);
+            } else {
+                return afqb.plots.yScale(+d.values.mean);
+            }
+        })
+        .defined(function (d) {
+            if (d[afqb.global.controls.plotsControlBox.plotKey]) {
+                return !isNaN(d[afqb.global.controls.plotsControlBox.plotKey]);
+            } else {
+                return !isNaN(d.values.mean);
+            }
+        });
+	return line(d)
+};
+
+afqb.plots.area = function (d,id) {
+	var area = d3.svg.area()
+        .x(function(d) { return afqb.plots.xScale[id](+d.key) })
+        .y0(function (d) {
+            if (afqb.global.controls.plotsControlBox.errorType === 'stderr') {
+                return afqb.plots.yScale(+d.values.mean - +d.values.stderr);
+            } else {
+                return afqb.plots.yScale(+d.values.mean - +d.values.std);
+            }
+        })
+        .y1(function (d) {
+            if (afqb.global.controls.plotsControlBox.errorType === 'stderr') {
+                return afqb.plots.yScale(+d.values.mean + +d.values.stderr);
+            } else {
+                return afqb.plots.yScale(+d.values.mean + +d.values.std);
+            }
+        });
+	return area(d)
+};
 
 afqb.plots.buildPlotGui = function (error, data) {
     "use strict";
@@ -468,20 +475,7 @@ afqb.plots.ready = function (error, data) {
 
 		tractLines.append("path")
             .attr("class", "line")
-            .attr("d", function (d) {
-            	var line = d3.svg.line()
-                    .interpolate("basis")
-                    .x(function (d) {
-						return afqb.plots.xScale[id](+d.nodeID);
-                    })
-                    .y(function (d) {
-						return afqb.plots.yScale(+d[afqb.global.controls.plotsControlBox.plotKey]);
-                    })
-                    .defined(function (d) {
-						return !isNaN(d[afqb.global.controls.plotsControlBox.plotKey]);
-                    });
-            	return line(d.values)
-            })
+            .attr("d", function (d) {return afqb.plots.line(d.values,id);})
             .style("opacity", afqb.global.controls.plotsControlBox.lineOpacity)
             .style("stroke-width", "1px");
 
@@ -515,43 +509,14 @@ afqb.plots.ready = function (error, data) {
         .attr("class", "area")
         .attr("d", function(d,i) {
         	var id = d[i].key.toLowerCase().replace(/\s+/g, "-");
-
-            var area = d3.svg.area()
-                .x(function(d) { return afqb.plots.xScale[id](+d.key) })
-                .y0(function (d) {
-                    if (afqb.global.controls.plotsControlBox.errorType === 'stderr') {
-                        return afqb.plots.yScale(+d.values.mean - +d.values.stderr);
-                    } else {
-                        return afqb.plots.yScale(+d.values.mean - +d.values.std);
-                    }
-                })
-                .y1(function (d) {
-                    if (afqb.global.controls.plotsControlBox.errorType === 'stderr') {
-                        return afqb.plots.yScale(+d.values.mean + +d.values.stderr);
-                    } else {
-                        return afqb.plots.yScale(+d.values.mean + +d.values.std);
-                    }
-                });
-        	return area(d[i].values); })
+        	return afqb.plots.area(d[i].values, id); })
         .style("opacity", 0.4);
 
     meanLines.append("path")
         .attr("class", "line")
         .attr("d", function(d,i) {
             var id = d[i].key.toLowerCase().replace(/\s+/g, "-");
-
-            var line = d3.svg.line()
-                .interpolate("basis")
-                .x(function (d) {
-					return afqb.plots.xScale[id](+d.key);
-                })
-                .y(function (d) {
-					return afqb.plots.yScale(+d.values.mean);
-                })
-                .defined(function (d) {
-					return !isNaN(d.values.mean);
-                });
-        	return line(d[i].values); })
+        	return afqb.plots.line(d[i].values, id); })
         .style("opacity", 0.99)
         .style("stroke-width", "3px");
 
@@ -789,18 +754,7 @@ afqb.plots.draw = function() {
 		.duration(0)
 		.attr("d", function (d) {
 			var id = d.values[0].tractID.toLowerCase().replace(/\s+/g, "-");
-            var line = d3.svg.line()
-                .interpolate("basis")
-                .x(function (d) {
-                    return afqb.plots.xScale[id](+d.nodeID);
-                })
-                .y(function (d) {
-                    return afqb.plots.yScale(+d[afqb.global.controls.plotsControlBox.plotKey]);
-                })
-                .defined(function (d) {
-                    return !isNaN(d[afqb.global.controls.plotsControlBox.plotKey]);
-                });
-            return line(d.values);
+            return afqb.plots.line(d.values, id);
 		});
 
     // Remove old meanlines
@@ -824,47 +778,15 @@ afqb.plots.draw = function() {
         meanLines.append("path")
             .attr("class", "area")
             .attr("d", function(d) {
-
                 var id = this.parentNode.parentNode.id.toLowerCase().replace(/tract-/g, "");
-
-                var area = d3.svg.area()
-                    .x(function(d) { return afqb.plots.xScale[id](+d.key) })
-                    .y0(function (d) {
-                        if (afqb.global.controls.plotsControlBox.errorType === 'stderr') {
-                            return afqb.plots.yScale(+d.values.mean - +d.values.stderr);
-                        } else {
-                            return afqb.plots.yScale(+d.values.mean - +d.values.std);
-                        }
-                    })
-                    .y1(function (d) {
-                        if (afqb.global.controls.plotsControlBox.errorType === 'stderr') {
-                            return afqb.plots.yScale(+d.values.mean + +d.values.stderr);
-                        } else {
-                            return afqb.plots.yScale(+d.values.mean + +d.values.std);
-                        }
-                    });
-                console.log(id);
-                return area(d.values); })
+                return afqb.plots.area(d.values, id); })
             .style("opacity", 0.25);
 
         meanLines.append("path")
             .attr("class", "line")
             .attr("d", function(d) {
-
                 var id = this.parentNode.parentNode.id.toLowerCase().replace(/tract-/g, "");
-
-                var line = d3.svg.line()
-                    .interpolate("basis")
-                    .x(function (d) {
-                        return afqb.plots.xScale[id](+d.key);
-                    })
-                    .y(function (d) {
-                        return afqb.plots.yScale(+d.values.mean);
-                    })
-                    .defined(function (d) {
-                        return !isNaN(d.values.mean);
-                    });
-                return line(d.values); })
+                return afqb.plots.line(d.values, id); })
             .style("opacity", 0.99)
             .style("stroke-width", "3px");
 
@@ -885,44 +807,14 @@ afqb.plots.draw = function() {
             .attr("class", "area")
             .attr("d", function(d,i) {
                 var id = d[i].key.toLowerCase().replace(/\s+/g, "-");
-
-                var area = d3.svg.area()
-                    .x(function(d) { return afqb.plots.xScale[id](+d.key) })
-                    .y0(function (d) {
-                        if (afqb.global.controls.plotsControlBox.errorType === 'stderr') {
-                            return afqb.plots.yScale(+d.values.mean - +d.values.stderr);
-                        } else {
-                            return afqb.plots.yScale(+d.values.mean - +d.values.std);
-                        }
-                    })
-                    .y1(function (d) {
-                        if (afqb.global.controls.plotsControlBox.errorType === 'stderr') {
-                            return afqb.plots.yScale(+d.values.mean + +d.values.stderr);
-                        } else {
-                            return afqb.plots.yScale(+d.values.mean + +d.values.std);
-                        }
-                    });
-                console.log(id);
-                return area(d[i].values); })
+                return afqb.plots.area(d[i].values, id); })
             .style("opacity", 0.4);
 
         meanLines.append("path")
             .attr("class", "line")
             .attr("d", function(d,i) {
                 var id = d[i].key.toLowerCase().replace(/\s+/g, "-");
-
-                var line = d3.svg.line()
-                    .interpolate("basis")
-                    .x(function (d) {
-                        return afqb.plots.xScale[id](+d.key);
-                    })
-                    .y(function (d) {
-                        return afqb.plots.yScale(+d.values.mean);
-                    })
-                    .defined(function (d) {
-                        return !isNaN(d.values.mean);
-                    });
-                return line(d[i].values); })
+                return afqb.plots.line(d[i].values, id); })
             .style("opacity", 0.99)
             .style("stroke-width", "3px");
     }
