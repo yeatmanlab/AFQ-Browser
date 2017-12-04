@@ -48,7 +48,7 @@ afqb.plots.buildTractCheckboxes = function (error, data) {
     }
 
     afqb.plots.tracts.forEach(function (element) {
-        var tractName = element.toLowerCase().replace(/\s+/g, "-");
+        var tractName = afqb.global.formatKeyName(element);
         if (!afqb.plots.settings.brushes.hasOwnProperty(tractName)) {
             afqb.plots.settings.brushes[tractName] = {
             	brushOn: false,
@@ -63,13 +63,13 @@ afqb.plots.buildTractCheckboxes = function (error, data) {
 	svg.append('input')
 		.attr("type", "checkbox")
 		.attr("class", "tracts")
-		.attr("id", function (d) { return "input-" + d.toLowerCase().replace(/\s+/g, "-"); })
-		.attr("name", function (d) { return d.toLowerCase().replace(/\s+/g, "-"); });
+		.attr("id", function (d) { return "input-" + afqb.global.formatKeyName(d); })
+		.attr("name", function (d) { return afqb.global.formatKeyName(d); });
 	// add label to the checkboxes
 	svg.append('label')
 		.text(function (d) { return d; })
-		.attr("for", function (d) { return "input-" + d.toLowerCase().replace(/\s+/g, "-"); })
-		.attr("id", function (d) { return "label-" + d.toLowerCase().replace(/\s+/g, "-"); });
+		.attr("for", function (d) { return "input-" + afqb.global.formatKeyName(d); })
+		.attr("id", function (d) { return "label-" + afqb.global.formatKeyName(d); });
 
 	//add event handler to the checkbox
 	d3.selectAll(".tracts")
@@ -200,9 +200,16 @@ afqb.plots.buildPlotGui = function (error, data) {
     "use strict";
 	if (error) { throw error; }
 
+    var nonMetricCols = ['subjectID', 'tractID', 'nodeID'];
+    var nodeKeys = Object.keys(data[0]).filter(function (element) {
+        return !nonMetricCols.includes(element);
+    });
+
+    var plotKey = nodeKeys.includes(afqb.plots.settings.plotKey) ? afqb.plots.settings.plotKey : nodeKeys[0];
+
 	var plotsGuiConfigObj = function () {
 		this.brushTract = afqb.plots.settings.brushTract;
-		this.plotKey = afqb.plots.settings.plotKey;
+		this.plotKey = plotKey;
 		this.lineOpacity = parseFloat(afqb.plots.settings.lineOpacity);
         this.errorType = afqb.plots.settings.errorType;
 	};
@@ -217,8 +224,6 @@ afqb.plots.buildPlotGui = function (error, data) {
 	plotsGuiContainer.appendChild(afqb.plots.gui.domElement);
 
 	afqb.global.controls.plotsControlBox = new plotsGuiConfigObj();
-
-	var nodeKeys = Object.keys(data[0]).slice(3);
 
     // Add key controller
 	afqb.plots.gui
@@ -307,8 +312,10 @@ afqb.plots.ready = function (error, data) {
 
 	data.forEach(function (d) {
 		if (typeof d.subjectID === 'number') {
-			d.subjectID = "s" + d.subjectID.toString();
-        }
+			d.subjectID = "s" + afqb.global.formatKeyName(d.subjectID.toString());
+        } else {
+			d.subjectID = afqb.global.formatKeyName(d.subjectID);
+		}
 	});
 
 	var plotKey = afqb.global.controls.plotsControlBox.plotKey;
@@ -355,8 +362,8 @@ afqb.plots.ready = function (error, data) {
 	//initialize panels for each tract - and attach tract data with them
 	var trPanels = d3.select("#tractdetails").selectAll("svg").data(afqb.plots.tractData);
 	trPanels.enter().append("svg")
-		.attr("id", function (d,i) { return "tract-" + afqb.plots.tracts[i].toLowerCase().replace(/\s+/g, "-"); })
-        .attr("name", function (d,i) { return afqb.plots.tracts[i].toLowerCase().replace(/\s+/g, "-"); })
+		.attr("id", function (d,i) { return "tract-" + afqb.global.formatKeyName(afqb.plots.tracts[i]); })
+        .attr("name", function (d,i) { return afqb.global.formatKeyName(afqb.plots.tracts[i]); })
 		.attr("width", afqb.plots.w + afqb.plots.m.left + afqb.plots.m.right + 40)
 		.attr("height", afqb.plots.h + afqb.plots.m.top + afqb.plots.m.bottom + afqb.plots.axisOffset.bottom)
 		.attr("display", "none")
@@ -422,7 +429,7 @@ afqb.plots.ready = function (error, data) {
 		.text(function(d,i) { return afqb.plots.tracts[i]; });
 
     trPanels.append("text")
-        .attr("id", function (d,i) { return "brush-ext-" + afqb.plots.tracts[i].toLowerCase().replace(/\s+/g, "-"); })
+        .attr("id", function (d,i) { return "brush-ext-" + afqb.global.formatKeyName(afqb.plots.tracts[i]); })
         .attr("class", "brushExt")
         .attr("text-anchor", "end")
         .attr("transform", "translate("+ (afqb.plots.w + afqb.plots.m.right + 30)
@@ -436,7 +443,7 @@ afqb.plots.ready = function (error, data) {
 		.enter().append("g")
 		.attr("class", "tracts")
 		.attr("id", function (d) {
-				return d.values[0].subjectID;
+            return d.values[0].subjectID;
 		})
 		.on("mouseover", mouseover)
 		.on("mouseout", mouseout)
@@ -572,7 +579,7 @@ afqb.plots.ready = function (error, data) {
 	}
 
     d3.select("#tractdetails").selectAll("svg").each(function (d) {
-        afqb.plots.newBrush(d.key.toLowerCase().replace(/\s+/g, "-"));
+        afqb.plots.newBrush(afqb.global.formatKeyName(d.key));
     });
 };
 
@@ -586,7 +593,9 @@ afqb.plots.changePlots = function (error, data) {
 
 	data.forEach(function (d) {
 		if (typeof d.subjectID === 'number'){
-			d.subjectID = "s" + d.subjectID.toString();
+			d.subjectID = "s" + afqb.global.formatKeyName(d.subjectID.toString());
+        } else {
+            d.subjectID = afqb.global.formatKeyName(d.subjectID);
         }
 	});
 
@@ -866,7 +875,7 @@ afqb.plots.showHideTractDetails = function (state, name) {
 	if (state === true){
 		d3.select("#tract-" + name).style("display", "inline");
 		var names = afqb.plots.tracts.map(function(name) {
-			return name.toLowerCase().replace(/\s+/g, "-");
+			return afqb.global.formatKeyName(name);
 		});
 		var index = names.indexOf(name);
 		var color = afqb.global.d3colors[parseInt(index)];

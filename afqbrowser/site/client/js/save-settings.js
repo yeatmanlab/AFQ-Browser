@@ -1,6 +1,12 @@
 // Tell jslint that certain variables are global
 /* global afqb, FileReader, d3, d3_queue, THREE */
 
+afqb.global.formatKeyName = function(bundle) {
+    // Standardize bundle names by making them lower case and
+    // replacing all dots and spaces with dashes
+    return bundle.toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-");
+};
+
 afqb.global.updateQueryString = function(queryObj) {
     "use strict";
 
