@@ -26,6 +26,7 @@ afqb.plots.buildFromNodes = function (error, useless, data) {
     afqb.three.initAndAnimate(error);
 	afqb.plots.buildPlotGui(error, data);
 	afqb.plots.ready(error, data);
+	afqb.table.restoreRowSelection();
     afqb.plots.updateBrush();
     afqb.plots.restoreBrush();
     //afqb.plots.draw();
@@ -384,8 +385,7 @@ afqb.plots.ready = function (error, data) {
 			}
 		});*/
     	var len = afqb.plots.tractMean[i].values.length;
-    	console.log(len);
-        var id = afqb.plots.tracts[i].toLowerCase().replace(/\s+/g, "-"); // Subject to ordering errors since we call
+        var id = afqb.plots.tracts[i].toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-"); // Subject to ordering errors since we call
         afqb.plots.xScale[id] = d3.scale.linear()
             .range([afqb.plots.m.left + 30, afqb.plots.w + afqb.plots.m.left + 20])
             .domain([0, len]);
@@ -491,7 +491,7 @@ afqb.plots.ready = function (error, data) {
 	// associate tractsline with each subject
 	trPanels.each(function (d) {
 
-		var id = d.key.toLowerCase().replace(/\s+/g, "-");
+		var id = d.key.toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-");
 		var data = d;
 
 		var tractLines = d3.select(this).selectAll(".tracts").data(data.values);
@@ -521,14 +521,14 @@ afqb.plots.ready = function (error, data) {
     meanLines.append("path")
         .attr("class", "area")
         .attr("d", function(d,i) {
-        	var id = d[i].key.toLowerCase().replace(/\s+/g, "-");
+        	var id = d[i].key.toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-");
         	return afqb.plots.area(d[i].values, id); })
         .style("opacity", 0.4);
 
     meanLines.append("path")
         .attr("class", "line")
         .attr("d", function(d,i) {
-            var id = d[i].key.toLowerCase().replace(/\s+/g, "-");
+            var id = d[i].key.toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-");
         	return afqb.plots.line(d[i].values, id); })
         .style("opacity", 0.99)
         .style("stroke-width", "3px");
@@ -761,7 +761,7 @@ afqb.plots.draw = function() {
 	trLines.select("path")
 		.duration(0)
 		.attr("d", function (d) {
-			var id = d.values[0].tractID.toLowerCase().replace(/\s+/g, "-");
+			var id = d.values[0].tractID.toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-");
             return afqb.plots.line(d.values, id);
 		});
 
@@ -814,14 +814,14 @@ afqb.plots.draw = function() {
         meanLines.append("path")
             .attr("class", "area")
             .attr("d", function(d,i) {
-                var id = d[i].key.toLowerCase().replace(/\s+/g, "-");
+                var id = d[i].key.toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-");
                 return afqb.plots.area(d[i].values, id); })
             .style("opacity", 0.4);
 
         meanLines.append("path")
             .attr("class", "line")
             .attr("d", function(d,i) {
-                var id = d[i].key.toLowerCase().replace(/\s+/g, "-");
+                var id = d[i].key.toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-");
                 return afqb.plots.line(d[i].values, id); })
             .style("opacity", 0.99)
             .style("stroke-width", "3px");
