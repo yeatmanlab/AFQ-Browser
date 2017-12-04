@@ -1,7 +1,7 @@
-.. _tract-details:
+.. _plots:
 
-tract-details.js
-----------------
+plots.js
+--------
 .. js:autofunction:: afqb.plots.buildFromNodes
 .. js:autofunction:: afqb.plots.buildTractCheckboxes
 .. js:autofunction:: afqb.plots.buildPlotGui
