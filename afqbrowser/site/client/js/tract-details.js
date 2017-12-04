@@ -20,6 +20,16 @@ afqb.plots.lastPlotKey = null;
 // transition variable for consistency
 afqb.plots.t = d3.transition().duration(750);
 
+/**
+ * Container function which calls other plots functions
+ * once nodes.csv data has been read.
+ *
+ * @param {Node} error - Types or not: either works.
+ * @param {Node} useless - Types or not: either works.
+ * @param {Node} data - Types or not: either works.
+ * @throws {PartyError|Hearty} Multiple types work fine.
+ * @returns {Number} Types and descriptions are both supported.
+ */
 afqb.plots.buildFromNodes = function (error, useless, data) {
 	"use strict";
     afqb.plots.buildTractCheckboxes(error, data);
@@ -34,6 +44,14 @@ afqb.plots.buildFromNodes = function (error, useless, data) {
 
 afqb.plots.brushes = [];
 
+/**
+ * Builds tract selection list in "Bundles" section. Reads
+ * unique tract IDs from nodes.csv and creates selectable
+ * text for each tract.
+ *
+ * @param {Node} error - Types or not: either works.
+ * @param {Node} data - Types or not: either works.
+ */
 afqb.plots.buildTractCheckboxes = function (error, data) {
 	"use strict";
     if (error) { throw error; }
@@ -200,6 +218,15 @@ afqb.plots.area = function (d, id) {
 	return area(d)
 };
 
+/**
+ * Builds control panel GUI for metric plots. Allows user
+ * to select which metric to plot, error type (std err or
+ * std dev) for shaded area, subject line opacity, and
+ * whether or not brushing is allowed.
+ *
+ * @param {Node} error - Types or not: either works.
+ * @param {Node} data - Types or not: either works.
+ */
 afqb.plots.buildPlotGui = function (error, data) {
     "use strict";
 	if (error) { throw error; }
@@ -310,6 +337,15 @@ afqb.plots.buildPlotGui = function (error, data) {
 	afqb.plots.gui.close();
 };
 
+/**
+ * Generates initial 2D plots. Turns nodes.csv into nested
+ * json object. This object is used to determine x/y
+ * range, plot subject lines, and calculate mean and
+ * error for the default metric.
+ *
+ * @param {Node} error - Types or not: either works.
+ * @param {Node} data - Types or not: either works.
+ */
 afqb.plots.ready = function (error, data) {
     "use strict";
 	if (error) { throw error; }
@@ -782,6 +818,17 @@ afqb.plots.ready = function (error, data) {
     });
 };
 
+/**
+ * Updates plots on sort or metric change. If data is
+ * sorted, means are calculated for each group of subjects
+ * defined by the sort. If metric changes, axes and means
+ * are updated accordingly. Calls afqb.plots.draw() and
+ * afqb.plots.zoomAxis().
+ *
+ * @param {Node} error - Types or not: either works.
+ * @param {Node} data - Types or not: either works.
+ *
+ */
 afqb.plots.changePlots = function (error, data) {
     "use strict";
 	if (error) { throw error; }
@@ -897,6 +944,11 @@ afqb.plots.changePlots = function (error, data) {
     afqb.plots.zoomAxis();
 };
 
+/**
+ * Redraws subject and mean lines after new metric or
+ * group selections. Calls afqb.plots.zoomAxis()
+ *
+ */
 afqb.plots.draw = function() {
     "use strict";
 	var plotKey = afqb.global.controls.plotsControlBox.plotKey;
@@ -1012,11 +1064,21 @@ afqb.plots.draw = function() {
     afqb.plots.zoomAxis();
 };
 
+/**
+ * Updates y axis for proper zoom.
+ *
+ */
 afqb.plots.zoomAxis = function () {
     "use strict";
 	d3.selectAll('.y.axis').call(afqb.plots.yAxis);
 };
 
+/**
+ * Initializes brush elements for 2D plots. Brush used to
+ * highlight a portion of tract in the "Anatomy" panel.
+ *
+ * @param {Node} name - Types or not: either works.
+ */
 afqb.plots.newBrush = function (name) {
     "use strict";
     var brush = d3.svg.brush()
@@ -1066,6 +1128,11 @@ afqb.plots.newBrush = function (name) {
     afqb.plots.brushes.push({name: name, brush: brush});
 };
 
+/**
+ * Updates brush elements for 2D plots. Brush used to
+ * highlight a portion of tract in the "Anatomy" panel.
+ *
+ */
 afqb.plots.updateBrush = function () {
     "use strict";
 	if (afqb.global.controls.plotsControlBox.brushTract) {
@@ -1094,6 +1161,14 @@ afqb.plots.updateBrush = function () {
 	}
 };
 
+/**
+ * Controls whether or not a plot is displayed for a given
+ * tract, and changes color of the label in the "Bundles"
+ * panel.
+ *
+ * @param {Node} state - Types or not: either works.
+ * @param {Node} name - Types or not: either works.
+ */
 afqb.plots.showHideTractDetails = function (state, name) {
     "use strict";
 	if (state === true){
@@ -1110,6 +1185,11 @@ afqb.plots.showHideTractDetails = function (state, name) {
 	}
 };
 
+/**
+ * :)
+ *
+ * @param {Node} error - Types or not: either works.
+ */
 afqb.plots.initCheckboxes = function (error) {
     "use strict";
     if (error) { throw error; }
