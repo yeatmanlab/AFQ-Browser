@@ -10,7 +10,7 @@ import git
 
 def upload(target, repo_name, uname=None, upass=None):
     """
-    Upload an assembled AFQ-Browser site to a github pages website
+    Upload an assembled AFQ-Browser site to a github pages website.
 
     Parameters
     ----------
@@ -81,9 +81,8 @@ def upload(target, repo_name, uname=None, upass=None):
     manifest_fname = op.join(tdir.name, 'afqvault', 'manifest.csv')
     manifest = pd.read_csv(manifest_fname,
                            index_col=0)
-    manifest = manifest.append(pd.DataFrame(
-                                data=dict(username=[uname],
-                                          repository_name=[repo_name])))
+    manifest = manifest.append(pd.DataFrame(data=dict(username=[uname],
+                                            repository_name=[repo_name])))
 
     # Commit this change:
     av_repo.index.add([os.path.abspath(manifest_fname)])
@@ -92,10 +91,9 @@ def upload(target, repo_name, uname=None, upass=None):
     origin.push("master")
 
     # Then, we create the PR against the central repo:
-    pr = afqvault_repo.create_pull(
-                        "Adds %s" % site_name,
-                        "Created automatically by afqbrowser-publish",
-                        "master",
-                        "%s:master" % uname)
+    afqvault_repo.create_pull("Adds %s" % site_name,
+                              "Created automatically by afqbrowser-publish",
+                              "master",
+                              "%s:master" % uname)
 
     return site_name
