@@ -81,19 +81,24 @@ def upload(target, repo_name, uname=None, upass=None):
     manifest_fname = op.join(tdir.name, 'afqvault', 'manifest.csv')
     manifest = pd.read_csv(manifest_fname,
                            index_col=0)
+    shape = manifest.shape
     manifest = manifest.append(pd.DataFrame(data=dict(username=[uname],
                                             repository_name=[repo_name])))
 
-    # Commit this change:
-    av_repo.index.add([os.path.abspath(manifest_fname)])
-    av_repo.index.commit("Adds %s" % site_name)
-    # Push it to your forks master branch
-    origin.push("master")
+    # Deduplicate -- if this site was already uploaded, we're done!
+    manifest = manifest.drop_duplicates()
+    # Otherwise, we need to make a PR against afqvault
+    if manifest.shape != shape:
+        # Commit this change:
+        av_repo.index.add([os.path.abspath(manifest_fname)])
+        av_repo.index.commit("Adds %s" % site_name)
+        # Push it to your forks master branch
+        origin.push("master")
 
-    # Then, we create the PR against the central repo:
-    afqvault_repo.create_pull("Adds %s" % site_name,
-                              "Created automatically by afqbrowser-publish",
-                              "master",
-                              "%s:master" % uname)
+        # Then, we create the PR against the central repo:
+        afqvault_repo.create_pull("Adds %s" % site_name,
+                                  "Auto-created by afqbrowser-publish",
+                                  "master",
+                                  "%s:master" % uname)
 
     return site_name
