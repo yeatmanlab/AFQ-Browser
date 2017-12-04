@@ -117,7 +117,7 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
             else:
                 re_df[m] = re_data
 
-            dfs.append(re_df)
+        dfs.append(re_df)
 
     nodes_df = pd.concat(dfs)
 
