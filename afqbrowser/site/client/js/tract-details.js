@@ -146,6 +146,11 @@ afqb.plots.yAxis = d3.svg.axis()
 	.tickSize(0 - afqb.plots.w - 5)
 	.ticks(5);
 
+afqb.plots.xAxisScale = d3.scale.linear()
+    .range([afqb.plots.m.left + 30, afqb.plots.w + afqb.plots.m.left + 20])
+    .domain([0, 100]);
+
+
 afqb.plots.line = function (d, id){
 
 	var line = d3.svg.line()
@@ -349,18 +354,37 @@ afqb.plots.ready = function (error, data) {
 		.key(function (d) { return d.subjectID; })
 		.entries(data);
 
+    // compute mean and error
+    afqb.plots.tractMean = d3.nest()
+        .key(function (d) { return d.tractID; })
+        .key(function (d) { return d.nodeID; })
+        .rollup(function (v) {
+            return {
+                mean: d3.mean(v, function (d) {
+                    return +d[plotKey];}),
+                stderr: (d3.deviation(v, function (d) {
+                    return +d[plotKey];
+                }) || 0.0)/Math.sqrt(v.length),
+                std: (d3.deviation(v, function (d) {
+                    return +d[plotKey];
+                }) || 0.0)
+            };
+        })
+        .entries(data);
+
     // initialize xScale dict
     afqb.plots.xScale = {};
 
 	// set x and y domains for the tract plots
     afqb.plots.tractData.forEach(function (d,i) {
-    	var len = 1;
-    	d.values.forEach(function (d,i){
+    	/*var len = 1;
+    	d.values.forEach(function (d){
     		if (d.values.length > len) {
     			len = d.values.length;
 			}
-		});
-		console.log(len);
+		});*/
+    	var len = afqb.plots.tractMean[i].values.length;
+    	console.log(len);
         var id = afqb.plots.tracts[i].toLowerCase().replace(/\s+/g, "-"); // Subject to ordering errors since we call
         afqb.plots.xScale[id] = d3.scale.linear()
             .range([afqb.plots.m.left + 30, afqb.plots.w + afqb.plots.m.left + 20])
@@ -415,7 +439,7 @@ afqb.plots.ready = function (error, data) {
 		var id = d.key.toLowerCase().replace(/\s+/g, "-");
 
 		var xAxis = d3.svg.axis()
-                .scale(afqb.plots.xScale[id])
+                .scale(afqb.plots.xAxisScale) //afqb.plots.xScale[id])
                 .orient("bottom")
                 .tickPadding(8)
                 .ticks(5);
@@ -487,24 +511,6 @@ afqb.plots.ready = function (error, data) {
             .style("stroke-width", "1px");
 
 	});
-
-    // compute mean line
-    afqb.plots.tractMean = d3.nest()
-        .key(function (d) { return d.tractID; })
-        .key(function (d) { return d.nodeID; })
-        .rollup(function (v) {
-            return {
-                mean: d3.mean(v, function (d) {
-                        return +d[plotKey];}),
-                stderr: (d3.deviation(v, function (d) {
-                        return +d[plotKey];
-                }) || 0.0)/Math.sqrt(v.length),
-                std: (d3.deviation(v, function (d) {
-                        return +d[plotKey];
-                }) || 0.0)
-            };
-        })
-        .entries(data);
 
 	var meanLines = d3.select("#tractdetails").selectAll("svg")
 		.append("g")
@@ -832,7 +838,7 @@ afqb.plots.zoomAxis = function () {
 afqb.plots.newBrush = function (name) {
     "use strict";
     var brush = d3.svg.brush()
-        .x(afqb.plots.xScale["left-thalamic-radiation"])
+        .x(afqb.plots.xAxisScale)
         .on("brush", brushed)
 		.on("brushstart", brushStart)
 		.on("brushend", brushEnd);
