@@ -354,10 +354,17 @@ afqb.plots.ready = function (error, data) {
 
 	// set x and y domains for the tract plots
     afqb.plots.tractData.forEach(function (d,i) {
+    	var len = 1;
+    	d.values.forEach(function (d,i){
+    		if (d.values.length > len) {
+    			len = d.values.length;
+			}
+		});
+		console.log(len);
         var id = afqb.plots.tracts[i].toLowerCase().replace(/\s+/g, "-"); // Subject to ordering errors since we call
         afqb.plots.xScale[id] = d3.scale.linear()
             .range([afqb.plots.m.left + 30, afqb.plots.w + afqb.plots.m.left + 20])
-            .domain([0, d.values[0].values.length]);
+            .domain([0, len]);
 
     });
 
@@ -691,17 +698,12 @@ afqb.plots.changePlots = function (error, data) {
 	afqb.plots.yScale.domain(d3.extent(data, function (d) {
 		return +d[plotKey];
 	}));
-	//afqb.plots.xScale["left-thalamic-radiation"].domain([0, 100]).nice();
 
     afqb.plots.yAxis.scale(afqb.plots.yScale);
 
 	// Select the section we want to apply our changes to
 	var svg = d3.select("#tractdetails").selectAll("svg")
 		.data(afqb.plots.tractData).transition();
-
-	// Culprit
-	// svg.selectAll(".y.axis") // change the y axis
-	// 	.call(afqb.plots.yAxis);
 
 	// update y zoom for new axis
 	afqb.plots.yzooms[plotKey] = d3.behavior.zoom()
