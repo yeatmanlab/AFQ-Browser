@@ -159,70 +159,70 @@ sortable-table.js
 
 tract-details.js
 ----------------
-+------------------------------------------------------+---------------------------------------------------------+
-| afqb.plots.buildFromNodes(error,useless,data)        | Container function which calls other plots functions    |
-|                                                      | once nodes.csv data has been read.                      |
-|                                                      |                                                         |
-|                                                      |                                                         |
-|                                                      |                                                         |
-+------------------------------------------------------+---------------------------------------------------------+
-| afqb.plots.buildTractCheckboxes(error, data)         | Builds tract selection list in "Bundles" section. Reads |
-|                                                      | unique tract IDs from nodes.csv and creates selectable  |
-|                                                      | text for each tract.                                    |
-|                                                      |                                                         |
-|                                                      |                                                         |
-+------------------------------------------------------+---------------------------------------------------------+
-| afqb.plots.buildPlotGui(error, data)                 | Builds control panel GUI for metric plots. Allows user  |
-|                                                      | to select which metric to plot, error type (std err or  |
-|                                                      | std dev) for shaded area, subject line opacity, and     |
-|                                                      | whether or not brushing is allowed.                     |
-|                                                      |                                                         |
-+------------------------------------------------------+---------------------------------------------------------+
-| afqb.plots.ready(error, data)                        | Generates initial 2D plots. Turns nodes.csv into nested |
-|                                                      | json object. This object is used to determine x/y       |
-|                                                      | range, plot subject lines, and calculate mean and       |
-|                                                      | error for the default metric.                           |
-|                                                      |                                                         |
-+------------------------------------------------------+---------------------------------------------------------+
-| afqb.plots.changePlots(error, data)                  | Updates plots on sort or metric change. If data is      |
-|                                                      | sorted, means are calculated for each group of subjects |
-|                                                      | defined by the sort. If metric changes, axes and means  |
-|                                                      | are updated accordingly. Calls afqb.plots.draw() and    |
-|                                                      | afqb.plots.zoomAxis().                                  |
-+------------------------------------------------------+---------------------------------------------------------+
-| afqb.plots.draw()                                    | Redraws subject and mean lines after new metric or      |
-|                                                      | group selections. Calls afqb.plots.zoomAxis()           |
-|                                                      |                                                         |
-|                                                      |                                                         |
-|                                                      |                                                         |
-+------------------------------------------------------+---------------------------------------------------------+
-| afqb.plots.zoomAxis()                                | Updates y axis for proper zoom.                         |
-|                                                      |                                                         |
-|                                                      |                                                         |
-|                                                      |                                                         |
-|                                                      |                                                         |
-+------------------------------------------------------+---------------------------------------------------------+
-| afqb.plots.newBrush(name)                            | Initializes brush elements for 2D plots. Brush used to  |
-|                                                      | highlight a portion of tract in the "Anatomy" panel.    |
-|                                                      |                                                         |
-|                                                      |                                                         |
-|                                                      |                                                         |
-+------------------------------------------------------+---------------------------------------------------------+
-| afqb.plots.updateBrush()                             |                                                         |
-|                                                      |                                                         |
-|                                                      |                                                         |
-|                                                      |                                                         |
-|                                                      |                                                         |
-+------------------------------------------------------+---------------------------------------------------------+
-| afqb.plots.showHidePlotDetails(state, name)          | Controls whether or not a plot is displayed for a given |
-|                                                      | tract, and changes color of the label in the "Bundles"  |
-|                                                      | panel.                                                  |
-|                                                      |                                                         |
-|                                                      |                                                         |
-+------------------------------------------------------+---------------------------------------------------------+
-| afqb.plots.initCheckboxes(error)                     |                                                         |
-|                                                      |                                                         |
-|                                                      |                                                         |
-|                                                      |                                                         |
-|                                                      |                                                         |
-+------------------------------------------------------+---------------------------------------------------------+
++----------------------------------------------------------------------+---------------------------------------------------------+
+| :ref:`afqb.plots.buildFromNodes(error,useless,data) <tract-details>` | Container function which calls other plots functions    |
+|                                                                      | once nodes.csv data has been read.                      |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
++----------------------------------------------------------------------+---------------------------------------------------------+
+| :ref:`afqb.plots.buildTractCheckboxes(error, data) <tract-details>`  | Builds tract selection list in "Bundles" section. Reads |
+|                                                                      | unique tract IDs from nodes.csv and creates selectable  |
+|                                                                      | text for each tract.                                    |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
++----------------------------------------------------------------------+---------------------------------------------------------+
+| :ref:`afqb.plots.buildPlotGui(error, data) <tract-details>`          | Builds control panel GUI for metric plots. Allows user  |
+|                                                                      | to select which metric to plot, error type (std err or  |
+|                                                                      | std dev) for shaded area, subject line opacity, and     |
+|                                                                      | whether or not brushing is allowed.                     |
+|                                                                      |                                                         |
++----------------------------------------------------------------------+---------------------------------------------------------+
+| :ref:`afqb.plots.ready(error, data) <tract-details>`                 | Generates initial 2D plots. Turns nodes.csv into nested |
+|                                                                      | json object. This object is used to determine x/y       |
+|                                                                      | range, plot subject lines, and calculate mean and       |
+|                                                                      | error for the default metric.                           |
+|                                                                      |                                                         |
++----------------------------------------------------------------------+---------------------------------------------------------+
+| :ref:`afqb.plots.changePlots(error, data) <tract-details>`           | Updates plots on sort or metric change. If data is      |
+|                                                                      | sorted, means are calculated for each group of subjects |
+|                                                                      | defined by the sort. If metric changes, axes and means  |
+|                                                                      | are updated accordingly. Calls afqb.plots.draw() and    |
+|                                                                      | afqb.plots.zoomAxis().                                  |
++----------------------------------------------------------------------+---------------------------------------------------------+
+| :ref:`afqb.plots.draw() <tract-details>`                             | Redraws subject and mean lines after new metric or      |
+|                                                                      | group selections. Calls afqb.plots.zoomAxis()           |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
++----------------------------------------------------------------------+---------------------------------------------------------+
+| :ref:`afqb.plots.zoomAxis() <tract-details>`                         | Updates y axis for proper zoom.                         |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
++----------------------------------------------------------------------+---------------------------------------------------------+
+| :ref:`afqb.plots.newBrush(name) <tract-details>`                     | Initializes brush elements for 2D plots. Brush used to  |
+|                                                                      | highlight a portion of tract in the "Anatomy" panel.    |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
++----------------------------------------------------------------------+---------------------------------------------------------+
+| :ref:`afqb.plots.updateBrush() <tract-details>`                      |                                                         |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
++----------------------------------------------------------------------+---------------------------------------------------------+
+| :ref:`afqb.plots.showHidePlotDetails(state, name) <tract-details>`   | Controls whether or not a plot is displayed for a given |
+|                                                                      | tract, and changes color of the label in the "Bundles"  |
+|                                                                      | panel.                                                  |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
++----------------------------------------------------------------------+---------------------------------------------------------+
+| :ref:`afqb.plots.initCheckboxes(error) <tract-details>`              |                                                         |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
+|                                                                      |                                                         |
++----------------------------------------------------------------------+---------------------------------------------------------+
