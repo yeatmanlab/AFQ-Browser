@@ -807,28 +807,25 @@ afqb.plots.draw = function() {
     d3.select("#tractdetails").selectAll("svg").selectAll(".means").remove();
     if (afqb.table.splitGroups) {
         // Join new afqb.plots.tractMean data with old meanLines elements
-        //var meanLines = d3.select("#tractdetails").selectAll("svg")
-        //    .selectAll(".means")
-        //    .data(function (d) {
-        //        return afqb.plots.tractMean.filter(function(element) {
-        //            return element.key === d.key;
-        //        })[0].values;
-        //    });
         var meanLines = d3.select("#tractdetails").selectAll("svg")
             .selectAll(".means")
-            .data(function (d,i) { return afqb.plots.tractMean[i]; });
+            .data(function (d) {
+                return afqb.plots.tractMean.filter(function(element) {
+                    return element.key === d.key;
+                })[0].values;
+            });
+
         // Enter and update. Merge entered elements and apply operations
         meanLines.enter().append("g")
             .attr("class", "tracts means")
-            .attr("id", function(d, i) {
-            	console.log(i);
-            	return "mean" + i; });
+            .attr("id", function(d) {
+            	return "mean" + d.key;});
 
         meanLines.append("path")
             .attr("class", "area")
-            .attr("d", function(d,i) {
+            .attr("d", function(d) {
 
-                var id = afqb.plots.tractMean[i].key.toLowerCase().replace(/\s+/g, "-");
+                var id = this.parentNode.parentNode.id.toLowerCase().replace(/tract-/g, "");
 
                 var area = d3.svg.area()
                     .x(function(d) { return afqb.plots.xScale[id](+d.key) })
@@ -848,12 +845,13 @@ afqb.plots.draw = function() {
                     });
                 console.log(id);
                 return area(d.values); })
-            .style("opacity", 0.4);
+            .style("opacity", 0.25);
 
         meanLines.append("path")
             .attr("class", "line")
-            .attr("d", function(d,i) {
-                var id = d[i].key.toLowerCase().replace(/\s+/g, "-");
+            .attr("d", function(d) {
+
+                var id = this.parentNode.parentNode.id.toLowerCase().replace(/tract-/g, "");
 
                 var line = d3.svg.line()
                     .interpolate("basis")
@@ -866,7 +864,7 @@ afqb.plots.draw = function() {
                     .defined(function (d) {
                         return !isNaN(d.values.mean);
                     });
-                return line(d[i].values); })
+                return line(d.values); })
             .style("opacity", 0.99)
             .style("stroke-width", "3px");
 
