@@ -413,7 +413,7 @@ afqb.plots.ready = function (error, data) {
 		.attr("class", "y axis")
 		.attr("transform", "translate(" + afqb.plots.m.left + ",0)")
 		.call(afqb.plots.yAxis);
-	
+
     // y axis label
     trPanels.append("text")
         .attr("text-anchor", "middle")
@@ -504,8 +504,9 @@ afqb.plots.ready = function (error, data) {
             .attr("id", function (d) {
                 return d.values[0].subjectID;
             })
-            .on("mouseover", mouseover)
-            .on("mouseout", mouseout)
+						.on("mouseover", mouseover)
+						.on("mousemove", mouseover)
+						.on("mouseout", mouseout)
             .on("click", onclick);
 
 		tractLines.append("path")
@@ -547,7 +548,8 @@ afqb.plots.ready = function (error, data) {
 	    .attr("class", "tooltip")
 	    .style("opacity", 0);
 
-	function mouseover() {
+
+	function mouseover(d) {
 		if (!afqb.global.mouse.brushing) {
 			if ($("path",this).css("stroke-width") === "1px") {
 				// uses the stroke-width of the line clicked on to
@@ -558,13 +560,48 @@ afqb.plots.ready = function (error, data) {
 					.style("stroke-width", "1.1px");
 
 			}
-
+			window.self = this;
+			var self = this;
 			if ($("path",this).css("stroke-width") === "2.1px") {
-				console.log("is highlighted")
+
+				var Nnodes = d.values.length;
+				var key = d3.select(self.parentNode).data()[0].key;
+				var fkey = afqb.global.formatKeyName(key)
+				var x0 = afqb.plots.xScale[fkey].invert(d3.mouse(this)[0])
+				var nodeIndex = Math.ceil(x0)
+				var y0 = d.values[nodeIndex][afqb.global.controls.plotsControlBox.plotKey]
+
+				var tt_data = {}
+
+				var plotIdx = 0;
+				afqb.plots.tractMean.forEach(function(val, idx){
+					if (val.key === key){
+						plotIdx = idx
+					}
+				})
+
+				//var plotIdx = 0 // TODO: get the index of the plot (from 0 to 20)
+
+				// TODO: this if for getting quantiles of sort key afqb.table.groupScale.quantiles()
+				var sortKey = afqb.table.settings.sort.key;
+				var z0 = {};
+
+				afqb.plots.tractMean[plotIdx].values.forEach(function(val, idx, arr){
+
+					z0[idx] = (y0 - val.values[nodeIndex].values.mean) / val.values[nodeIndex].values.std
+					z0[idx] = d3.format(",.2f")(z0[idx])
+				})
+
+				console.log("groupScale: ", afqb.table.groupScale(y0));
+
 				d3.select("#tractdetails").select(".tooltip")
 					.style("opacity", 1)
-					.html(function(d){
-						return "hi"
+					.html(function(){
+						var h = "<b>"+self.id+ "</b>" + "<br>Node: " + nodeIndex + "<br>";
+						for (key in z0){
+							h += '<span style="color:COLOR">SORT</span>VAL<br>'.replace("SORT", sortKey).replace("VAL", z0[key]).replace("COLOR", afqb.table.ramp(key)); //key + ": " + z0[key] + "<br>"
+						}
+						return h
 					})
 					.style("left", (d3.event.pageX) + "px")
 					.style("top", (d3.event.pageY - 28) + "px");
@@ -656,8 +693,8 @@ afqb.plots.ready = function (error, data) {
 					.style("stroke-width", "1px");
 
 			}
-			d3.select("#tractdetails").select(".tooltip")
-				.style("opacity", 0);
+			//d3.select("#tractdetails").select(".tooltip")
+			//	.style("opacity", 0);
 		}
 	}
 
