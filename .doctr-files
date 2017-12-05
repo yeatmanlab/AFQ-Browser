@@ -1,7 +1,6 @@
 ./_images/BDE_Banner_revised20160211-01.jpg
 ./_sources/api.rst.txt
 ./_sources/gen_api/afqbrowser.assemble.rst.txt
-./_sources/gen_api/afqbrowser.mat2tables.rst.txt
 ./_sources/gen_api/afqbrowser.run.rst.txt
 ./_sources/index.rst.txt
 ./_sources/installation_guide.rst.txt
@@ -32,7 +31,6 @@
 ./_static/websupport.js
 ./api.html
 ./gen_api/afqbrowser.assemble.html
-./gen_api/afqbrowser.mat2tables.html
 ./gen_api/afqbrowser.run.html
 ./genindex.html
 ./index.html
