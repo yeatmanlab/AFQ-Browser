@@ -29,5 +29,5 @@ after_success:
       cd doc;
       make html;
       cd ..;
-      doctr deploy --built-docs doc/_build/html --deploy-repo AFQ-Browser/AFQ-Browser.github.io doc
+      doctr deploy . --built-docs doc/_build/html;
     fi
