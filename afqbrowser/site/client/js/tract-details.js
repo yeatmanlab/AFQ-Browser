@@ -643,14 +643,16 @@ afqb.plots.ready = function (error, data) {
 							// if a color is needed, format the heading:
 							if (sortKey){
 								// TODO: this if for getting quantiles of sort key afqb.table.groupScale.quantiles()
-								var quantiles = afqb.table.groupScale.quantiles();
+								// JK: above line does'nt work anymore??
+								var quantiles = [0.5] //BRK this is just for tests. afqb.table.groupScale.quantiles() doesn't work??
 								var sortHeading = sortKey
-								if (key === 0) {
-									sortHeading += '< ' + quantiles[0];
-								} else if (key !== Nzkeys) {
+
+								if (key == 0) {
+									sortHeading += ' < ' + quantiles[key];
+								} else if (key != Nzkeys - 1) {
 									sortHeading = quantiles[key - 1] + " < " + sortHeading + " < " + quantiles[key];
 								} else {
-									sortHeading = quantiles[key] + " < " + sortHeading;
+									sortHeading = quantiles[key - 1] + " < " + sortHeading;
 								}
 								h += '<span style="color:COLOR">SORT</span><br>'.replace("SORT", sortHeading).replace("COLOR", afqb.table.ramp(key))
 							}
