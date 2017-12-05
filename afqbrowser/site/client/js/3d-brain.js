@@ -324,7 +324,9 @@ afqb.three.init = function (callback) {
             });
             colorCoreMaterial.color.setHex(afqb.global.colors[index]);
 
-            coreGeometry = new THREE.TubeBufferGeometry(coreCurve, 100, 3, 8, false);
+            var tubeSegments = 100;
+            var radiusSegments = 8;
+            coreGeometry = new THREE.TubeBufferGeometry(coreCurve, tubeSegments, 3, radiusSegments, false);
             var colorMesh = new THREE.Mesh(
                 coreGeometry, colorCoreMaterial
             );
@@ -336,6 +338,7 @@ afqb.three.init = function (callback) {
 
             // Record some useful info for later
             colorMesh.name = keyName;
+            colorMesh.geometryLength = 2 * tubeSegments * radiusSegments * 3;
             colorMesh.defaultMaterial = colorCoreMaterial;
             colorMesh.highlightMaterial = highlightCoreMaterial;
 
@@ -641,17 +644,10 @@ afqb.three.brushOn3D = function () {
 
     afqb.three.colorCoreGroup.children.forEach(function (element) {
         var lo = Math.floor(afqb.plots.settings.brushes[element.name].brushExtent[0]);
-        var hi = Math.ceil(afqb.plots.settings.brushes[element.name].brushExtent[1]) - 1;
+        var hi = Math.ceil(afqb.plots.settings.brushes[element.name].brushExtent[1]);
 
         // loIdx is the low index and count is the number of indices
-        // This is a little sloppy and sometimes the count will be too high
-        // but the visual offset should be minimal.
-        // TODO: Positions come in pairs, with all vertices except the first
-        // and last being repeated. Take this into account to make loIdx and
-        // count correct (not just good enough).
-        var position = element.geometry.attributes.position;
-        var uv = element.geometry.attributes.uv;
-        var totalLength = position.itemSize * position.count + uv.itemSize * uv.count;
+        var totalLength = element.geometryLength;
 
         // loIdx should be the nearest multiple of 3
         var loIdx = Math.floor(lo * totalLength / 100.0 / 3) * 3;
