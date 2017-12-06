@@ -169,14 +169,15 @@ afqb.table.restoreRowSelection = function () {
     });
 };
 
-$('#launch-binder').click(function (e) {
-    e.preventDefault();
+var setupBinderURL = function () {
+
     // Parse the URL
     var uri = new URI(location.href);
     var user = uri.hostname().replace('.github.io/', '');
     var repo = uri.directory();
-    var binderUrl = '//mybinder.org/v2/gh/' + user + '/' + repo + '/gh-pages?filepath=index.ipynb';
-    console.log(binderUrl);
-    // window.open(binderUrl);
+    var binderUrl = 'https://mybinder.org/v2/gh/' + user + '/' + repo + '/gh-pages?filepath=index.ipynb';
+     $("#launch-binder").attr("href", binderUrl);
     return false;
-})
+}
+
+setupBinderURL();
