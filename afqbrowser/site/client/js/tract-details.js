@@ -180,7 +180,7 @@ afqb.plots.line = function (d, id){
 	return line(d)
 };
 
-afqb.plots.area = function (d,id) {
+afqb.plots.area = function (d, id) {
 	var area = d3.svg.area()
         .x(function(d) { return afqb.plots.xScale[id](+d.key) })
         .y0(function (d) {
@@ -385,7 +385,7 @@ afqb.plots.ready = function (error, data) {
 			}
 		});*/
     	var len = afqb.plots.tractMean[i].values.length;
-        var id = afqb.plots.tracts[i].toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-"); // Subject to ordering errors since we call
+        var id = afqb.global.formatKeyName(afqb.plots.tracts[i]); // Subject to ordering errors since we call
         afqb.plots.xScale[id] = d3.scale.linear()
             .range([afqb.plots.m.left + 30, afqb.plots.w + afqb.plots.m.left + 20])
             .domain([0, len]);
@@ -436,7 +436,7 @@ afqb.plots.ready = function (error, data) {
 	trPanels.select("g").each(function (d) {
 
         var g = d3.select(this);
-		var id = d.key.toLowerCase().replace(/\s+/g, "-");
+        var id = afqb.global.formatKeyName(d.key);
 
 		var xAxis = d3.svg.axis()
                 .scale(afqb.plots.xAxisScale) //afqb.plots.xScale[id])
@@ -489,10 +489,9 @@ afqb.plots.ready = function (error, data) {
         .style("fill", function(d,i){return afqb.global.d3colors[i];} );
 
 	// associate tractsline with each subject
-	trPanels.each(function (d) {
+	trPanels.each(function (data) {
 
-		var id = d.key.toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-");
-		var data = d;
+		var id = afqb.global.formatKeyName(data.key);
 
 		var tractLines = d3.select(this).selectAll(".tracts").data(data.values);
 		tractLines.enter().append("g")
@@ -506,10 +505,9 @@ afqb.plots.ready = function (error, data) {
 
 		tractLines.append("path")
             .attr("class", "line")
-            .attr("d", function (d) {return afqb.plots.line(d.values,id);})
+            .attr("d", function (d) {return afqb.plots.line(d.values, id);})
             .style("opacity", afqb.global.controls.plotsControlBox.lineOpacity)
             .style("stroke-width", "1px");
-
 	});
 
 	var meanLines = d3.select("#tractdetails").selectAll("svg")
@@ -521,14 +519,14 @@ afqb.plots.ready = function (error, data) {
     meanLines.append("path")
         .attr("class", "area")
         .attr("d", function(d,i) {
-        	var id = d[i].key.toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-");
+        	var id = afqb.global.formatKeyName(d[i].key);
         	return afqb.plots.area(d[i].values, id); })
         .style("opacity", 0.4);
 
     meanLines.append("path")
         .attr("class", "line")
         .attr("d", function(d,i) {
-            var id = d[i].key.toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-");
+            var id = afqb.global.formatKeyName(d[i].key);
         	return afqb.plots.line(d[i].values, id); })
         .style("opacity", 0.99)
         .style("stroke-width", "3px");
@@ -761,7 +759,7 @@ afqb.plots.draw = function() {
 	trLines.select("path")
 		.duration(0)
 		.attr("d", function (d) {
-			var id = d.values[0].tractID.toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-");
+			var id = afqb.global.formatKeyName(d.values[0].tractID);
             return afqb.plots.line(d.values, id);
 		});
 
@@ -786,14 +784,14 @@ afqb.plots.draw = function() {
         meanLines.append("path")
             .attr("class", "area")
             .attr("d", function(d) {
-                var id = this.parentNode.parentNode.id.toLowerCase().replace(/tract-/g, "");
+                var id = afqb.global.formatKeyName(this.parentNode.parentNode.id).replace('tract-', '');
                 return afqb.plots.area(d.values, id); })
             .style("opacity", 0.25);
 
         meanLines.append("path")
             .attr("class", "line")
             .attr("d", function(d) {
-                var id = this.parentNode.parentNode.id.toLowerCase().replace(/tract-/g, "");
+                var id = afqb.global.formatKeyName(this.parentNode.parentNode.id).replace('tract-', '');
                 return afqb.plots.line(d.values, id); })
             .style("opacity", 0.99)
             .style("stroke-width", "3px");
@@ -814,14 +812,14 @@ afqb.plots.draw = function() {
         meanLines.append("path")
             .attr("class", "area")
             .attr("d", function(d,i) {
-                var id = d[i].key.toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-");
+                var id = afqb.global.formatKeyName(d[i].key);
                 return afqb.plots.area(d[i].values, id); })
             .style("opacity", 0.4);
 
         meanLines.append("path")
             .attr("class", "line")
             .attr("d", function(d,i) {
-                var id = d[i].key.toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-");
+                var id = afqb.global.formatKeyName(d[i].key);
                 return afqb.plots.line(d[i].values, id); })
             .style("opacity", 0.99)
             .style("stroke-width", "3px");
