@@ -168,3 +168,15 @@ afqb.table.restoreRowSelection = function () {
         }
     });
 };
+
+$('#launch-binder').click(function (e) {
+    e.preventDefault();
+    // Parse the URL
+    var uri = new URI(location.href);
+    var user = uri.hostname();
+    var repo = uri.directory();
+    var binderUrl = '//mybinder.org/v2/gh/' + user + '/' + repo + '/master';
+    console.log(binderUrl);
+    // window.open(binderUrl);
+    return false;
+})
