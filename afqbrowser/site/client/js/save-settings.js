@@ -170,11 +170,9 @@ afqb.table.restoreRowSelection = function () {
 };
 
 var setupBinderURL = function () {
-
     // Parse the URL
     var uri = new URI(location.href);
-    var hostname = uri.hostname();
-    var user = hostname.replace('.github.io/', '');
+    var user = uri.hostname().split('.')[0];
     var repo = uri.directory();
     var binderUrl = 'https://mybinder.org/v2/gh/' + user + '/' + repo + '/gh-pages?filepath=index.ipynb';
      $("#launch-binder").attr("href", binderUrl);
