@@ -583,6 +583,8 @@ afqb.plots.ready = function (error, data) {
 			if ($("path",this).css("stroke-width") === "2.1px") {
 				// uses the stroke-width of the line clicked on
 				// to determine whether to turn the line on or off
+                afqb.table.settings.selectedRows[this.id] = false;
+
 				d3.selectAll('#' + this.id)
 					.selectAll('path')
 					.style("stroke-width", "1.1px");
@@ -590,8 +592,9 @@ afqb.plots.ready = function (error, data) {
 				d3.selectAll('#' + this.id)
 					.selectAll('g')
 					.style("opacity", 0.3);
-
 			} else if ($("path",this).css("stroke-width") === "1.1px") {
+                afqb.table.settings.selectedRows[this.id] = true;
+
 				d3.selectAll('#' + this.id)
 					.selectAll('path')
 					.style("opacity", 1)
@@ -601,6 +604,8 @@ afqb.plots.ready = function (error, data) {
 					.selectAll('g')
 					.style("opacity", 1);
 			} else if ($("path",this).css("opacity") === afqb.global.controls.plotsControlBox.lineOpacity) {
+                afqb.table.settings.selectedRows[this.id] = true;
+
 				d3.selectAll('#' + this.id)
 					.selectAll('path')
 					.style("opacity", 1)
@@ -610,6 +615,14 @@ afqb.plots.ready = function (error, data) {
 					.selectAll('g')
 					.style("opacity", 1);
 			}
+
+            // Update the query string
+            var selectedRows = {};
+            selectedRows[this.id] = afqb.table.settings.selectedRows[this.id];
+
+            afqb.global.updateQueryString(
+                {table: {selectedRows: selectedRows}}
+            );
 		}
 	}
 
