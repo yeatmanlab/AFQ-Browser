@@ -40,6 +40,7 @@ afqb.global.initSettings = function (callback) {
                 .split("-").map(function (word) {
                     return word.charAt(0).toUpperCase() + word.slice(1);
                 }).join(" ");
+            afqb.table.settings.restoring = true;
 
             // Parse all the checkbox strings as booleans
             Object.keys(afqb.plots.settings.checkboxes).forEach(function (bundle) {

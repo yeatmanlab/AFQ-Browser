@@ -241,7 +241,7 @@ afqb.table.refreshTable = function () {
         // If sort.key and sort.count are the same, just update the row order
 		var sameKey = (sortOn === afqb.table.settings.prevSort.key);
 		var sameCount = (afqb.table.settings.sort.count === afqb.table.settings.prevSort.count);
-        if (sameKey && sameCount) {
+        if (sameKey && sameCount && !afqb.table.settings.restoring) {
 			if (afqb.table.settings.sort.order === "ascending") {
 				rows.sort(function (a, b) {
 					return afqb.table.descendingWithNull(a[sortOn], b[sortOn]);
@@ -264,7 +264,7 @@ afqb.table.refreshTable = function () {
                 });
         }
 		
-		if (!sameKey) {
+		if (!sameKey && !afqb.table.settings.restoring) {
 			// Only resort the data if the sort key is different
 			rows.sort(function (a, b) {
 				return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
@@ -370,6 +370,16 @@ afqb.table.refreshTable = function () {
 			d3.csv("data/nodes.csv", afqb.plots.changePlots);
 
             if (afqb.table.settings.restoring) {
+                if (afqb.table.settings.sort.order === "ascending") {
+                    rows.sort(function (a, b) {
+                        return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
+                    });
+                } else {
+                    rows.sort(function (a, b) {
+                        return afqb.table.descendingWithNull(a[sortOn], b[sortOn]);
+                    });
+                }
+
                 // Update row positions
                 rows//.transition()
                     //.duration(500)
