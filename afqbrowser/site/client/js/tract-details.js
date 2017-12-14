@@ -603,7 +603,7 @@ afqb.plots.ready = function (error, data) {
 				} else {
 					// the table has NOT been sorted, calculate only 1 z-score
 					var val = afqb.plots.tractMean[plotIdx].values
-					console.log("val[nodeIndex]", val[nodeIndex], val)
+					// console.log("val[nodeIndex]", val[nodeIndex], val)
 					z0[0] = (y0 - val[nodeIndex].values.mean) / val[nodeIndex].values.std
 					z0[0] = d3.format(",.2f")(z0[0])
 				}
@@ -644,21 +644,40 @@ afqb.plots.ready = function (error, data) {
 							if (sortKey){
 								// TODO: this if for getting quantiles of sort key afqb.table.groupScale.quantiles()
 								// JK: above line does'nt work anymore??
-								var quantiles = [0.5] //BRK this is just for tests. afqb.table.groupScale.quantiles() doesn't work??
+								console.log("afqb.table.groupScale", afqb.table.groupScale);
+								var quantiles = []
+								try {
+									var Q = afqb.table.groupScale.quantiles(); //[0.5] //BRK this is just for tests. afqb.table.groupScale.quantiles() doesn't work??
+
+									for (var i=0; i<Q.length; i += 1){
+										quantiles.push(d3.format(",.2f")(Q[i]));
+									}
+								} catch (e) {
+									console.log("no quantiles");
+								} finally {
+
+								}
+
+
 								var sortHeading = sortKey
 
 								if (key == 0) {
-									sortHeading += ' < ' + quantiles[key];
+									if (quantiles[key]){
+										sortHeading += ' < ' + quantiles[key];
+									}
+
 								} else if (key != Nzkeys - 1) {
 									sortHeading = quantiles[key - 1] + " < " + sortHeading + " < " + quantiles[key];
 								} else {
-									sortHeading = quantiles[key - 1] + " < " + sortHeading;
+									if (quantiles[key - 1]){
+										sortHeading = quantiles[key - 1] + " < " + sortHeading;
+									}
 								}
 								h += '<span style="color:COLOR">SORT</span><br>'.replace("SORT", sortHeading).replace("COLOR", afqb.table.ramp(key))
 							}
 
 							// finally, add the z-score value
-							h += '<span style="font-size:1.2em;">VAL</span><br>'.replace("VAL", z0[key]);
+							h += '<span style="font-size:1.2em;">z = VAL</span><br>'.replace("VAL", z0[key]);
 						}
 						return h
 					})
