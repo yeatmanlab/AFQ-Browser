@@ -1,0 +1,157 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>save-settings.js &#8212; afqbrowser 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="save-settings-js">
+<span id="save-settings"></span><h1>save-settings.js<a class="headerlink" href="#save-settings-js" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="afqb.global.formatKeyName">
+<code class="descclassname">afqb.global.</code><code class="descname">formatKeyName</code><span class="sig-paren">(</span><em>bundle</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.global.formatKeyName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use universal key name for robust linking between elements</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bundle</strong> (<em>srting</em>) – <ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.global.updateQueryString">
+<code class="descclassname">afqb.global.</code><code class="descname">updateQueryString</code><span class="sig-paren">(</span><em>queryObj</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.global.updateQueryString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the QuerySting object for proper reload</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>queryObj</strong> (<em>object</em>) – <ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.global.initSettings">
+<code class="descclassname">afqb.global.</code><code class="descname">initSettings</code><span class="sig-paren">(</span><em>callback</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.global.initSettings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize settings from querystring</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>callback</strong> – <ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.plots.restoreBrush">
+<code class="descclassname">afqb.plots.</code><code class="descname">restoreBrush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.restoreBrush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restore brush settings on reload.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.table.restoreRowSelection">
+<code class="descclassname">afqb.table.</code><code class="descname">restoreRowSelection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#afqb.table.restoreRowSelection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restore selected rows and subject lines on reload.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/escience-logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017 -- , Jason Yeatman, Adam Richie-Halford, Josh Smith, Anisha Keshavan, Ariel Rokem, The University of Washington.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/save-settings.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

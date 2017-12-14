@@ -1,0 +1,294 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>plots.js &#8212; afqbrowser 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="plots-js">
+<span id="plots"></span><h1>plots.js<a class="headerlink" href="#plots-js" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="afqb.plots.buildFromNodes">
+<code class="descclassname">afqb.plots.</code><code class="descname">buildFromNodes</code><span class="sig-paren">(</span><em>error</em>, <em>useless</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.buildFromNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container function which calls other plots functions
+once nodes.csv data has been read.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>error</strong> – <ul>
+<li></li>
+</ul>
+</li>
+<li><strong>useless</strong> – <ul>
+<li></li>
+</ul>
+</li>
+<li><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.plots.buildTractCheckboxes">
+<code class="descclassname">afqb.plots.</code><code class="descname">buildTractCheckboxes</code><span class="sig-paren">(</span><em>error</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.buildTractCheckboxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds tract selection list in “Bundles” section. Reads
+unique tract IDs from nodes.csv and creates selectable
+text for each tract.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>error</strong> – <ul>
+<li></li>
+</ul>
+</li>
+<li><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.plots.buildPlotGui">
+<code class="descclassname">afqb.plots.</code><code class="descname">buildPlotGui</code><span class="sig-paren">(</span><em>error</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.buildPlotGui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds control panel GUI for metric plots. Allows user
+to select which metric to plot, error type (std err or
+std dev) for shaded area, subject line opacity, and
+whether or not brushing is allowed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>error</strong> – <ul>
+<li></li>
+</ul>
+</li>
+<li><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.plots.ready">
+<code class="descclassname">afqb.plots.</code><code class="descname">ready</code><span class="sig-paren">(</span><em>error</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates initial 2D plots. Turns nodes.csv into nested
+json object. This object is used to determine x/y
+range, plot subject lines, and calculate mean and
+error for the default metric.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>error</strong> – <ul>
+<li></li>
+</ul>
+</li>
+<li><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.plots.changePlots">
+<code class="descclassname">afqb.plots.</code><code class="descname">changePlots</code><span class="sig-paren">(</span><em>error</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.changePlots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates plots on sort or metric change. If data is
+sorted, means are calculated for each group of subjects
+defined by the sort. If metric changes, axes and means
+are updated accordingly. Calls afqb.plots.draw() and
+afqb.plots.zoomAxis().</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>error</strong> – <ul>
+<li></li>
+</ul>
+</li>
+<li><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.plots.draw">
+<code class="descclassname">afqb.plots.</code><code class="descname">draw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.draw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Redraws subject and mean lines after new metric or
+group selections. Calls afqb.plots.zoomAxis()</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.plots.zoomAxis">
+<code class="descclassname">afqb.plots.</code><code class="descname">zoomAxis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.zoomAxis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates y axis for proper zoom.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.plots.newBrush">
+<code class="descclassname">afqb.plots.</code><code class="descname">newBrush</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.newBrush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes brush elements for 2D plots. Brush used to
+highlight a portion of tract in the “Anatomy” panel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>string</em>) – <ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.plots.updateBrush">
+<code class="descclassname">afqb.plots.</code><code class="descname">updateBrush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.updateBrush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates brush elements for 2D plots. Brush used to
+highlight a portion of tract in the “Anatomy” panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.plots.showHideTractDetails">
+<code class="descclassname">afqb.plots.</code><code class="descname">showHideTractDetails</code><span class="sig-paren">(</span><em>state</em>, <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.showHideTractDetails" title="Permalink to this definition">¶</a></dt>
+<dd><p>Controls whether or not a plot is displayed for a given
+tract, and changes color of the label in the “Bundles”
+panel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>state</strong> (<em>string</em>) – <ul>
+<li></li>
+</ul>
+</li>
+<li><strong>name</strong> (<em>string</em>) – <ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.plots.initCheckboxes">
+<code class="descclassname">afqb.plots.</code><code class="descname">initCheckboxes</code><span class="sig-paren">(</span><em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.initCheckboxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>:)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>error</strong> – <ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/escience-logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017 -- , Jason Yeatman, Adam Richie-Halford, Josh Smith, Anisha Keshavan, Ariel Rokem, The University of Washington.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/plots.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
