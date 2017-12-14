@@ -353,7 +353,7 @@ afqb.table.refreshTable = function () {
 			afqb.table.ramp = d3.scale.linear()
 				.domain([0, numGroups-1]).range(["red", "blue"]);
 
-			var idColor = function (element) {
+			afqb.global.idColor = function (element) {
 				d3.selectAll('#' + element.subjectID)
 					.selectAll('.line')
 					.style("stroke",
@@ -365,7 +365,7 @@ afqb.table.refreshTable = function () {
 							element.group === null ? "black" : afqb.table.ramp(element.group));
 			};
 
-			afqb.table.subData.forEach(idColor); // color lines
+			afqb.table.subData.forEach(afqb.global.idColor); // color lines
 
 			d3.csv("data/nodes.csv", afqb.plots.changePlots);
 

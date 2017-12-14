@@ -975,6 +975,7 @@ afqb.plots.draw = function() {
             .style("stroke-width", "3px");
 
         // set mean colors
+        afqb.table.subData.forEach(afqb.global.idColor); // color lines
         d3.select("#tractdetails").selectAll("svg").select("#error-area").selectAll(".area")
             .style("fill", function (d, i) { return afqb.table.ramp(i); });
         d3.select("#tractdetails").selectAll("svg").select("#mean-lines").selectAll(".line")
