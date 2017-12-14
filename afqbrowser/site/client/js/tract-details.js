@@ -314,6 +314,10 @@ afqb.plots.ready = function (error, data) {
     "use strict";
 	if (error) { throw error; }
 
+    var plotKey = afqb.global.controls.plotsControlBox.plotKey;
+    afqb.plots.lastPlotKey = plotKey;
+
+
 	data.forEach(function (d) {
 		if (typeof d.subjectID === 'number') {
 			d.subjectID = "s" + afqb.global.formatKeyName(d.subjectID.toString());
@@ -322,33 +326,9 @@ afqb.plots.ready = function (error, data) {
 		}
 	});
 
-	var plotKey = afqb.global.controls.plotsControlBox.plotKey;
-
 	data = data.filter(function (d) {
 		return Boolean(d[plotKey]);
 	});
-
-    afqb.plots.yzooms[plotKey] = d3.behavior.zoom()
-        .y(afqb.plots.yScale)
-        .on("zoom", afqb.plots.zoomable ? afqb.plots.zoomAxis : null)
-        .on("zoomend",afqb.plots.zoomable ? afqb.plots.draw : null);
-
-    // If we've already stored this type of plot's zoom settings, recover them
-    if (afqb.plots.settings.zoom[plotKey]
-		&& afqb.plots.settings.zoom[plotKey].hasOwnProperty("scale")
-        && afqb.plots.settings.zoom[plotKey].hasOwnProperty("translate")) {
-        afqb.plots.yzooms[plotKey].scale(
-                parseFloat(afqb.plots.settings.zoom[plotKey].scale) || 1);
-        afqb.plots.yzooms[plotKey].translate(
-            afqb.plots.settings.zoom[plotKey].translate.map(parseFloat) || [0, 0]);
-    } else {
-        // We need to store this for later use
-        afqb.plots.settings.zoom[plotKey] = {};
-        afqb.plots.settings.zoom[plotKey].scale = afqb.plots.yzooms[plotKey].scale();
-        afqb.plots.settings.zoom[plotKey].translate = afqb.plots.yzooms[plotKey].translate();
-    }
-
-	afqb.plots.lastPlotKey = plotKey;
 
 	afqb.plots.tractData = d3.nest()
 		.key(function (d) { return d.tractID; })
@@ -397,6 +377,26 @@ afqb.plots.ready = function (error, data) {
 	}));
 
     afqb.plots.yAxis.scale(afqb.plots.yScale);
+
+    afqb.plots.yzooms[plotKey] = d3.behavior.zoom()
+        .y(afqb.plots.yScale)
+        .on("zoom", afqb.plots.zoomable ? afqb.plots.zoomAxis : null)
+        .on("zoomend",afqb.plots.zoomable ? afqb.plots.draw : null);
+
+    // If we've already stored this type of plot's zoom settings, recover them
+    if (afqb.plots.settings.zoom[plotKey]
+        && afqb.plots.settings.zoom[plotKey].hasOwnProperty("scale")
+        && afqb.plots.settings.zoom[plotKey].hasOwnProperty("translate")) {
+        afqb.plots.yzooms[plotKey].scale(
+            parseFloat(afqb.plots.settings.zoom[plotKey].scale) || 1);
+        afqb.plots.yzooms[plotKey].translate(
+            afqb.plots.settings.zoom[plotKey].translate.map(parseFloat) || [0, 0]);
+    } else {
+        // We need to store this for later use
+        afqb.plots.settings.zoom[plotKey] = {};
+        afqb.plots.settings.zoom[plotKey].scale = afqb.plots.yzooms[plotKey].scale();
+        afqb.plots.settings.zoom[plotKey].translate = afqb.plots.yzooms[plotKey].translate();
+    }
 
 	//initialize panels for each tract - and attach tract data with them
 	var trPanels = d3.select("#tractdetails").selectAll("svg").data(afqb.plots.tractData);
