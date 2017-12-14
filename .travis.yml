@@ -17,7 +17,6 @@ install:
 - travis_retry pip install $PIP_DEPS
 - travis_retry pip install -r requirements.txt
 - travis_retry pip install -e .
-- npm install jsdoc@3.5.5
 
 script:
 - flake8 --ignore N802,N806 `find . -name \*.py | grep -v setup.py | grep -v version.py | grep -v __init__.py | grep -v /doc/`
@@ -27,6 +26,7 @@ after_success:
 - coveralls
 - |
     if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then
+      npm install jsdoc@3.5.5
       pip install sphinx sphinx-gallery pillow sphinx-js
       # Doctr for gh-pages;
       set -e;
