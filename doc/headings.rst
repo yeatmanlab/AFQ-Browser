@@ -2,3 +2,4 @@
 
 headings.js
 -----------
+.. js:autofunction:: afqb.global.updateHeadings

@@ -15,6 +15,13 @@ afqb.table.splitGroups = false;
 
 afqb.table.ramp = null;
 
+/**
+ * Initialize Table from subject metadata in subjects.csv.
+ *
+ * @param error -
+ * @param useless -
+ * @param {data} data -
+ */
 afqb.table.buildTable = function (error, useless, data) {
 	"use strict";
 	data.forEach(function (d) {
@@ -147,6 +154,10 @@ afqb.table.buildTable = function (error, useless, data) {
     afqb.table.restoreRowSelection();
 };
 
+/**
+ * Refresh the Table after sort operations.
+ *
+ */
 afqb.table.refreshTable = function () {
     "use strict";
     // create the table header
@@ -401,6 +412,12 @@ afqb.table.refreshTable = function () {
     );
 };
 
+/**
+ * Sort rows in ascending order.
+ *
+ * @param {object} a -
+ * @param {object} b -
+ */
 afqb.table.ascendingWithNull = function (a, b) {
     "use strict";
 	// d3.ascending ignores null and undefined values
@@ -409,6 +426,12 @@ afqb.table.ascendingWithNull = function (a, b) {
 	return b === null ? -1 : a === null ? 1 : d3.ascending(a, b);
 };
 
+/**
+ * Sort rows in descending order.
+ *
+ * @param {object} a -
+ * @param {object} b -
+ */
 afqb.table.descendingWithNull = function (a, b) {
     "use strict";
 	// d3.descending ignores null and undefined values
@@ -418,6 +441,11 @@ afqb.table.descendingWithNull = function (a, b) {
 };
 
 // onclick function to toggle on and off rows
+/**
+ * Select subject by row. Change opacity of row
+ * and corresponding subject lines in 2D plots.
+ *
+ */
 afqb.table.rowSelect = function () {
     "use strict";
     if($('g',this).css("opacity") == 0.3) {
@@ -465,6 +493,11 @@ $(document).mousedown(function() {
         afqb.global.mouse.isDown = false;
     });
 
+/**
+ * Controls subject selection and deselection by
+ * drag.
+ *
+ */
 afqb.table.tableMouseDown = function () {
     "use strict";
 	if(afqb.global.mouse.isDown) {

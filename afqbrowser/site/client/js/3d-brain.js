@@ -4,6 +4,11 @@
 // =========== three js part
 
 // Combine the init and animate function calls for use in d3.queue()
+/**
+ * Function description
+ * @throws error -
+ *
+ */
 afqb.three.initAndAnimate = function (error) {
     "use strict";
     if (error) { throw error; }
@@ -593,6 +598,10 @@ afqb.three.init = function (callback) {
 };
 
 // Resize the three.js window on full window resize.
+/**
+ * Function description
+ *
+ */
 afqb.three.onWindowResize = function () {
     "use strict";
     var width = afqb.three.container.clientWidth;
@@ -604,6 +613,10 @@ afqb.three.onWindowResize = function () {
     afqb.three.renderer.setSize(width, height);
 };
 
+/**
+ * Function description
+ *
+ */
 afqb.three.animate = function () {
     "use strict";
     requestAnimationFrame(afqb.three.animate);
@@ -662,6 +675,10 @@ afqb.three.brushOn3D = function () {
     });
 };
 
+/**
+ * Function description
+ *
+ */
 afqb.three.lightUpdate = function () {
     "use strict";
     afqb.three.directionalLight.position.copy(afqb.three.camera.position);
@@ -678,6 +695,11 @@ afqb.three.makeInvisible = function (object) {
 };
 
 // Highlight specified bundle based on left panel checkboxes
+/**
+ * Function description
+ * @param {string} state
+ * @param {string} name
+ */
 afqb.three.highlightBundle = function (state, name) {
     "use strict";
     var groups = [afqb.three.colorGroup, afqb.three.colorCoreGroup];
@@ -713,6 +735,11 @@ afqb.three.highlightBundle = function (state, name) {
     return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 };
 
+/**
+ * Function description
+ * @param {string} child
+ *
+ */
 afqb.three.mouseoutBundle = function (child) {
     var myBundle = d3.selectAll("input.tracts").filter(function (d) {
     	return afqb.global.formatKeyName(d) === child.name;
@@ -735,6 +762,11 @@ afqb.three.mouseoutBundle = function (child) {
 };
 
 // Highlight specified bundle based on mouseover
+/**
+ * Function description
+ * @param {string} child
+ *
+ */
 afqb.three.mouseoverBundle = function (child) {
     "use strict";
 	if (afqb.global.controls.threeControlBox.highlight) {

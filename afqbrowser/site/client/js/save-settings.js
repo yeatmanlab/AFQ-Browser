@@ -7,6 +7,11 @@ afqb.global.formatKeyName = function(bundle) {
     return bundle.toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-");
 };
 
+/**
+ * Updates the QuerySting object for proper reload
+ *
+ * @param {object} queryObj -
+ */
 afqb.global.updateQueryString = function(queryObj) {
     "use strict";
 
@@ -18,6 +23,11 @@ afqb.global.updateQueryString = function(queryObj) {
     window.history.pushState({search: settingsStr}, '', settingsStr);
 };
 
+/**
+ * Initialize settings from querystring
+ *
+ * @param callback -
+ */
 afqb.global.initSettings = function (callback) {
     "use strict";
     if (afqb.global.settings.loaded) {
@@ -135,6 +145,10 @@ afqb.global.initSettings = function (callback) {
 	}
 };
 
+/**
+ * Restore brush settings on reload.
+ *
+ */
 afqb.plots.restoreBrush = function () {
     "use strict";
     Object.keys(afqb.plots.settings.brushes).forEach(function (tract) {
@@ -156,6 +170,10 @@ afqb.plots.restoreBrush = function () {
     });
 };
 
+/**
+ * Restore selected rows and subject lines on reload.
+ *
+ */
 afqb.table.restoreRowSelection = function () {
     "use strict";
     Object.keys(afqb.table.settings.selectedRows).forEach(function (rowID) {
