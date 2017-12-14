@@ -1,6 +1,11 @@
 // Tell jslint that certain variables are global
 /* global afqb, FileReader, d3, d3_queue, THREE */
 
+/**
+ * Use universal key name for robust linking between elements
+ *
+ * @param {srting} bundle -
+ */
 afqb.global.formatKeyName = function(bundle) {
     // Standardize bundle names by making them lower case and
     // replacing all dots and spaces with dashes
