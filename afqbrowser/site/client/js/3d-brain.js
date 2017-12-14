@@ -3,10 +3,9 @@
 
 // =========== three js part
 
-// Combine the init and animate function calls for use in d3.queue()
 /**
- * Function description
- * @throws error -
+ * Combine the init and animate function calls for use in d3.queue()
+ * @param error -
  *
  */
 afqb.three.initAndAnimate = function (error) {
@@ -16,6 +15,11 @@ afqb.three.initAndAnimate = function (error) {
 	afqb.three.animate();
 };
 
+/**
+ * function description
+ * @param streamlinesExist -
+ *
+ */
 afqb.three.buildthreeGui = function (streamlinesExist) {
     var ThreeGuiConfigObj = function () {
         this.lhOpacity = parseFloat(afqb.three.settings.lHOpacity);
@@ -167,6 +171,11 @@ afqb.three.buildthreeGui = function (streamlinesExist) {
     afqb.three.gui.close();
 };
 
+/**
+ * function description
+ * @param callback -
+ *
+ */
 afqb.three.init = function (callback) {
     "use strict";
     // contain all bundles in these Group objects
@@ -597,9 +606,8 @@ afqb.three.init = function (callback) {
     }, false);
 };
 
-// Resize the three.js window on full window resize.
 /**
- * Function description
+ * Resize the three.js window on full window resize.
  *
  */
 afqb.three.onWindowResize = function () {
@@ -631,6 +639,10 @@ afqb.three.animate = function () {
     }
 };
 
+/**
+ * Function description
+ *
+ */
 afqb.three.brushOn3D = function () {
 // For each fiber bundle update the length of fiber to be plotted
 // based on the d3 brushes in the 2D plots
@@ -684,19 +696,28 @@ afqb.three.lightUpdate = function () {
     afqb.three.directionalLight.position.copy(afqb.three.camera.position);
 };
 
-// Visibility toggle function to show/hide core fibers vs streamlines
+
+/**
+ * Visibility toggle function to show/hide core fibers vs streamlines
+ * @param {object} object -
+ *
+ */
 afqb.three.makeVisible = function (object) {
     object.visible = true;
 };
 
-// Visibility toggle function to show/hide core fibers vs streamlines
+
+/**
+ * Visibility toggle function to show/hide core fibers vs streamlines
+ * @param {object} object -
+ *
+ */
 afqb.three.makeInvisible = function (object) {
     object.visible = false;
 };
 
-// Highlight specified bundle based on left panel checkboxes
 /**
- * Function description
+ * Highlight specified bundle based on left panel checkboxes
  * @param {string} state
  * @param {string} name
  */
@@ -761,9 +782,8 @@ afqb.three.mouseoutBundle = function (child) {
     afqb.three.highlightBundle(myBundle.checked, myBundle.name);
 };
 
-// Highlight specified bundle based on mouseover
 /**
- * Function description
+ * Highlight specified bundle based on mouseover
  * @param {string} child
  *
  */
