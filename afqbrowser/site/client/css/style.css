@@ -624,3 +624,11 @@ div.tooltip {
     border-style: solid;
     pointer-events: none;
 }
+
+.titleTip {
+  margin: 5px;
+}
+
+.zTip {
+  margin-bottom: 10px;
+}

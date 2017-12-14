@@ -635,7 +635,7 @@ afqb.plots.ready = function (error, data) {
 						// get the label color from the ramp and groupScale functions
 						var labelColor = afqb.table.ramp(afqb.table.groupScale(tableVal[sortKey]));
 						// Add the title text below:
-						var h = '<b style="color:COLOR">'.replace("COLOR",labelColor)+self.id+ "</b>" + "<br>Node: " + nodeIndex + "<br>";
+						var h = '<div class="titleTip"><b style="color:COLOR">'.replace("COLOR",labelColor)+self.id+ "</b>" + "<br>Node: " + nodeIndex + '<br><hr></div>';
 						// for each key in the z-score dict, format HTML
 						var Nzkeys = Object.keys(z0).length
 						for (key in z0){
@@ -677,7 +677,7 @@ afqb.plots.ready = function (error, data) {
 							}
 
 							// finally, add the z-score value
-							h += '<span style="font-size:1.2em;">z = VAL</span><br>'.replace("VAL", z0[key]);
+							h += '<div class="zTip"><span style="font-size:1.2em;margin-top=3px;">z = VAL</span><br></div>'.replace("VAL", z0[key]);
 						}
 						return h
 					})
