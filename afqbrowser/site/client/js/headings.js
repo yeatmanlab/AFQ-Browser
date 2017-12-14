@@ -1,6 +1,11 @@
 // Tell jslint that afqb is a global variable
 /* global afqb */
 
+/**
+ * Updates headings...
+ *
+ *
+ */
 afqb.global.updateHeadings = function () {
     // Change the title in the html header
     document.title = afqb.global.settings.html.title || "AFQ Browser";
@@ -39,7 +44,7 @@ afqb.global.updateHeadings = function () {
     }
     
     afqb.global.settings.html.title = document.title;
-}
+};
 
 afqb.global.queues.headingsQ = d3_queue.queue();
 afqb.global.queues.headingsQ.defer(afqb.global.initSettings);

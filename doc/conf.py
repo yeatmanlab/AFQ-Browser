@@ -54,7 +54,11 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.mathjax',
               'math_dollar',  # has to go before numpydoc
               'numpydoc',
-              'github']
+              'github',
+              'sphinx_js']
+
+# Add path to js directory for js auto-documentation
+js_source_path = '../afqbrowser/site/client/js/'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

@@ -1,8 +1,8 @@
 API
 ===
 
-Functions
----------
+Python Functions
+----------------
 
 .. autosummary::
    :template: function.rst
@@ -11,3 +11,18 @@ Functions
    afqbrowser.mat2tables
    afqbrowser.assemble
    afqbrowser.run
+
+
+
+JavaScript API
+--------------
+
+:ref:`anatomy`
+
+:ref:`headings`
+
+:ref:`save-settings`
+
+:ref:`table`
+
+:ref:`plots`
