@@ -26,7 +26,8 @@ afqb.plots.t = d3.transition().duration(750);
  *
  * @param error -
  * @param useless -
- * @param {data} data -
+ * @param {data} data - JavaScript array created by d3.csv(data/nodes.csv).
+ *
  */
 afqb.plots.buildFromNodes = function (error, useless, data) {
 	"use strict";
@@ -48,7 +49,7 @@ afqb.plots.brushes = [];
  * text for each tract.
  *
  * @param error -
- * @param {data} data -
+ * @param {data} data - JavaScript array created by d3.csv(data/nodes.csv).
  */
 afqb.plots.buildTractCheckboxes = function (error, data) {
 	"use strict";
@@ -223,7 +224,7 @@ afqb.plots.area = function (d, id) {
  * whether or not brushing is allowed.
  *
  * @param error -
- * @param {data} data -
+ * @param {data} data - JavaScript array created by d3.csv(data/nodes.csv).
  */
 afqb.plots.buildPlotGui = function (error, data) {
     "use strict";
@@ -342,7 +343,7 @@ afqb.plots.buildPlotGui = function (error, data) {
  * error for the default metric.
  *
  * @param error -
- * @param {data} data -
+ * @param {data} data - JavaScript array created by d3.csv(data/nodes.csv).
  */
 afqb.plots.ready = function (error, data) {
     "use strict";
@@ -824,7 +825,7 @@ afqb.plots.ready = function (error, data) {
  * afqb.plots.zoomAxis().
  *
  * @param error -
- * @param {data} data -
+ * @param {data} data - JavaScript array created by d3.csv(data/nodes.csv).
  *
  */
 afqb.plots.changePlots = function (error, data) {
