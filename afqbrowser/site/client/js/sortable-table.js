@@ -255,7 +255,7 @@ afqb.table.refreshTable = function () {
 				afqb.table.settings.prevSort.order = "descending";
 				afqb.table.settings.sort.order = "ascending";
 			}
-            
+
             // Update row positions
             rows//.transition()
                 //.duration(500)
@@ -263,7 +263,7 @@ afqb.table.refreshTable = function () {
                     return "translate(0," + i * (afqb.table.fieldHeight + 1) + ")";
                 });
         }
-		
+
 		if (!sameKey && !afqb.table.settings.restoring) {
 			// Only resort the data if the sort key is different
 			rows.sort(function (a, b) {
@@ -273,7 +273,7 @@ afqb.table.refreshTable = function () {
 				return afqb.table.ascendingWithNull(a[sortOn], b[sortOn]);
 			});
 			afqb.table.settings.sort.order = "ascending";
-            
+
             // Update row positions
             rows//.transition()
                 //.duration(500)
@@ -281,10 +281,10 @@ afqb.table.refreshTable = function () {
                     return "translate(0," + i * (afqb.table.fieldHeight + 1) + ")";
                 });
 		}
-		
+
 		if (!sameKey || !sameCount || afqb.table.settings.restoring) {
             console.assert(afqb.table.settings.splitMethod === "Equal Size" || afqb.table.settings.splitMethod === "Equal Interval", "Split method must be 'Equal Size' or 'Equal Interval'");
-            
+
             // Get unique, non-null values from the column `sortOn`
             var uniqueNotNull = function (value, index, self) {
                 return (self.indexOf(value) === index) && (value !== null);
@@ -300,8 +300,8 @@ afqb.table.refreshTable = function () {
             // numGroups may be smaller if there are not enough unique values
             var usrGroups = afqb.table.settings.sort.count;
             var numGroups = Math.min(usrGroups, uniques.length);
-			var groupScale;
-            
+						// var groupScale;
+
             // Create groupScale to map between the unique
             // values and the discrete group indices.
             // TODO: Use the datatype json instead of
@@ -309,16 +309,16 @@ afqb.table.refreshTable = function () {
             if (typeof uniques[0] === 'number') {
                 if (afqb.table.settings.splitMethod === "Equal Size" || numGroups === 1) {
                     // Split into groups of equal size
-                    groupScale = d3.scale.quantile()
+                    afqb.table.groupScale = d3.scale.quantile()
                         .range(d3.range(numGroups));
-                    
-                    groupScale.domain(uniques);
+
+                    afqb.table.groupScale.domain(uniques);
                 } else {
                     // Split into groups of equal interval
-                    groupScale = d3.scale.quantize()
+                    afqb.table.groupScale = d3.scale.quantize()
                         .range(d3.range(numGroups));
-                    
-                    groupScale.domain([d3.min(uniques), d3.max(uniques)]);
+
+                    afqb.table.groupScale.domain([d3.min(uniques), d3.max(uniques)]);
                 }
             } else {
                 var rangeOrdinal = new Array(uniques.length);
@@ -327,10 +327,10 @@ afqb.table.refreshTable = function () {
                             i * uniques.length / numGroups,
                             (i + 1) * uniques.length / numGroups);
                 }
-                groupScale = d3.scale.ordinal()
+                afqb.table.groupScale = d3.scale.ordinal()
                     .range(rangeOrdinal);
-                
-                groupScale.domain(uniques);
+
+                afqb.table.groupScale.domain(uniques);
             }
 
 			// Assign group index to each element of afqb.table.subData
@@ -339,8 +339,8 @@ afqb.table.refreshTable = function () {
 					element.group = null;
 					afqb.table.subGroups[element.subjectID] = null;
 				} else {
-					element.group = groupScale(element[sortOn]);
-					afqb.table.subGroups[element.subjectID] = groupScale(element[sortOn]);
+					element.group = afqb.table.groupScale(element[sortOn]);
+					afqb.table.subGroups[element.subjectID] = afqb.table.groupScale(element[sortOn]);
 				}
 			});
 

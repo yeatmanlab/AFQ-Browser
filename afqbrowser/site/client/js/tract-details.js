@@ -413,7 +413,7 @@ afqb.plots.ready = function (error, data) {
 		.attr("class", "y axis")
 		.attr("transform", "translate(" + afqb.plots.m.left + ",0)")
 		.call(afqb.plots.yAxis);
-	
+
     // y axis label
     trPanels.append("text")
         .attr("text-anchor", "middle")
@@ -504,8 +504,9 @@ afqb.plots.ready = function (error, data) {
             .attr("id", function (d) {
                 return d.values[0].subjectID;
             })
-            .on("mouseover", mouseover)
-            .on("mouseout", mouseout)
+						.on("mouseover", mouseover)
+						.on("mousemove", mouseover)
+						.on("mouseout", mouseout)
             .on("click", onclick);
 
 		tractLines.append("path")
@@ -542,7 +543,13 @@ afqb.plots.ready = function (error, data) {
         .style("opacity", 0.99)
         .style("stroke-width", "3px");
 
-	function mouseover() {
+	// Define the div for the tooltip
+	var tt = d3.select("#tractdetails").append("div")
+	    .attr("class", "tooltip")
+	    .style("opacity", 0);
+
+
+	function mouseover(d) {
 		if (!afqb.global.mouse.brushing) {
 			if ($("path",this).css("stroke-width") === "1px") {
 				// uses the stroke-width of the line clicked on to
@@ -551,7 +558,134 @@ afqb.plots.ready = function (error, data) {
 					.selectAll('path')
 					.style("opacity", 1)
 					.style("stroke-width", "1.1px");
+
 			}
+
+			// save self as the 'this' for the mouseover function's context
+			var self = this;
+
+			// only show tooltip if mousing over selected lines
+			if ($("path",this).css("stroke-width") === "2.1px") {
+
+				// calculate the x,y coordinates close to the mouse
+				var Nnodes = d.values.length;
+				var key = d3.select(self.parentNode).data()[0].key;
+				var fkey = afqb.global.formatKeyName(key)
+				var x0 = afqb.plots.xScale[fkey].invert(d3.mouse(this)[0])
+				var nodeIndex = Math.ceil(x0)
+				var y0 = d.values[nodeIndex][afqb.global.controls.plotsControlBox.plotKey]
+
+				// get the correct tract name for this plot
+				var key = d3.select(self.parentNode).data().key;
+				var plotIdx = 0;
+				afqb.plots.tractMean.forEach(function(val, idx){
+					if (val.key === key){
+						plotIdx = idx
+					}
+				})
+
+
+
+				// store the sort key, used for coloring if the table is sorted
+				var sortKey = afqb.table.settings.sort.key;
+
+				// initialize the variable for the z score
+				var z0 = {};
+
+				// HACK: the structure of afqb.plots.tractMean varies depending on whether or not the table is sorted.
+				// the check in the if statement checks whether or not we need to calculate z-scores against multiple groups
+				if (Array.isArray(afqb.plots.tractMean[0].values[0].values)) {
+					// for each group in afqb.plots.tractMean[plotIdx].values, calculate and score the y val
+					afqb.plots.tractMean[plotIdx].values.forEach(function(val, idx, arr){
+						z0[idx] = (y0 - val.values[nodeIndex].values.mean) / val.values[nodeIndex].values.std
+						z0[idx] = d3.format(",.2f")(z0[idx])
+					})
+				} else {
+					// the table has NOT been sorted, calculate only 1 z-score
+					var val = afqb.plots.tractMean[plotIdx].values
+					// console.log("val[nodeIndex]", val[nodeIndex], val)
+					z0[0] = (y0 - val[nodeIndex].values.mean) / val[nodeIndex].values.std
+					z0[0] = d3.format(",.2f")(z0[0])
+				}
+
+				// if the table hasn't been sorted, then afqb.table.groupScale and afqb.table.ramp are null.
+				// define as functions that return default values
+				if (afqb.table.groupScale === null){
+					afqb.table.groupScale = function(){return 0}
+				}
+
+				if (afqb.table.ramp == null){
+					afqb.table.ramp = function(){return "black"}
+				}
+
+
+				// get the subject's metadata from the table
+				// used later to color the subject_id heading
+				var tableVal = {};
+				afqb.table.subData.forEach(function(val){
+					if (val.subjectID === self.id){
+						tableVal = val
+					}
+				})
+
+				// select the tooltip, make it visible, format the HTML, and set the position
+				d3.select("#tractdetails").select(".tooltip")
+					.style("opacity", 1)
+					.html(function(){
+						// get the label color from the ramp and groupScale functions
+						var labelColor = afqb.table.ramp(afqb.table.groupScale(tableVal[sortKey]));
+						// Add the title text below:
+						var h = '<div class="titleTip"><b style="color:COLOR">'.replace("COLOR",labelColor)+self.id+ "</b>" + "<br>Node: " + nodeIndex + '<br><hr></div>';
+						// for each key in the z-score dict, format HTML
+						var Nzkeys = Object.keys(z0).length
+						for (key in z0){
+
+							// if a color is needed, format the heading:
+							if (sortKey){
+								// TODO: this if for getting quantiles of sort key afqb.table.groupScale.quantiles()
+								// JK: above line does'nt work anymore??
+								console.log("afqb.table.groupScale", afqb.table.groupScale);
+								var quantiles = []
+								try {
+									var Q = afqb.table.groupScale.quantiles(); //[0.5] //BRK this is just for tests. afqb.table.groupScale.quantiles() doesn't work??
+
+									for (var i=0; i<Q.length; i += 1){
+										quantiles.push(d3.format(",.2f")(Q[i]));
+									}
+								} catch (e) {
+									console.log("no quantiles");
+								} finally {
+
+								}
+
+
+								var sortHeading = sortKey
+
+								if (key == 0) {
+									if (quantiles[key]){
+										sortHeading += ' < ' + quantiles[key];
+									}
+
+								} else if (key != Nzkeys - 1) {
+									sortHeading = quantiles[key - 1] + " < " + sortHeading + " < " + quantiles[key];
+								} else {
+									if (quantiles[key - 1]){
+										sortHeading = quantiles[key - 1] + " < " + sortHeading;
+									}
+								}
+								h += '<span style="color:COLOR">SORT</span><br>'.replace("SORT", sortHeading).replace("COLOR", afqb.table.ramp(key))
+							}
+
+							// finally, add the z-score value
+							h += '<div class="zTip"><span style="font-size:1.2em;margin-top=3px;">z = VAL</span><br></div>'.replace("VAL", z0[key]);
+						}
+						return h
+					})
+					.style("left", (d3.event.pageX) + "px")
+					.style("top", (d3.event.pageY - 28) + "px");
+			} // end if statment for tooltip
+
+
 			if (afqb.global.mouse.isDown) {
 				if ($("path",this).css("stroke-width") === "2.1px") {
 					//uses the opacity of the row for selection and deselection
@@ -635,7 +769,11 @@ afqb.plots.ready = function (error, data) {
 					.selectAll('path')
 					.style("opacity", afqb.global.controls.plotsControlBox.lineOpacity)
 					.style("stroke-width", "1px");
+
 			}
+			// remove the tooltip
+			d3.select("#tractdetails").select(".tooltip")
+				.style("opacity", 0);
 		}
 	}
 

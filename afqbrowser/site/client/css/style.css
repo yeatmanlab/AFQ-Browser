@@ -608,3 +608,27 @@ Special hover stuff
   -webkit-transition: all 0.3s 1s ease-out;
   transition: all 0.3s 1s ease-out;
 }
+
+/* TOOLTIP */
+
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: auto;
+    height: auto;
+    padding: 10px;
+    font: 12px sans-serif;
+    background: #f4f4f4;
+    border: 1px;
+    border-radius: 8px;
+    border-style: solid;
+    pointer-events: none;
+}
+
+.titleTip {
+  margin: 5px;
+}
+
+.zTip {
+  margin-bottom: 10px;
+}

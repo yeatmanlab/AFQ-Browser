@@ -4,7 +4,8 @@
 
 var afqb = {
 	table: {
-		settings: {}
+		settings: {},
+		groupScale: null,
 	},
 	plots: {
 		settings: {}
