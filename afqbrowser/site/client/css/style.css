@@ -626,9 +626,20 @@ div.tooltip {
 }
 
 .titleTip {
-  margin: 5px;
+  margin: 2px;
 }
 
 .zTip {
-  margin-bottom: 10px;
+  margin-bottom: 2px;
+}
+
+.disabled {
+  cursor: not-allowed;
+  
+  opacity: 0.5;
+}
+
+
+.binderBtn {
+  margin-right: 1em;
 }

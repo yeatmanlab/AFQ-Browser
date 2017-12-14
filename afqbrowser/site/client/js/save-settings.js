@@ -174,6 +174,9 @@ afqb.table.restoreRowSelection = function () {
 
 var setupBinderURL = function () {
     // Parse the URL
+    if (window.location.hostname == "localhost") {
+      $("#launch-binder").addClass("disabled")
+    }
     var uri = new URI(location.href);
     var user = uri.hostname().split('.')[0];
     var repo = uri.directory();
