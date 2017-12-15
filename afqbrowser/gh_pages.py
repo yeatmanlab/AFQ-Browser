@@ -8,7 +8,7 @@ import github as gh
 import git
 
 
-def upload(target, repo_name, uname=None, upass=None):
+def upload(target, repo_name, uname=None, upass=None, token=None):
     """
     Upload an assembled AFQ-Browser site to a github pages website.
 
@@ -33,12 +33,17 @@ def upload(target, repo_name, uname=None, upass=None):
             file_list.append(os.path.abspath(op.join(path, f)))
     # Get credentials from the user
     if uname is None:
-        uname = getpass.getpass("Github user-name?")
-    if upass is None:
-        upass = getpass.getpass("Github password?")
+        uname = getpass.getpass("GitHub user-name? ")
+    if not any([upass, token]):
+        upass = getpass.getpass("GitHub password (leave blank if using 2FA and personal access token)? ")
+        if not upass:
+            token = getpass.getpass("GitHub personal access token? ")
+            print('If prompted again for username and password, use your access token as the password.')
+
+    login_uname = uname if token is None else token
 
     # Create the remote repo on Github (use PyGithub)
-    g = gh.Github(uname, upass)
+    g = gh.Github(login_uname, upass)
     u = g.get_user()
     remote = u.create_repo(repo_name)
     # Create the local repo using GitPython:
@@ -54,8 +59,9 @@ def upload(target, repo_name, uname=None, upass=None):
     # Push to Github
     branch = r.create_head("gh-pages")
     branch.checkout()
-    r.create_remote("origin", remote.clone_url)
-    o = r.remote("origin")
+    o = r.create_remote("origin", remote.clone_url)
+    assert o.exists()
+
     o.push("gh-pages")
 
     # Strangely, that last slash is crucial so that this works as a link:
