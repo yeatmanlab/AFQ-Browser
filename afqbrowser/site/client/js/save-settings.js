@@ -4,9 +4,10 @@
 /**
  * Use universal key name for robust linking between elements
  *
- * @param {srting} bundle -
+ * @param {string} bundle - bundle name
  */
 afqb.global.formatKeyName = function(bundle) {
+    "use strict";
     // Standardize bundle names by making them lower case and
     // replacing all dots and spaces with dashes
     return bundle.toLowerCase().replace(/\s+/g, "-").replace(/\./g, "-");
@@ -15,33 +16,48 @@ afqb.global.formatKeyName = function(bundle) {
 /**
  * Updates the QuerySting object for proper reload
  *
- * @param {object} queryObj -
+ * @param {object} queryObj - object to stringify and merge with existing query string
  */
 afqb.global.updateQueryString = function(queryObj) {
     "use strict";
-
+    // Pull down the current query string
     var urlSettings = Qs.parse(location.search.slice(1));
+
+    // Extend the existing query string obj with the input obj
     var updatedSettings = $.extend(true, {}, urlSettings, queryObj);
 
+    // Convert back to a query string
     var settingsStr = "?" + Qs.stringify(updatedSettings, {encode: false});
 
+    // Push back up to the URL
     window.history.pushState({search: settingsStr}, '', settingsStr);
 };
 
 /**
- * Initialize settings from querystring
+ * Initialize settings from querystring.
  *
- * @param callback -
+ * AFQ-Browser settings are stored in four places, corresponding to the
+ * different visualization panels (naming is self-explanatory):
+ * - afqb.three.settings
+ * - afqb.plots.settings
+ * - afqb.table.settings
+ * - afqb.global.settings
+ *
+ * In the query string, all settings are lumped together. So we must parse
+ * the query string and separate settings into their different groups.
+ *
+ * @param callback - function to call after the settings have been loaded
  */
 afqb.global.initSettings = function (callback) {
     "use strict";
     if (afqb.global.settings.loaded) {
+        // Don't load settings again if called twice on accident
         if (callback) { callback(null); }
 	} else {
         // Load default settings from settings.json
         d3.json("settings.json", function(settings) {
-            // Update with values from query string
             "use strict";
+            // Update with values from query string
             var qsSettings = Qs.parse(location.search.slice(1));
             var updatedSettings = $.extend(true, {}, settings, qsSettings);
 
@@ -153,6 +169,8 @@ afqb.global.initSettings = function (callback) {
 /**
  * Restore brush settings on reload.
  *
+ * Brush settings are stored in afqb.plots.settings.brushes. Iterate through
+ * that and restore the brush extents.
  */
 afqb.plots.restoreBrush = function () {
     "use strict";
@@ -178,6 +196,8 @@ afqb.plots.restoreBrush = function () {
 /**
  * Restore selected rows and subject lines on reload.
  *
+ * This function iterates over afqb.table.settings.selectedRows and
+ * changes the opacity of the associated table rows and plot lines.
  */
 afqb.table.restoreRowSelection = function () {
     "use strict";
@@ -195,14 +215,26 @@ afqb.table.restoreRowSelection = function () {
     });
 };
 
+/**
+ * Set the binder URL for the launch binder button
+ *
+ * If on localhost, disable the binder button. Otherwise, assume we're on
+ * github pages and inspect the current URL to get the github user and repo.
+ * Use that info to structure the binder URL. Then set the launch-binder
+ * buttons href to the new binder URL
+ */
 var setupBinderURL = function () {
-    // Parse the URL
+    // Disable the button if on localhost
     if (window.location.hostname == "localhost") {
       $("#launch-binder").addClass("disabled")
     }
+
+    // Parse the URL, getting user and repo name
     var uri = new URI(location.href);
     var user = uri.hostname().split('.')[0];
     var repo = uri.directory();
+
+    // Construct binder URL and set the button's href
     var binderUrl = 'https://mybinder.org/v2/gh/' + user + '/' + repo + '/gh-pages?filepath=index.ipynb';
      $("#launch-binder").attr("href", binderUrl);
     return false;
