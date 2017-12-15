@@ -5,8 +5,8 @@
 
 /**
  * Combine the init and animate function calls for use in d3.queue()
- * @param error -
  *
+ * @param error - error passed through from previous function in d3.queue()
  */
 afqb.three.initAndAnimate = function (error) {
     "use strict";
@@ -16,9 +16,12 @@ afqb.three.initAndAnimate = function (error) {
 };
 
 /**
- * function description
- * @param streamlinesExist -
+ * Build the dat.gui controls for the anatomy panel
  *
+ * @param streamlinesExist - boolean to indicate existence of anatomy streamlines.
+ * if streamlinesExist is true, then the fiberRepesentation controller will allow
+ * both 'core fiber' and 'all fibers' options. Otherwise, only 'core fiber' will
+ * be allowed.
  */
 afqb.three.buildthreeGui = function (streamlinesExist) {
     var ThreeGuiConfigObj = function () {
@@ -125,16 +128,19 @@ afqb.three.buildthreeGui = function (streamlinesExist) {
     // Add fiber representation controller
     var fiberRepController;
     if (streamlinesExist) {
+        // Allow both options: 'core fiber' and 'all fibers'
         fiberRepController = afqb.three.gui
             .add(afqb.global.controls.threeControlBox, 'fiberRepresentation', ['all fibers', 'core fiber'])
             .name('Fiber Representation');
     } else {
+        // Restrict to only 'core fiber'
         fiberRepController = afqb.three.gui
             .add(afqb.global.controls.threeControlBox, 'fiberRepresentation', ['core fiber'])
             .name('Fiber Representation');
     }
 
     fiberRepController.onFinishChange(function (value) {
+        // Toggle visibility of either core fibers or streamlines
         if (value === "all fibers") {
             afqb.three.colorGroup.traverse(afqb.three.makeVisible);
             afqb.three.greyGroup.traverse(afqb.three.makeVisible);
@@ -172,11 +178,26 @@ afqb.three.buildthreeGui = function (streamlinesExist) {
 };
 
 /**
- * function description
- * @param callback -
+ * Initialize the three.js scene for subject's anatomy
  *
+ * The scene consists of six object groups:
+ * - afqb.three.brain: the brain surface, loaded from freesurf.OBJ
+ * - afqb.three.colorGroup: fiber bundle streamlines that display when
+ *   selected, one object for each bundle
+ * - afqb.three.greyGroup: grey fiber bundles that are always displayed
+ *   underneath the color ones, all rendered together as one buffer geometry
+ * - afqb.three.colorCoreGroup: core fibers that display when selected, one
+ *   object per bundle
+ * - afqb.three.greyCoreGroup: grey core fibers that are always displayed
+ *   underneath the color bundles
+ * - afqb.three.convexGroup: invisible convex hulls, one for each streamline
+ *   colorGroup. These are never displayed but hold all of the dom events for
+ *   the colorGroup objects.
+ *
+ * @param streamlinesCallback - function to be called after the streamlines
+ * have been loaded from streamlines.json
  */
-afqb.three.init = function (callback) {
+afqb.three.init = function (streamlinesCallback) {
     "use strict";
     // contain all bundles in these Group objects
     afqb.three.colorGroup = new THREE.Group();
@@ -188,31 +209,34 @@ afqb.three.init = function (callback) {
 	// We put the renderer inside a div with id #threejsbrain
 	afqb.three.container = document.getElementById("threejsbrain");
 
+	// Get width and height
     var width = afqb.three.container.clientWidth;
 	var height = afqb.three.container.clientHeight;
 
+	// Show three.js stats if desired
     afqb.three.stats = {};
-
     if (afqb.three.settings.showStats) {
         afqb.three.stats = new Stats();
         afqb.three.container.appendChild(afqb.three.stats.dom);
     }
 
+    // Set the camera position
     afqb.three.camera = new THREE.PerspectiveCamera(45, width / height, 1, 2000);
     afqb.three.camera.position.copy(new THREE.Vector3(
         afqb.three.settings.cameraPosition.x,
         afqb.three.settings.cameraPosition.y,
         afqb.three.settings.cameraPosition.z
     ));
-
 	afqb.three.camera.up.set(0, 0, 1);
 
-    // scene
+    // init scene
     afqb.three.scene = new THREE.Scene();
 
+    // Use ambient light
     var ambient = new THREE.AmbientLight(0x111111);
     afqb.three.scene.add(ambient);
 
+    // And a directional light always pointing from the camera
     afqb.three.directionalLight = new THREE.DirectionalLight(0xffeedd, 1);
     afqb.three.directionalLight.position.set(
 		afqb.three.camera.position.x,
@@ -221,17 +245,14 @@ afqb.three.init = function (callback) {
     );
     afqb.three.scene.add(afqb.three.directionalLight);
 
-    var manager = new THREE.LoadingManager();
-    manager.onProgress = function (item, loaded, total) {
-        // console.log(item, loaded, total);
-    };
-
     // renderer
     afqb.three.renderer = new THREE.WebGLRenderer({ alpha: true });
-
     afqb.three.renderer.setSize(width, height);
     afqb.three.container.appendChild(afqb.three.renderer.domElement);
 
+    // Add a mouseout listener for the entire 3D view, that will unhighlight
+    // any bundles that didn't have time to register their own mouseout event
+    // before the mouse escaped the container.
     afqb.three.renderer.domElement.addEventListener("mouseout", function () {
         var groups = [
             afqb.three.colorGroup, afqb.three.colorCoreGroup,
@@ -246,12 +267,9 @@ afqb.three.init = function (callback) {
         });
     });
 
-    // dom event
-    var domEvents = new THREEx.DomEvents(afqb.three.camera, afqb.three.renderer.domElement);
-
     // model
-    // load brain surface
-    var loader = new THREE.OBJLoader(manager);
+    // load brain surface using OBJLoader
+    var loader = new THREE.OBJLoader();
     loader.load('data/freesurf.OBJ', function (object) {
         afqb.three.brain = object;
         afqb.three.rh = object.getObjectByName('rh.pial.asc');
@@ -263,13 +281,20 @@ afqb.three.init = function (callback) {
                 child.material.transparent = true;
 
 				child.rotation.x = Math.PI / 2;
+
+				// Scale set by trial and error
 				child.scale.set(1.75, 1.75, 1.75);
+
+				// Set render order so that it doesn't occlude the
+                // fiber bundles underneath when opacity is decreased
 				child.renderOrder = 3;
                 child.traverse(function (object) {
                     object.renderOrder = 3;
                 });
             }
         });
+
+        // Separate the hemispheres a little bit so that depthWrite works as expected.
 		afqb.three.lh.translateX(-0.05);
 		afqb.three.rh.translateX(0.05);
 
@@ -282,14 +307,19 @@ afqb.three.init = function (callback) {
         afqb.three.scene.add(object);
     });
 
+    // init dom events for later
+    var domEvents = new THREEx.DomEvents(afqb.three.camera, afqb.three.renderer.domElement);
+
     // load fiber bundle using jQuery
     $.getJSON("data/streamlines.json", function (json) {
         var names = afqb.plots.tracts.map(function(name) {
             return afqb.global.formatKeyName(name);
         });
 
+        // init streamlinesExist to false and set to true later only if we find them
         var streamlinesExist = false;
 
+        // Iterate through the bundles
         Object.keys(json).forEach(function (bundleKey) {
             var oneBundle = json[bundleKey];
 
@@ -358,13 +388,16 @@ afqb.three.init = function (callback) {
 
             afqb.three.colorCoreGroup.add(colorMesh);
 
+            // Now that we've dealt with the core fibers, see if there's anything
+            // left over. If so, these are the streamlines.
             streamlinesExist = !$.isEmptyObject(oneBundle) || streamlinesExist;
+
             if (streamlinesExist) {
                 // fiberKeys correspond to individual fibers in each fiber bundle
                 // They may not be consecutive keys depending on the
                 // downsampling of the input data, hence the need for `nFibers`
                 // and `iFiber`
-                //
+
                 // First loop simply counts the number of fibers in this bundle
                 // and asserts that each individual fiber has been resampled to
                 // the same size.
@@ -495,7 +528,7 @@ afqb.three.init = function (callback) {
         afqb.three.buildthreeGui(streamlinesExist);
 
 		// And add event listeners for mouseover, etc.
-        // First add event listeners to all the groups
+        // First add event listeners to all these groups
         var groups = [
             afqb.three.greyCoreGroup,
             afqb.three.colorCoreGroup,
@@ -547,6 +580,9 @@ afqb.three.init = function (callback) {
             });
         });
 
+        // Fix the render orders for each group
+        // render orders should satisfy
+        // surface > grey stuff > color stuff
         afqb.three.greyCoreGroup.renderOrder = 2;
         afqb.three.greyCoreGroup.traverse(function (object) {
             object.renderOrder = 2;
@@ -567,6 +603,7 @@ afqb.three.init = function (callback) {
             object.renderOrder = 1;
         });
 
+        // Set the initial visibility based on the dat.gui control
         if (afqb.global.controls.threeControlBox.fiberRepresentation === "all fibers") {
             afqb.three.colorGroup.traverse(afqb.three.makeVisible);
             afqb.three.greyGroup.traverse(afqb.three.makeVisible);
@@ -588,15 +625,24 @@ afqb.three.init = function (callback) {
         afqb.three.scene.add(afqb.three.greyCoreGroup);
         afqb.three.scene.add(afqb.three.convexGroup);
 
-        if (callback) { callback(null); }
+        // Use the callback function
+        if (streamlinesCallback) { streamlinesCallback(null); }
+
+        // Restore brushing if refreshing from a querystring
         afqb.three.brushOn3D();
     });
 
+    // Add a window resize event listener
     window.addEventListener('resize', afqb.three.onWindowResize, false);
+
+    // Add orbit controls (disabling keys and updating lighting when the camera moves)
     afqb.three.orbitControls = new THREE.OrbitControls(afqb.three.camera, afqb.three.renderer.domElement);
     afqb.three.orbitControls.addEventListener('change', afqb.three.lightUpdate);
     afqb.three.orbitControls.enableKeys = false;
 
+    // We want to update the camera position in the querystring but only when
+    // the user is done moving the camera, so attach this to the 'click' event
+    // listener
     afqb.three.renderer.domElement.addEventListener('click', function() {
 		// Update the query string
 		var cameraPosition = afqb.three.camera.position.clone();
@@ -608,7 +654,6 @@ afqb.three.init = function (callback) {
 
 /**
  * Resize the three.js window on full window resize.
- *
  */
 afqb.three.onWindowResize = function () {
     "use strict";
@@ -622,8 +667,11 @@ afqb.three.onWindowResize = function () {
 };
 
 /**
- * Function description
+ * Define how the scene should update after init.
  *
+ * Pretty standard here: request animation frame, render, update camera,
+ * update stats if desired. If brushing, use afqb.three.brushOn3D to
+ * change the drawRange of color objects.
  */
 afqb.three.animate = function () {
     "use strict";
@@ -640,13 +688,12 @@ afqb.three.animate = function () {
 };
 
 /**
- * Function description
- *
+ * Update the drawRange of each fiber bundle based on the d3 brushes in the
+ * 2D plots panel.
  */
 afqb.three.brushOn3D = function () {
-// For each fiber bundle update the length of fiber to be plotted
-// based on the d3 brushes in the 2D plots
     afqb.three.colorGroup.children.forEach(function (element) {
+        // Get the extent of the brushes for this bundle
         var lo = Math.floor(afqb.plots.settings.brushes[element.name].brushExtent[0]);
         var hi = Math.ceil(afqb.plots.settings.brushes[element.name].brushExtent[1]) - 1;
 
@@ -668,6 +715,7 @@ afqb.three.brushOn3D = function () {
     });
 
     afqb.three.colorCoreGroup.children.forEach(function (element) {
+        // Get the extent of the brushes for this bundle
         var lo = Math.floor(afqb.plots.settings.brushes[element.name].brushExtent[0]);
         var hi = Math.ceil(afqb.plots.settings.brushes[element.name].brushExtent[1]);
 
@@ -688,8 +736,7 @@ afqb.three.brushOn3D = function () {
 };
 
 /**
- * Function description
- *
+ * Update the directional light to always point from camera
  */
 afqb.three.lightUpdate = function () {
     "use strict";
@@ -699,8 +746,8 @@ afqb.three.lightUpdate = function () {
 
 /**
  * Visibility toggle function to show/hide core fibers vs streamlines
- * @param {object} object -
  *
+ * @param {object} object - the object to show
  */
 afqb.three.makeVisible = function (object) {
     object.visible = true;
@@ -709,8 +756,8 @@ afqb.three.makeVisible = function (object) {
 
 /**
  * Visibility toggle function to show/hide core fibers vs streamlines
- * @param {object} object -
  *
+ * @param {object} object - the object to hide
  */
 afqb.three.makeInvisible = function (object) {
     object.visible = false;
@@ -718,17 +765,21 @@ afqb.three.makeInvisible = function (object) {
 
 /**
  * Highlight specified bundle based on left panel checkboxes
- * @param {string} state
- * @param {string} name
+ * If state is checked, show the color group and hide the grey group
+ *
+ * @param {string} state - checkbox state, checked or unchecked
+ * @param {string} name - formatted bundle name
  */
 afqb.three.highlightBundle = function (state, name) {
     "use strict";
     var groups = [afqb.three.colorGroup, afqb.three.colorCoreGroup];
     groups.forEach(function (group) {
+        // Get the bundle corresponding to this name
         var bundle = group.children.filter(function (element) {
             return element.name === name;
         })[0];
 
+        // Toggle visibility
         if (bundle !== undefined) {
             if (state) {
                 bundle.traverse(afqb.three.makeVisible)
@@ -740,10 +791,12 @@ afqb.three.highlightBundle = function (state, name) {
 
     var groups = [afqb.three.greyGroup, afqb.three.greyCoreGroup];
     groups.forEach(function (group) {
+        // Get the bundle corresponding to this name
         var bundle = group.children.filter(function (element) {
             return element.name === name;
         })[0];
 
+        // Toggle visibility
         if (bundle !== undefined) {
             if (state) {
                 bundle.traverse(afqb.three.makeInvisible)
@@ -753,66 +806,75 @@ afqb.three.highlightBundle = function (state, name) {
         }
     });
 
+    // Render again
     return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 };
 
 /**
- * Function description
- * @param {string} child
+ * Restore bundle to original state (checked or unchecked) after mouseout
  *
+ * @param {string} child - the child object (i.e. bundle) in some group
  */
 afqb.three.mouseoutBundle = function (child) {
-    var myBundle = d3.selectAll("input.tracts").filter(function (d) {
-    	return afqb.global.formatKeyName(d) === child.name;
-    })[0][0];
+    // Specify streamline groups or core fiber groups depending on the
+    // dat.gui controls
     if (afqb.global.controls.threeControlBox.fiberRepresentation === 'all fibers') {
         var groups = [afqb.three.colorGroup, afqb.three.greyGroup];
     } else {
         var groups = [afqb.three.colorCoreGroup, afqb.three.greyCoreGroup];
     }
+
     groups.forEach(function (group) {
+        // Get the bundle corresponding to this child.name
         var bundle = group.children.filter(function (element) {
             return element.name === child.name;
         })[0];
 
+        // Restore the material back to the default
         if (bundle !== undefined) {
             bundle.material = bundle.defaultMaterial;
         }
     });
+
+    // Get the checkbox list bundle info from the child name
+    var myBundle = d3.selectAll("input.tracts").filter(function (d) {
+        return afqb.global.formatKeyName(d) === child.name;
+    })[0][0];
+
+    // Restore highlighted state based on the checkbox.
+    // Rendering is taken care of inside this function.
     afqb.three.highlightBundle(myBundle.checked, myBundle.name);
 };
 
 /**
  * Highlight specified bundle based on mouseover
- * @param {string} child
  *
+ * @param {string} child - the child object (i.e. bundle) in some group
  */
 afqb.three.mouseoverBundle = function (child) {
     "use strict";
 	if (afqb.global.controls.threeControlBox.highlight) {
+	    // Specify streamline groups or core fiber groups depending on the
+        // dat.gui controls
 	    if (afqb.global.controls.threeControlBox.fiberRepresentation === 'all fibers') {
             var groups = [afqb.three.colorGroup, afqb.three.greyGroup];
         } else {
             var groups = [afqb.three.colorCoreGroup, afqb.three.greyCoreGroup];
         }
+
         groups.forEach(function (group) {
+            // Get the bundle corresponding to this child.name
             var bundle = group.children.filter(function (element) {
                 return element.name === child.name;
             })[0];
 
+            // Change the material to the highlight material
             if (bundle !== undefined) {
                 bundle.material = bundle.highlightMaterial;
             }
         });
 
+	    // Render scene
         return afqb.three.renderer.render(afqb.three.scene, afqb.three.camera);
 	}
 };
-
-// var $window = $(window),
-//    $stickyEl = $('#statcontent'),
-//    elTop = $stickyEl.offset().top;
-
-// $window.scroll(function() {
-//     $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop);
-// });
