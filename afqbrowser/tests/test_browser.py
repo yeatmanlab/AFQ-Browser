@@ -8,7 +8,7 @@ import numpy.testing as npt
 
 def test_assemble():
     data_path = op.join(afqb.__path__[0], 'site')
-    tdir =  tempfile.mkdtemp()
+    tdir = tempfile.mkdtemp()
     afqb.assemble(op.join(data_path, 'client', 'data', 'afq.mat'),
                   target=tdir)
 
