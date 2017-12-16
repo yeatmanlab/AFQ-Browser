@@ -16,12 +16,12 @@ Publishing your website
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 There is a command line function that allows you to publish your website to
-Github. If you don't already have one, start by `creating a Github account <https://github.com/join>. Then run the following sequence::
+GitHub. If you don't already have one, start by `creating a GitHub account <https://github.com/join>. Then run the following sequence::
 
     afqbrowser-assemble   # Run this if you haven't before
     afqbrowser-publish -t ./AFQ-Browser -r myresults
 
 Where `./AFQ-Browser` is the folder that was created by `afqbrowser-assemble`,
 and the URL of the website is: `https://username.github.io/myresults` (with
-`username` replaced with your Github username, and `myresults` replaced with the
+`username` replaced with your GitHub username, and `myresults` replaced with the
 input to the `-r` flag).

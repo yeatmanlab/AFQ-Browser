@@ -20,9 +20,9 @@ def upload(target, repo_name, uname=None, upass=None, token=None):
     repo_name : str
         The website will be at https://<username>.github.io/<repo_name>
     uname : str, optional
-        Github user-name
+        GitHub user-name
     upass : str, optional
-        Github password
+        GitHub password
 
     """
     # Get all the files that will be committed/pushed
@@ -42,7 +42,7 @@ def upload(target, repo_name, uname=None, upass=None, token=None):
 
     login_uname = uname if token is None else token
 
-    # Create the remote repo on Github (use PyGithub)
+    # Create the remote repo on GitHub (use PyGithub)
     g = gh.Github(login_uname, upass)
     u = g.get_user()
     remote = u.create_repo(repo_name)
@@ -56,7 +56,7 @@ def upload(target, repo_name, uname=None, upass=None, token=None):
     f.close()
     r.index.add([os.path.abspath(f.name)])
     r.index.commit("Add nojekyll file")
-    # Push to Github
+    # Push to GitHub
     branch = r.create_head("gh-pages")
     branch.checkout()
     o = r.create_remote("origin", remote.clone_url)
