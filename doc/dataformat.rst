@@ -33,10 +33,10 @@ streamlines for that tract. Coordinates are kept in MNI space aligned to AC-PC.
 
 2. A csv file (``nodes.csv``) that contains information about the tract profiles
 and populates the "Bundle details" panel. This table should have columns (and
-headers) named `subjectID` ,``tractID`` ,and ``nodeID``. The `subjectID`
+headers) named ``subjectID``, ``tractID``, and ``nodeID``. The ``subjectID``
 identifies a unique subject in your dataset, and it can take any string value
 you want (e.g., ``patient1``), as long as it is consistent with the information
-in the ``subjects.csv`` file (see below). The tract ID is the same key used in
+in the ``subjects.csv`` file (see below). The ``tractID`` is the same key used in
 the ``streamlines.json`` file to identify the tracts (e.g., ``tract_name1``,
 ``tract_name2``, etc.). The ``nodeID`` runs from 0 to the n-1, where n is the
 number of nodes in the tract profile for that tract. Other columns in this

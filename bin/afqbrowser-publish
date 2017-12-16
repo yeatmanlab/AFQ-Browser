@@ -3,7 +3,7 @@
 from argparse import ArgumentParser
 import afqbrowser.gh_pages as gh
 
-description = """Publish an AFQ-Browser site as a Github webpage"""
+description = """Publish an AFQ-Browser site as a GitHub webpage"""
 parser = ArgumentParser(description=description)
 
 parser.add_argument("-t", "--target", metavar="target",
@@ -11,7 +11,7 @@ parser.add_argument("-t", "--target", metavar="target",
                     default=None)
 
 parser.add_argument("-r", "--reponame", type=str, metavar="reponame",
-                    help="The name of the Github repo for the website")
+                    help="The name of the GitHub repo for the website")
 
 args = parser.parse_args()
 

@@ -41,12 +41,19 @@ of the afq.mat file.
 ## Publishing your website
 
 There is a command line function that allows you to publish your website to
-Github. If you don't already have one, start by [creating a Github account](https://github.com/join). Then run the following sequence:
+GitHub. If you don't already have one, start by [creating a GitHub account](https://github.com/join). Then run the following sequence:
 
     afqbrowser-assemble   # Run this if you haven't before
     afqbrowser-publish -t ./AFQ-Browser -r myresults
 
 Where `./AFQ-Browser` is the folder that was created by `afqbrowser-assemble`,
 and the URL of the website is: `https://username.github.io/myresults` (with
-`username` replaced with your Github username, and `myresults` replaced with the
+`username` replaced with your GitHub username, and `myresults` replaced with the
 input to the `-r` flag).
+
+If you use two-factor authentication to access GitHub, you'll need to
+[create a personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)
+to use `afqbrowser-publish`. After creating your token, store it in a safe
+place. `afqbrowser-publish` will ask you for this token to login to GitHub.
+Leave the password field blank to tell `afqbrowser-publish` to give you a
+prompt for your token.
