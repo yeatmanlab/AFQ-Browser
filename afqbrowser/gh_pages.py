@@ -35,10 +35,12 @@ def upload(target, repo_name, uname=None, upass=None, token=None):
     if uname is None:
         uname = getpass.getpass("GitHub user-name? ")
     if not any([upass, token]):
-        upass = getpass.getpass("GitHub password (leave blank if using 2FA and personal access token)? ")
+        upass = getpass.getpass("GitHub password (leave blank if using 2FA "
+                                "and personal access token)? ")
         if not upass:
             token = getpass.getpass("GitHub personal access token? ")
-            print('If prompted again for username and password, use your access token as the password.')
+            print('If prompted again for username and password, use your '
+                  'access token as the password.')
 
     login_uname = uname if token is None else token
 
