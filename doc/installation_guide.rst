@@ -23,7 +23,7 @@ distribution,
 Installing the development version
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The development version is probably less stable, but might include new features and fixes. There are two ways to install this version. The first uses `pip`::
+The development version is probably less stable, but might include new features and fixes. There are two ways to install this version. The first uses ``pip``::
 
   pip install git+https://github.com/yeatmanlab/AFQ-Browser.git
 
