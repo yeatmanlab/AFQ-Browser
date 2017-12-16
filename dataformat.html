@@ -70,10 +70,10 @@ core fibers for each tract are displayed, or all the numerically designated
 streamlines for that tract. Coordinates are kept in MNI space aligned to AC-PC.</p>
 <p>2. A csv file (<code class="docutils literal"><span class="pre">nodes.csv</span></code>) that contains information about the tract profiles
 and populates the “Bundle details” panel. This table should have columns (and
-headers) named <cite>subjectID</cite> ,``tractID`` ,and <code class="docutils literal"><span class="pre">nodeID</span></code>. The <cite>subjectID</cite>
+headers) named <code class="docutils literal"><span class="pre">subjectID</span></code>, <code class="docutils literal"><span class="pre">tractID</span></code>, and <code class="docutils literal"><span class="pre">nodeID</span></code>. The <code class="docutils literal"><span class="pre">subjectID</span></code>
 identifies a unique subject in your dataset, and it can take any string value
 you want (e.g., <code class="docutils literal"><span class="pre">patient1</span></code>), as long as it is consistent with the information
-in the <code class="docutils literal"><span class="pre">subjects.csv</span></code> file (see below). The tract ID is the same key used in
+in the <code class="docutils literal"><span class="pre">subjects.csv</span></code> file (see below). The <code class="docutils literal"><span class="pre">tractID</span></code> is the same key used in
 the <code class="docutils literal"><span class="pre">streamlines.json</span></code> file to identify the tracts (e.g., <code class="docutils literal"><span class="pre">tract_name1</span></code>,
 <code class="docutils literal"><span class="pre">tract_name2</span></code>, etc.). The <code class="docutils literal"><span class="pre">nodeID</span></code> runs from 0 to the n-1, where n is the
 number of nodes in the tract profile for that tract. Other columns in this
