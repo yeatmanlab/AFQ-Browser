@@ -2,9 +2,7 @@
 /* global afqb */
 
 /**
- * Updates headings...
- *
- *
+ * Updates document.title and heading text based on content of afqb.global.settings.html
  */
 afqb.global.updateHeadings = function () {
     // Change the title in the html header
