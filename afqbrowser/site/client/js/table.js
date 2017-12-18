@@ -16,11 +16,14 @@ afqb.table.splitGroups = false;
 afqb.table.ramp = null;
 
 /**
- * Initialize Table from subject metadata in subjects.csv.
+ * Initialize Table from subject metadata in subjects.csv. Subject rows
+ * maintain their order from subjects.csv.
  *
- * @param error -
- * @param useless -
- * @param {data} data -
+ * @param error - Passed to prevent execution in case error occurs
+ * in preceding functions.
+ * @param useless - Obligatory callback argument that we don't use in the
+ * function.
+ * @param {object} data - JavaScript array created by d3.csv(data/subjects.csv).
  */
 afqb.table.buildTable = function (error, useless, data) {
 	"use strict";
@@ -155,7 +158,10 @@ afqb.table.buildTable = function (error, useless, data) {
 };
 
 /**
- * Refresh the Table after sort operations.
+ * Refresh the Table after sort operations. Subject rows are rearranged in
+ * ascending or descending order and colored by group. Number of groups is
+ * determined by the user specified value in the Table gui (default = 2).
+ * Selection is retained on refresh.
  *
  */
 afqb.table.refreshTable = function () {
@@ -413,10 +419,14 @@ afqb.table.refreshTable = function () {
 };
 
 /**
- * Sort rows in ascending order.
+ * Sort rows in ascending order. Elements a and b
+ * are sorted with d3.ascending, and their associated
+ * rows are similarly ordered.
  *
- * @param {object} a -
- * @param {object} b -
+ * @param {element} a - value in sorting column for the first
+ * object
+ * @param {element} b - value in sorting column for the second
+ * object
  */
 afqb.table.ascendingWithNull = function (a, b) {
     "use strict";
@@ -427,10 +437,14 @@ afqb.table.ascendingWithNull = function (a, b) {
 };
 
 /**
- * Sort rows in descending order.
+ * Sort rows in descending order. Elements a and b
+ * are sorted with d3.descending, and their associated
+ * rows are similarly ordered.
  *
- * @param {object} a -
- * @param {object} b -
+ * @param {element} a - value in sorting column for the first
+ * object
+ * @param {element} b - value in sorting column for the second
+ * object
  */
 afqb.table.descendingWithNull = function (a, b) {
     "use strict";
@@ -494,7 +508,7 @@ $(document).mousedown(function() {
     });
 
 /**
- * Controls subject selection and deselection by
+ * Define subject selection and deselection by
  * drag.
  *
  */
