@@ -51,14 +51,7 @@ once nodes.csv data has been read.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>error</strong> – <ul>
-<li></li>
-</ul>
-</li>
-<li><strong>useless</strong> – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>useless</strong> – Obligatory callback argument that we don’t use in the function.</li>
 <li><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</li>
 </ul>
 </td>
@@ -78,11 +71,48 @@ text for each tract.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>error</strong> – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</li>
 <li><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.plots.line">
+<code class="descclassname">afqb.plots.</code><code class="descname">line</code><span class="sig-paren">(</span><em>d</em>, <em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates line object with appropriate domain and range for each tract.
+Called for draw and transformation operations involving subject lines
+or mean lines in the 2D plots.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>d</strong> (<em>data</em>) – Subject or mean data for 2D plot of selected metric</li>
+<li><strong>id</strong> (<em>string</em>) – formatted tract name</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="afqb.plots.area">
+<code class="descclassname">afqb.plots.</code><code class="descname">area</code><span class="sig-paren">(</span><em>d</em>, <em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates area object with appropriate domain and range for each tract.
+Called for draw and transformation operations involving standard deviation
+and standard error in 2D plots.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>d</strong> (<em>data</em>) – Mean data for 2D plot of selected metric</li>
+<li><strong>id</strong> (<em>string</em>) – formatted tract name</li>
 </ul>
 </td>
 </tr>
@@ -102,11 +132,8 @@ whether or not brushing is allowed.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>error</strong> – <ul>
-<li></li>
-</ul>
-</li>
-<li><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</li>
+<li><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</li>
+<li><strong>data</strong> (<em>object</em>) – JavaScript object created by d3.csv(data/nodes.csv).</li>
 </ul>
 </td>
 </tr>
@@ -126,10 +153,7 @@ error for the default metric.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>error</strong> – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</li>
 <li><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</li>
 </ul>
 </td>
@@ -151,10 +175,7 @@ afqb.plots.zoomAxis().</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>error</strong> – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</li>
 <li><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</li>
 </ul>
 </td>
@@ -167,13 +188,13 @@ afqb.plots.zoomAxis().</p>
 <dt id="afqb.plots.draw">
 <code class="descclassname">afqb.plots.</code><code class="descname">draw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.draw" title="Permalink to this definition">¶</a></dt>
 <dd><p>Redraws subject and mean lines after new metric or
-group selections. Calls afqb.plots.zoomAxis()</p>
+group selections. Calls afqb.plots.zoomAxis().</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="afqb.plots.zoomAxis">
 <code class="descclassname">afqb.plots.</code><code class="descname">zoomAxis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.zoomAxis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates y axis for proper zoom.</p>
+<dd><p>Updates y axis zoom on sort or metric change.</p>
 </dd></dl>
 
 <dl class="function">
@@ -186,10 +207,7 @@ highlight a portion of tract in the “Anatomy” panel.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<em>string</em>) – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>name</strong> (<em>string</em>) – formatted tract name.</li>
 </ul>
 </td>
 </tr>
@@ -215,14 +233,8 @@ panel.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>state</strong> (<em>string</em>) – <ul>
-<li></li>
-</ul>
-</li>
-<li><strong>name</strong> (<em>string</em>) – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>state</strong> (<em>boolean</em>) – true if the tract is selected, false if it is hidden.</li>
+<li><strong>name</strong> (<em>string</em>) – formatted tract name</li>
 </ul>
 </td>
 </tr>
@@ -233,16 +245,13 @@ panel.</p>
 <dl class="function">
 <dt id="afqb.plots.initCheckboxes">
 <code class="descclassname">afqb.plots.</code><code class="descname">initCheckboxes</code><span class="sig-paren">(</span><em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.initCheckboxes" title="Permalink to this definition">¶</a></dt>
-<dd><p>:)</p>
+<dd><p>Initialize the selectable tract list.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>error</strong> – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</li>
 </ul>
 </td>
 </tr>

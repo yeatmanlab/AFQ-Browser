@@ -44,24 +44,16 @@
 <dl class="function">
 <dt id="afqb.table.buildTable">
 <code class="descclassname">afqb.table.</code><code class="descname">buildTable</code><span class="sig-paren">(</span><em>error</em>, <em>useless</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.table.buildTable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize Table from subject metadata in subjects.csv.</p>
+<dd><p>Initialize Table from subject metadata in subjects.csv. Subject rows
+maintain their order from subjects.csv.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>error</strong> – <ul>
-<li></li>
-</ul>
-</li>
-<li><strong>useless</strong> – <ul>
-<li></li>
-</ul>
-</li>
-<li><strong>data</strong> (<em>data</em>) – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</li>
+<li><strong>useless</strong> – Obligatory callback argument that we don’t use in the function.</li>
+<li><strong>data</strong> (<em>object</em>) – JavaScript array created by d3.csv(data/subjects.csv).</li>
 </ul>
 </td>
 </tr>
@@ -72,26 +64,25 @@
 <dl class="function">
 <dt id="afqb.table.refreshTable">
 <code class="descclassname">afqb.table.</code><code class="descname">refreshTable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#afqb.table.refreshTable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Refresh the Table after sort operations.</p>
+<dd><p>Refresh the Table after sort operations. Subject rows are rearranged in
+ascending or descending order and colored by group. Number of groups is
+determined by the user specified value in the Table gui (default = 2).
+Selection is retained on refresh.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="afqb.table.ascendingWithNull">
 <code class="descclassname">afqb.table.</code><code class="descname">ascendingWithNull</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.table.ascendingWithNull" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sort rows in ascending order.</p>
+<dd><p>Sort rows in ascending order. Elements a and b
+are sorted with d3.ascending, and their associated
+rows are similarly ordered.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>a</strong> (<em>object</em>) – <ul>
-<li></li>
-</ul>
-</li>
-<li><strong>b</strong> (<em>object</em>) – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>a</strong> (<em>element</em>) – value in sorting column for the first object</li>
+<li><strong>b</strong> (<em>element</em>) – value in sorting column for the second object</li>
 </ul>
 </td>
 </tr>
@@ -102,20 +93,16 @@
 <dl class="function">
 <dt id="afqb.table.descendingWithNull">
 <code class="descclassname">afqb.table.</code><code class="descname">descendingWithNull</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.table.descendingWithNull" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sort rows in descending order.</p>
+<dd><p>Sort rows in descending order. Elements a and b
+are sorted with d3.descending, and their associated
+rows are similarly ordered.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>a</strong> (<em>object</em>) – <ul>
-<li></li>
-</ul>
-</li>
-<li><strong>b</strong> (<em>object</em>) – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>a</strong> (<em>element</em>) – value in sorting column for the first object</li>
+<li><strong>b</strong> (<em>element</em>) – value in sorting column for the second object</li>
 </ul>
 </td>
 </tr>
@@ -133,7 +120,7 @@ and corresponding subject lines in 2D plots.</p>
 <dl class="function">
 <dt id="afqb.table.tableMouseDown">
 <code class="descclassname">afqb.table.</code><code class="descname">tableMouseDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#afqb.table.tableMouseDown" title="Permalink to this definition">¶</a></dt>
-<dd><p>Controls subject selection and deselection by
+<dd><p>Define subject selection and deselection by
 drag.</p>
 </dd></dl>
 
