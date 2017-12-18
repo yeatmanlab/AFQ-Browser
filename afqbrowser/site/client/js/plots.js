@@ -241,8 +241,9 @@ afqb.plots.area = function (d, id) {
  * std dev) for shaded area, subject line opacity, and
  * whether or not brushing is allowed.
  *
- * @param error -
- * @param {data} data - JavaScript array created by d3.csv(data/nodes.csv).
+ * @param error - Passed to prevent execution in case error occurs
+ * in preceding functions.
+ * @param {object} data - JavaScript object created by d3.csv(data/nodes.csv).
  */
 afqb.plots.buildPlotGui = function (error, data) {
     "use strict";
@@ -360,7 +361,8 @@ afqb.plots.buildPlotGui = function (error, data) {
  * range, plot subject lines, and calculate mean and
  * error for the default metric.
  *
- * @param error -
+ * @param error - Passed to prevent execution in case error occurs
+ * in preceding functions.
  * @param {data} data - JavaScript array created by d3.csv(data/nodes.csv).
  */
 afqb.plots.ready = function (error, data) {
@@ -842,7 +844,8 @@ afqb.plots.ready = function (error, data) {
  * are updated accordingly. Calls afqb.plots.draw() and
  * afqb.plots.zoomAxis().
  *
- * @param error -
+ * @param error - Passed to prevent execution in case error occurs
+ * in preceding functions.
  * @param {data} data - JavaScript array created by d3.csv(data/nodes.csv).
  *
  */
@@ -963,7 +966,7 @@ afqb.plots.changePlots = function (error, data) {
 
 /**
  * Redraws subject and mean lines after new metric or
- * group selections. Calls afqb.plots.zoomAxis()
+ * group selections. Calls afqb.plots.zoomAxis().
  *
  */
 afqb.plots.draw = function() {
@@ -1083,7 +1086,7 @@ afqb.plots.draw = function() {
 };
 
 /**
- * Updates y axis for proper zoom.
+ * Updates y axis zoom on sort or metric change.
  *
  */
 afqb.plots.zoomAxis = function () {
@@ -1095,7 +1098,7 @@ afqb.plots.zoomAxis = function () {
  * Initializes brush elements for 2D plots. Brush used to
  * highlight a portion of tract in the "Anatomy" panel.
  *
- * @param {string} name -
+ * @param {string} name - formatted tract name.
  */
 afqb.plots.newBrush = function (name) {
     "use strict";
@@ -1184,8 +1187,9 @@ afqb.plots.updateBrush = function () {
  * tract, and changes color of the label in the "Bundles"
  * panel.
  *
- * @param {string} state -
- * @param {string} name -
+ * @param {boolean} state - true if the tract is selected,
+ * false if it is hidden.
+ * @param {string} name - formatted tract name
  */
 afqb.plots.showHideTractDetails = function (state, name) {
     "use strict";
@@ -1204,9 +1208,10 @@ afqb.plots.showHideTractDetails = function (state, name) {
 };
 
 /**
- * :)
+ * Initialize the selectable tract list.
  *
- * @param error -
+ * @param error - Passed to prevent execution in case error occurs
+ * in preceding functions.
  */
 afqb.plots.initCheckboxes = function (error) {
     "use strict";
