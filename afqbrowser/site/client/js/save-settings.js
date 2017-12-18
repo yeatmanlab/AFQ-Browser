@@ -38,6 +38,7 @@ afqb.global.updateQueryString = function(queryObj) {
  *
  * AFQ-Browser settings are stored in four places, corresponding to the
  * different visualization panels (naming is self-explanatory):
+ *
  * - afqb.three.settings
  * - afqb.plots.settings
  * - afqb.table.settings

@@ -181,6 +181,7 @@ afqb.three.buildthreeGui = function (streamlinesExist) {
  * Initialize the three.js scene for subject's anatomy
  *
  * The scene consists of six object groups:
+ *
  * - afqb.three.brain: the brain surface, loaded from freesurf.OBJ
  * - afqb.three.colorGroup: fiber bundle streamlines that display when
  *   selected, one object for each bundle
