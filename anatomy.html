@@ -50,10 +50,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>error</strong> – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>error</strong> – error passed through from previous function in d3.queue()</li>
 </ul>
 </td>
 </tr>
@@ -64,16 +61,13 @@
 <dl class="function">
 <dt id="afqb.three.buildthreeGui">
 <code class="descclassname">afqb.three.</code><code class="descname">buildthreeGui</code><span class="sig-paren">(</span><em>streamlinesExist</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.three.buildthreeGui" title="Permalink to this definition">¶</a></dt>
-<dd><p>function description</p>
+<dd><p>Build the dat.gui controls for the anatomy panel</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>streamlinesExist</strong> – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>streamlinesExist</strong> – boolean to indicate existence of anatomy streamlines. if streamlinesExist is true, then the fiberRepesentation controller will allow both ‘core fiber’ and ‘all fibers’ options. Otherwise, only ‘core fiber’ will be allowed.</li>
 </ul>
 </td>
 </tr>
@@ -83,17 +77,29 @@
 
 <dl class="function">
 <dt id="afqb.three.init">
-<code class="descclassname">afqb.three.</code><code class="descname">init</code><span class="sig-paren">(</span><em>callback</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.three.init" title="Permalink to this definition">¶</a></dt>
-<dd><p>function description</p>
+<code class="descclassname">afqb.three.</code><code class="descname">init</code><span class="sig-paren">(</span><em>streamlinesCallback</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.three.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the three.js scene for subject’s anatomy</p>
+<p>The scene consists of six object groups:</p>
+<ul class="simple">
+<li>afqb.three.brain: the brain surface, loaded from freesurf.OBJ</li>
+<li>afqb.three.colorGroup: fiber bundle streamlines that display when
+selected, one object for each bundle</li>
+<li>afqb.three.greyGroup: grey fiber bundles that are always displayed
+underneath the color ones, all rendered together as one buffer geometry</li>
+<li>afqb.three.colorCoreGroup: core fibers that display when selected, one
+object per bundle</li>
+<li>afqb.three.greyCoreGroup: grey core fibers that are always displayed
+underneath the color bundles</li>
+<li>afqb.three.convexGroup: invisible convex hulls, one for each streamline
+colorGroup. These are never displayed but hold all of the dom events for
+the colorGroup objects.</li>
+</ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>callback</strong> – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>streamlinesCallback</strong> – function to be called after the streamlines have been loaded from streamlines.json</li>
 </ul>
 </td>
 </tr>
@@ -110,19 +116,23 @@
 <dl class="function">
 <dt id="afqb.three.animate">
 <code class="descclassname">afqb.three.</code><code class="descname">animate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#afqb.three.animate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function description</p>
+<dd><p>Define how the scene should update after init.</p>
+<p>Pretty standard here: request animation frame, render, update camera,
+update stats if desired. If brushing, use afqb.three.brushOn3D to
+change the drawRange of color objects.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="afqb.three.brushOn3D">
 <code class="descclassname">afqb.three.</code><code class="descname">brushOn3D</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#afqb.three.brushOn3D" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function description</p>
+<dd><p>Update the drawRange of each fiber bundle based on the d3 brushes in the
+2D plots panel.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="afqb.three.lightUpdate">
 <code class="descclassname">afqb.three.</code><code class="descname">lightUpdate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#afqb.three.lightUpdate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function description</p>
+<dd><p>Update the directional light to always point from camera</p>
 </dd></dl>
 
 <dl class="function">
@@ -134,10 +144,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>object</strong> (<em>object</em>) – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>object</strong> (<em>object</em>) – the object to hide</li>
 </ul>
 </td>
 </tr>
@@ -154,10 +161,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>object</strong> (<em>object</em>) – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>object</strong> (<em>object</em>) – the object to show</li>
 </ul>
 </td>
 </tr>
@@ -168,14 +172,15 @@
 <dl class="function">
 <dt id="afqb.three.highlightBundle">
 <code class="descclassname">afqb.three.</code><code class="descname">highlightBundle</code><span class="sig-paren">(</span><em>state</em>, <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.three.highlightBundle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Highlight specified bundle based on left panel checkboxes</p>
+<dd><p>Highlight specified bundle based on left panel checkboxes
+If state is checked, show the color group and hide the grey group</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>state</strong> (<em>string</em>) – </li>
-<li><strong>name</strong> (<em>string</em>) – </li>
+<li><strong>state</strong> (<em>string</em>) – checkbox state, checked or unchecked</li>
+<li><strong>name</strong> (<em>string</em>) – formatted bundle name</li>
 </ul>
 </td>
 </tr>
@@ -186,13 +191,13 @@
 <dl class="function">
 <dt id="afqb.three.mouseoutBundle">
 <code class="descclassname">afqb.three.</code><code class="descname">mouseoutBundle</code><span class="sig-paren">(</span><em>child</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.three.mouseoutBundle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function description</p>
+<dd><p>Restore bundle to original state (checked or unchecked) after mouseout</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>child</strong> (<em>string</em>) – </li>
+<li><strong>child</strong> (<em>string</em>) – the child object (i.e. bundle) in some group</li>
 </ul>
 </td>
 </tr>
@@ -209,7 +214,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>child</strong> (<em>string</em>) – </li>
+<li><strong>child</strong> (<em>string</em>) – the child object (i.e. bundle) in some group</li>
 </ul>
 </td>
 </tr>

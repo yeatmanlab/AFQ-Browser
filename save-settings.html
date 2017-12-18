@@ -50,10 +50,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>bundle</strong> (<em>srting</em>) – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>bundle</strong> (<em>string</em>) – bundle name</li>
 </ul>
 </td>
 </tr>
@@ -70,10 +67,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>queryObj</strong> (<em>object</em>) – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>queryObj</strong> (<em>object</em>) – object to stringify and merge with existing query string</li>
 </ul>
 </td>
 </tr>
@@ -84,16 +78,23 @@
 <dl class="function">
 <dt id="afqb.global.initSettings">
 <code class="descclassname">afqb.global.</code><code class="descname">initSettings</code><span class="sig-paren">(</span><em>callback</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.global.initSettings" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize settings from querystring</p>
+<dd><p>Initialize settings from querystring.</p>
+<p>AFQ-Browser settings are stored in four places, corresponding to the
+different visualization panels (naming is self-explanatory):</p>
+<ul class="simple">
+<li>afqb.three.settings</li>
+<li>afqb.plots.settings</li>
+<li>afqb.table.settings</li>
+<li>afqb.global.settings</li>
+</ul>
+<p>In the query string, all settings are lumped together. So we must parse
+the query string and separate settings into their different groups.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>callback</strong> – <ul>
-<li></li>
-</ul>
-</li>
+<li><strong>callback</strong> – function to call after the settings have been loaded</li>
 </ul>
 </td>
 </tr>
@@ -105,12 +106,16 @@
 <dt id="afqb.plots.restoreBrush">
 <code class="descclassname">afqb.plots.</code><code class="descname">restoreBrush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.restoreBrush" title="Permalink to this definition">¶</a></dt>
 <dd><p>Restore brush settings on reload.</p>
+<p>Brush settings are stored in afqb.plots.settings.brushes. Iterate through
+that and restore the brush extents.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="afqb.table.restoreRowSelection">
 <code class="descclassname">afqb.table.</code><code class="descname">restoreRowSelection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#afqb.table.restoreRowSelection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Restore selected rows and subject lines on reload.</p>
+<p>This function iterates over afqb.table.settings.selectedRows and
+changes the opacity of the associated table rows and plot lines.</p>
 </dd></dl>
 
 </div>
