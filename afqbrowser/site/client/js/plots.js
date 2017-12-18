@@ -24,8 +24,10 @@ afqb.plots.t = d3.transition().duration(750);
  * Container function which calls other plots functions
  * once nodes.csv data has been read.
  *
- * @param error -
- * @param useless -
+ * @@param error - Passed to prevent execution in case error occurs
+ * in preceding functions.
+ * @param useless - Obligatory callback argument that we don't use in the
+ * function.
  * @param {data} data - JavaScript array created by d3.csv(data/nodes.csv).
  *
  */
@@ -48,7 +50,8 @@ afqb.plots.brushes = [];
  * unique tract IDs from nodes.csv and creates selectable
  * text for each tract.
  *
- * @param error -
+ * @param error - Passed to prevent execution in case error occurs
+ * in preceding functions.
  * @param {data} data - JavaScript array created by d3.csv(data/nodes.csv).
  */
 afqb.plots.buildTractCheckboxes = function (error, data) {
@@ -168,7 +171,14 @@ afqb.plots.xAxisScale = d3.scale.linear()
     .range([afqb.plots.m.left + 30, afqb.plots.w + afqb.plots.m.left + 20])
     .domain([0, 100]);
 
-
+/**
+ * Creates line object with appropriate domain and range for each tract.
+ * Called for draw and transformation operations involving subject lines
+ * or mean lines in the 2D plots.
+ *
+ * @param {data} d - Subject or mean data for 2D plot of selected metric
+ * @param {string} id - formatted tract name
+ */
 afqb.plots.line = function (d, id){
 
 	var line = d3.svg.line()
@@ -197,6 +207,14 @@ afqb.plots.line = function (d, id){
 	return line(d)
 };
 
+/**
+ * Creates area object with appropriate domain and range for each tract.
+ * Called for draw and transformation operations involving standard deviation
+ * and standard error in 2D plots.
+ *
+ * @param {data} d - Mean data for 2D plot of selected metric
+ * @param {string} id - formatted tract name
+ */
 afqb.plots.area = function (d, id) {
 	var area = d3.svg.area()
         .x(function(d) { return afqb.plots.xScale[id](+d.key) })

@@ -4,6 +4,8 @@ plots.js
 --------
 .. js:autofunction:: afqb.plots.buildFromNodes
 .. js:autofunction:: afqb.plots.buildTractCheckboxes
+.. js:autofunction:: afqb.plots.line
+.. js:autofunction:: afqb.plots.area
 .. js:autofunction:: afqb.plots.buildPlotGui
 .. js:autofunction:: afqb.plots.ready
 .. js:autofunction:: afqb.plots.changePlots
