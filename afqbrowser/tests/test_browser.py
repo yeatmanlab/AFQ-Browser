@@ -26,8 +26,9 @@ def test_tracula():
     data_path = op.join(afqb.__path__[0], 'site', 'client',
                         'data', 'tracula_data')
     stats_dir = op.join(data_path, 'stats')
+    tdir = tempfile.mkdtemp()
     nodes_fname, meta_fname, streamlines_fname, params_fname =\
-        afqb.tracula2nodes(stats_dir)
+        afqb.tracula2nodes(stats_dir, out_path=tdir)
 
     # Test for regressions:
     nodes = pd.read_csv(nodes_fname)
