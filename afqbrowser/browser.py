@@ -371,6 +371,48 @@ def assemble(source, target=None, metadata=None):
     data_path = op.join(afqb.__path__[0], 'site')
     copy_and_overwrite(data_path, site_dir)
     out_path = op.join(site_dir, 'client', 'data')
+
+    # Load the settings.json
+    settings_path = op.join(site_dir, 'client', 'settings.json')
+    with open(settings_path) as fp:
+        settings = json.load(fp)
+
+    defaults = {}
+    if settings.get('global') and settings.get('global').get('html'):
+        html_settings = settings.get('global').get('html')
+        defaults['title'] = ('Page title', html_settings.get('title'))
+        defaults['subtitle'] = ('Page subtitle', html_settings.get('subtitle'))
+        defaults['link'] = ('Title hyperlink', html_settings.get('link'))
+        defaults['sublink'] = ('Subtitle hyperlink', html_settings.get('sublink'))
+    else:
+        html_settings = {}
+        defaults['title'] = ('Page title', None)
+        defaults['subtitle'] = ('Page subtitle', None)
+        defaults['link'] = ('Title hyperlink', None)
+        defaults['sublink'] = ('Subtitle hyperlink', None)
+
+    try:
+        prompt = raw_input
+    except NameError:
+        prompt = input
+
+    key_list = ['title', 'subtitle', 'link', 'sublink']
+    for key in key_list:
+        prompt_text, value = defaults[key]
+        text = '{p:s} [{d!s}]: '.format(p=prompt_text, d=value)
+        new_val = prompt(text)
+        if not new_val:
+            new_val = value
+
+        if new_val is not None:
+            html_settings[key] = new_val
+
+    html_settings = {'global': {'html': html_settings}}
+    settings.update(html_settings)
+
+    with open(settings_path, 'w') as fp:
+        json.dump(settings, fp)
+
     if source.endswith('.mat'):
         # We have an AFQ-generated mat-file on our hands:
         nodes_fname, meta_fname, params_fname = afq_mat2tables(
