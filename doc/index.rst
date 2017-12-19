@@ -28,6 +28,7 @@ processed with `AFQ` to explore patterns in the data.
        reference/index
        api
        dataformat
+       getting_help
 
 .. figure:: _static/BDE_Banner_revised20160211-01.jpg
    :align: center
