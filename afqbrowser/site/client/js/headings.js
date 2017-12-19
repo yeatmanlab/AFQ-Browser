@@ -9,7 +9,7 @@ afqb.global.updateHeadings = function () {
     document.title = afqb.global.settings.html.title || "AFQ Browser";
     
     // Get the h1 title
-    var title = document.getElementById("title-bar");
+    var title = document.getElementById("title-bar-title");
     // If user specified a link, then create an "a" tag and fill it appropriately
     // else, just put the text
     if (afqb.global.settings.html.link) {
@@ -24,21 +24,17 @@ afqb.global.updateHeadings = function () {
 
     if (afqb.global.settings.html.subtitle) {
         // If the user specified a subtitle then add a span tag to the title-bar 
-        var subtitle = document.createElement("span");
-        subtitle.id = "title-bar-subtitle"; //Assign span id
-        subtitle.setAttribute("style", "font-size: 75%;"); //Set span style
+        var subtitle = $('#title-bar-subtitle');
         if (afqb.global.settings.html.sublink) {
             var a = document.createElement("a");
             a.href = afqb.global.settings.html.sublink;
             a.innerHTML = afqb.global.settings.html.subtitle || "";
-            title.innerHTML += " | ";
-            subtitle.innerHTML = "";
-            subtitle.appendChild(a);
+            subtitle.html("");
+            subtitle.append(a);
         } else {
-            title.innerHTML += " | ";
-            subtitle.innerHTML = afqb.global.settings.html.subtitle || "";
+            subtitle.html(afqb.global.settings.html.subtitle || "");
         }
-        title.appendChild(subtitle);
+        $('#title-bar-separator').css("visibility", "visible");
     }
     
     afqb.global.settings.html.title = document.title;

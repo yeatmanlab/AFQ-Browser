@@ -382,14 +382,17 @@ def assemble(source, target=None, metadata=None):
         html_settings = settings.get('global').get('html')
         defaults['title'] = ('Page title', html_settings.get('title'))
         defaults['subtitle'] = ('Page subtitle', html_settings.get('subtitle'))
-        defaults['link'] = ('Title hyperlink', html_settings.get('link'))
-        defaults['sublink'] = ('Subtitle hyperlink', html_settings.get('sublink'))
+        defaults['link'] = ('Title hyperlink (including http(s)://)',
+                            html_settings.get('link'))
+        defaults['sublink'] = ('Subtitle hyperlink (including http(s)://)',
+                               html_settings.get('sublink'))
     else:
         html_settings = {}
         defaults['title'] = ('Page title', None)
         defaults['subtitle'] = ('Page subtitle', None)
-        defaults['link'] = ('Title hyperlink', None)
-        defaults['sublink'] = ('Subtitle hyperlink', None)
+        defaults['link'] = ('Title hyperlink (including http(s)://)', None)
+        defaults['sublink'] = ('Subtitle hyperlink (including http(s)://)',
+                               None)
 
     try:
         prompt = raw_input
