@@ -1,3 +1,8 @@
+.. figure:: _static/BDE_Banner_revised20160211-01.jpg
+   :align: center
+   :figclass: align-center
+   :target: http://brainandeducation.com
+
 
 AFQ-Browser:
 ============
@@ -35,10 +40,6 @@ If you are interested in technical details and motivation behind this project, p
        dataformat
        getting_help
 
-.. figure:: _static/BDE_Banner_revised20160211-01.jpg
-   :align: center
-   :figclass: align-center
-   :target: http://escience.washington.edu
 
    Acknowledgements: this work was supported by a grant from the
    `Gordon & Betty Moore Foundation <https://www.moore.org/>`_,  and from the
