@@ -325,7 +325,10 @@ afqb.plots.buildPlotGui = function (error, data) {
                 d3.select("#tractdetails")
                     .selectAll("svg").selectAll(".tracts")
                     .filter(function () {
-                        return (afqb.table.settings.selectedRows[this.id] === false);
+                        return (afqb.table.settings.selectedRows[this.id] !== true);
+                    })
+                    .filter(function () {
+                        return (this.id.indexOf("mean") === -1);
                     })
                     .select(".line")
                     .style("opacity", value);
