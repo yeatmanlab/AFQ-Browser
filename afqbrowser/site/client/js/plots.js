@@ -24,7 +24,7 @@ afqb.plots.t = d3.transition().duration(750);
  * Container function which calls other plots functions
  * once nodes.csv data has been read.
  *
- * @@param error - Passed to prevent execution in case error occurs
+ * @param error - Passed to prevent execution in case error occurs
  * in preceding functions.
  * @param useless - Obligatory callback argument that we don't use in the
  * function.
