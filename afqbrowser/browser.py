@@ -29,6 +29,48 @@ MNI_AFF = np.array([[1., 0., 0., -98.],
                     [0., 0., 0., 1.]])
 
 
+def _extract_params(afq):
+    """
+    Helper function to extract a params dict from the AFQ mat file
+    """
+    afq_params = afq['params']
+    params_dict = {k: afq_params.item()[k].tolist() for k in
+                   afq_params.item().dtype.names}
+
+    params_dict['track'] = {k: params_dict['track'][k].tolist() for k in
+                            params_dict['track'].dtype.names}
+
+    for k in params_dict['track'].keys():
+        if hasattr(params_dict['track'][k], 'tolist'):
+            params_dict['track'][k] = params_dict['track'][k].tolist()
+
+    for k in params_dict.keys():
+        if hasattr(params_dict[k], 'tolist'):
+            params_dict[k] = params_dict[k].tolist()
+
+    # Some newer version of AFQ have scan params:
+    if 'scanparams' in afq.dtype.names:
+        scan_params = afq['scanparams'].item()
+        scan_dict = {k: scan_params[k].tolist() for k in
+                     scan_params.dtype.names}
+        for k in scan_dict.keys():
+            if hasattr(scan_dict[k], 'tolist'):
+                scan_dict[k] = scan_dict[k].tolist()
+
+        scan_dict = {k: scan_params[k].tolist() for k in
+                     scan_params.dtype.names}
+        for k in scan_dict.keys():
+            if hasattr(scan_dict[k], 'tolist'):
+                scan_dict[k] = scan_dict[k].tolist()
+
+    # Older versions of AFQ don't have the scan params:
+    else:
+        scan_dict = {}
+
+    params = {'analysis_params': params_dict, 'scan_params': scan_dict}
+    return params
+
+
 def _create_metadata(subject_ids, meta_fname):
     """Helper function to create a minimal metadata file."""
     meta_df = pd.DataFrame({"subjectID": subject_ids},
@@ -36,7 +78,7 @@ def _create_metadata(subject_ids, meta_fname):
     meta_df.to_csv(meta_fname)
 
 
-def tracula2nodes(stats_dir, out_path=None, metadata=None):
+def tracula2nodes(stats_dir, out_path=None, metadata=None, params=None):
     """
     Create a nodes table from a TRACULA `stats` directory.
 
@@ -58,8 +100,17 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
         "subjectID". For an example, see the 'data/subjects.csv' that comes
         with the software.
 
+    params : str, optional
+        Full path to a params file that describes the analysis and the scan
+        params. This is a json file that has keys "analysis_params" and
+        "scan_params" that can be filled with a dict with parameters pertaining
+        to the analysis and to the scanned data. The fields used by AFQ are
+        described in:
+        `https://github.com/jyeatman/AFQ/blob/master/functions/AFQ_Create.m`
+
     Returns
     -------
+    nodes_fname, meta_fname, streamlines_fname, params_fname
 
     Notes
     -----
@@ -139,7 +190,14 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None):
     with open(streamlines_fname, 'w') as f:
         f.write(json.dumps(streamlines))
 
-    return nodes_fname, meta_fname, streamlines_fname
+    params_fname = op.join(out_path, 'params.json')
+    if params is None:
+        with open(params_fname, 'w') as f:
+            f.write(json.dumps({"analysis_params": {}, "scan_params": {}}))
+    else:
+        shutil.copy(params, params_fname)
+
+    return nodes_fname, meta_fname, streamlines_fname, params_fname
 
 
 def _create_subject_ids(n_subjects):
@@ -157,7 +215,7 @@ def _create_subject_ids(n_subjects):
 def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
                    out_path=None, metadata=None):
     """
-    Create a nodes table and a subjects table from an AFQ `.mat` file.
+    Create nodes table, subjects table and params dict from AFQ `.mat` file.
 
     Parameters
     ----------
@@ -173,7 +231,7 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
         Default: pull out all of the statistics that are in the mat file.
 
     out_path : str, optional
-        Full path to the CSV file to be saved as output. Default: pwd.
+        Full path for the CSV/JSON files to be saved as output. Default: pwd.
 
     metadata : str, optional
         Full path to a file with user-supplied metadata. This has to be a csv
@@ -271,7 +329,11 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
     else:
         shutil.copy(metadata, meta_fname)
 
-    return nodes_fname, meta_fname
+    params_fname = op.join(out_path, 'params.json')
+    params = _extract_params(afq)
+    json.dump(params, open(params_fname, 'w'))
+
+    return nodes_fname, meta_fname, params_fname
 
 
 def copy_and_overwrite(from_path, to_path):
@@ -311,12 +373,12 @@ def assemble(source, target=None, metadata=None):
     out_path = op.join(site_dir, 'client', 'data')
     if source.endswith('.mat'):
         # We have an AFQ-generated mat-file on our hands:
-        nodes_fname, meta_fname = afq_mat2tables(
+        nodes_fname, meta_fname, params_fname = afq_mat2tables(
             source,
             out_path=out_path)
     else:
         # Assume we got a TRACULA stats path:
-        nodes_fname, meta_fname, streamlines_fname =\
+        nodes_fname, meta_fname, streamlines_fname, params_fname =\
             tracula2nodes(source, out_path=out_path, metadata=metadata)
 
 

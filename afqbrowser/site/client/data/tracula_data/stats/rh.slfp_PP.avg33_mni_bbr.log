@@ -1,0 +1,99 @@
+
+
+cwd /autofs/homes/010/ayendiki
+cmdline /usr/local/freesurfer/stable6/bin/dmri_group --list /space/freesurfer/subjects/tutorial/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.inputs.txt --ref /usr/pubsw/packages/fsl/current/data/standard/MNI152_T1_1mm_brain.nii.gz --out /space/freesurfer/subjects/tutorial/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr 
+sysname  Linux
+hostname compute-0-65
+machine  x86_64
+user     ayendiki
+Base name of output files: /autofs/cluster/freesurfer/subjects/tutorial/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr
+Text file with list of individual inputs: /autofs/cluster/freesurfer/subjects/tutorial/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.inputs.txt
+Loading output reference volume from /autofs/cluster/pubsw/2/pubsw/Linux2-2.3-x86_64/packages/fsl.64bit/5.0.7/data/standard/MNI152_T1_1mm_brain.nii.gz
+Loading list of inputs from /autofs/cluster/freesurfer/subjects/tutorial/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.inputs.txt
+Loading measures along the path from /space/freesurfer/subjects/tutorial/diffusion_tutorial/elmo.2005/dpath/rh.slfp_PP_avg33_mni_bbr/pathstats.byvoxel.txt
+Loading input reference volume from /space/freesurfer/subjects/tutorial/diffusion_tutorial/elmo.2005/dlabel/diff/aparc+aseg_mask.bbr.nii.gz
+Loading affine registration from /space/freesurfer/subjects/tutorial/diffusion_tutorial/elmo.2005/dmri/xfms/diff2mni.bbr.mat
+Loading measures along the path from /space/freesurfer/subjects/tutorial/diffusion_tutorial/elmo.2008/dpath/rh.slfp_PP_avg33_mni_bbr/pathstats.byvoxel.txt
+Loading input reference volume from /space/freesurfer/subjects/tutorial/diffusion_tutorial/elmo.2008/dlabel/diff/aparc+aseg_mask.bbr.nii.gz
+Loading affine registration from /space/freesurfer/subjects/tutorial/diffusion_tutorial/elmo.2008/dmri/xfms/diff2mni.bbr.mat
+Loading measures along the path from /space/freesurfer/subjects/tutorial/diffusion_tutorial/elmo.2012/dpath/rh.slfp_PP_avg33_mni_bbr/pathstats.byvoxel.txt
+Loading input reference volume from /space/freesurfer/subjects/tutorial/diffusion_tutorial/elmo.2012/dlabel/diff/aparc+aseg_mask.bbr.nii.gz
+Loading affine registration from /space/freesurfer/subjects/tutorial/diffusion_tutorial/elmo.2012/dmri/xfms/diff2mni.bbr.mat
+INFO: Sampling interval along path is 2.46099 mm
+Writing mean path voxel coords to /autofs/cluster/freesurfer/subjects/tutorial/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.coords.mean.txt
+Writing mean path RAS coords to /autofs/cluster/freesurfer/subjects/tutorial/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.path.mean.txt
+Writing group table to /autofs/cluster/freesurfer/subjects/tutorial/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.AD.txt
+Writing group table to /autofs/cluster/freesurfer/subjects/tutorial/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.RD.txt
+Writing group table to /autofs/cluster/freesurfer/subjects/tutorial/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.MD.txt
+Writing group table to /autofs/cluster/freesurfer/subjects/tutorial/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.FA.txt
+Writing group table to /autofs/cluster/freesurfer/subjects/tutorial/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.AD_Avg.txt
+Writing group table to /autofs/cluster/freesurfer/subjects/tutorial/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.RD_Avg.txt
+Writing group table to /autofs/cluster/freesurfer/subjects/tutorial/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.MD_Avg.txt
+Writing group table to /autofs/cluster/freesurfer/subjects/tutorial/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.FA_Avg.txt
+Done in 0.564 sec.
+dmri_group done
+
+
+cwd /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial
+cmdline /usr/local/freesurfer/stable6/bin/dmri_group --list /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.inputs.txt --ref /usr/pubsw/packages/fsl/current/data/standard/MNI152_T1_1mm_brain.nii.gz --out /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr 
+sysname  Linux
+hostname oribi
+machine  x86_64
+user     eboyd2
+Base name of output files: /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr
+Text file with list of individual inputs: /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.inputs.txt
+Loading output reference volume from /autofs/cluster/pubsw/2/pubsw/Linux2-2.3-x86_64/packages/fsl.64bit/5.0.7/data/standard/MNI152_T1_1mm_brain.nii.gz
+Loading list of inputs from /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.inputs.txt
+Loading measures along the path from /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/elmo.2008/dpath/rh.slfp_PP_avg33_mni_bbr/pathstats.byvoxel.txt
+Loading input reference volume from /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/elmo.2008/dlabel/diff/aparc+aseg_mask.bbr.nii.gz
+Loading affine registration from /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/elmo.2008/dmri/xfms/diff2mni.bbr.mat
+Loading measures along the path from /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/elmo.2012/dpath/rh.slfp_PP_avg33_mni_bbr/pathstats.byvoxel.txt
+Loading input reference volume from /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/elmo.2012/dlabel/diff/aparc+aseg_mask.bbr.nii.gz
+Loading affine registration from /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/elmo.2012/dmri/xfms/diff2mni.bbr.mat
+INFO: Sampling interval along path is 2.22863 mm
+Writing mean path voxel coords to /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.coords.mean.txt
+Writing mean path RAS coords to /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.path.mean.txt
+Writing group table to /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.AD.txt
+Writing group table to /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.RD.txt
+Writing group table to /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.MD.txt
+Writing group table to /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.FA.txt
+Writing group table to /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.AD_Avg.txt
+Writing group table to /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.RD_Avg.txt
+Writing group table to /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.MD_Avg.txt
+Writing group table to /autofs/space/rama_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.FA_Avg.txt
+Done in 0.236 sec.
+dmri_group done
+
+
+cwd /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial
+cmdline /usr/local/freesurfer/stable6_0_0/bin/dmri_group --list /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.inputs.txt --ref /usr/pubsw/packages/fsl/current/data/standard/MNI152_T1_1mm_brain.nii.gz --out /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr 
+sysname  Linux
+hostname druyan.nmr.mgh.harvard.edu
+machine  x86_64
+user     eboyd2
+Base name of output files: /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr
+Text file with list of individual inputs: /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.inputs.txt
+Loading output reference volume from /autofs/cluster/pubsw/2/pubsw/Linux2-2.3-x86_64/packages/fsl.64bit/5.0.7/data/standard/MNI152_T1_1mm_brain.nii.gz
+Loading list of inputs from /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.inputs.txt
+Loading measures along the path from /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/elmo.2005/dpath/rh.slfp_PP_avg33_mni_bbr/pathstats.byvoxel.txt
+Loading input reference volume from /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/elmo.2005/dlabel/diff/aparc+aseg_mask.bbr.nii.gz
+Loading affine registration from /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/elmo.2005/dmri/xfms/diff2mni.bbr.mat
+Loading measures along the path from /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/elmo.2008/dpath/rh.slfp_PP_avg33_mni_bbr/pathstats.byvoxel.txt
+Loading input reference volume from /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/elmo.2008/dlabel/diff/aparc+aseg_mask.bbr.nii.gz
+Loading affine registration from /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/elmo.2008/dmri/xfms/diff2mni.bbr.mat
+Loading measures along the path from /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/elmo.2012/dpath/rh.slfp_PP_avg33_mni_bbr/pathstats.byvoxel.txt
+Loading input reference volume from /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/elmo.2012/dlabel/diff/aparc+aseg_mask.bbr.nii.gz
+Loading affine registration from /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/elmo.2012/dmri/xfms/diff2mni.bbr.mat
+INFO: Sampling interval along path is 2.32446 mm
+Writing mean path voxel coords to /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.coords.mean.txt
+Writing mean path RAS coords to /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.path.mean.txt
+Writing group table to /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.AD.txt
+Writing group table to /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.RD.txt
+Writing group table to /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.MD.txt
+Writing group table to /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.FA.txt
+Writing group table to /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.AD_Avg.txt
+Writing group table to /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.RD_Avg.txt
+Writing group table to /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.MD_Avg.txt
+Writing group table to /autofs/space/druyan_001/users/eboyd2/FStutorial_edits/diffusion_tutorial/stats/rh.slfp_PP.avg33_mni_bbr.FA_Avg.txt
+Done in 0.333 sec.
+dmri_group done
