@@ -57,3 +57,9 @@ to use `afqbrowser-publish`. After creating your token, store it in a safe
 place. `afqbrowser-publish` will ask you for this token to login to GitHub.
 Leave the password field blank to tell `afqbrowser-publish` to give you a
 prompt for your token.
+
+## Getting help
+
+Feel free to post issues [here](https://github.com/yeatmanlab/AFQ-Browser/issues)
+
+You can ask questions on the mailing list: [automated-fiber-quantification-afq@googlegroups.com](mailto:automated-fiber-quantification-afq@googlegroups.com)

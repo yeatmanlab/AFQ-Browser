@@ -19,6 +19,11 @@ tissue properties within the tracts (`Yeatman et al. 2012 <http://journals.plos.
 This software package allows researchers to interactively query the data
 processed with `AFQ` to explore patterns in the data.
 
+AFQ-Browser paper
+~~~~~~~~~~~~~~~~~
+
+If you are interested in technical details and motivation behind this project, please read our `paper <http://www.biorxiv.org/content/early/2017/08/30/182402>`_.
+
 
     .. toctree::
        :maxdepth: 2
@@ -28,6 +33,7 @@ processed with `AFQ` to explore patterns in the data.
        reference/index
        api
        dataformat
+       getting_help
 
 .. figure:: _static/BDE_Banner_revised20160211-01.jpg
    :align: center
