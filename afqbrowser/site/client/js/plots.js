@@ -743,6 +743,7 @@ afqb.plots.ready = function (error, data) {
 
 			if (afqb.global.mouse.isDown) {
 				if ($("path",this).css("stroke-width") === "2.1px") {
+                    afqb.table.settings.selectedRows[this.id] = false;
 					//uses the opacity of the row for selection and deselection
 					d3.selectAll('#' + this.id)
 						.selectAll('path')
@@ -754,6 +755,7 @@ afqb.plots.ready = function (error, data) {
 						.style("opacity", 0.3);
 
 				} else {
+                    afqb.table.settings.selectedRows[this.id] = true;
 					d3.selectAll('#' + this.id)
 						.selectAll('path')
 						.style("opacity", 1)
@@ -763,6 +765,14 @@ afqb.plots.ready = function (error, data) {
 						.selectAll('g')
 						.style("opacity", 1);
 				}
+
+                // Update the query string
+                var selectedRows = {};
+                selectedRows[this.id] = afqb.table.settings.selectedRows[this.id];
+
+                afqb.global.updateQueryString(
+                    {table: {selectedRows: selectedRows}}
+                );
 			}
 		}
 	}
