@@ -65,5 +65,6 @@ PACKAGE_DATA = {'afqbrowser': [pjoin('site', '*'),
                                pjoin('site', 'client', '*'),
                                pjoin('site', 'client', 'data', '*'),
                                pjoin('site', 'client', 'css', '*'),
-                               pjoin('site', 'client', 'js', '*')]}
+                               pjoin('site', 'client', 'js', '*'),
+                               pjoin('site', 'client', 'js', 'third-party', '*')]}
 SCRIPTS = [op.join('bin', op.split(f)[-1]) for f in glob.glob('bin/*')]
