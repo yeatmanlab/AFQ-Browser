@@ -516,6 +516,7 @@ afqb.table.tableMouseDown = function () {
     "use strict";
 	if(afqb.global.mouse.isDown) {
 		if($('g',this).css("opacity") == 0.3) {
+            afqb.table.settings.selectedRows[this.id] = true;
 			//uses the opacity of the row for selection and deselection
 			d3.selectAll('#' + this.id)
 				.selectAll('g')
@@ -526,6 +527,7 @@ afqb.table.tableMouseDown = function () {
 				.style("opacity", 1)
 				.style("stroke-width", "2.1px");
 		} else {
+            afqb.table.settings.selectedRows[this.id] = false;
 			d3.selectAll('#' + this.id)
 				.selectAll('g')
 				.style("opacity", 0.3);
@@ -535,6 +537,14 @@ afqb.table.tableMouseDown = function () {
 				.style("opacity", afqb.global.controls.plotsControlBox.lineOpacity)
 				.style("stroke-width", "1.1px");
 		}
+
+        // Update the query string
+        var selectedRows = {};
+        selectedRows[this.id] = afqb.table.settings.selectedRows[this.id];
+
+        afqb.global.updateQueryString(
+            {table: {selectedRows: selectedRows}}
+        );
 	}
 };
 
