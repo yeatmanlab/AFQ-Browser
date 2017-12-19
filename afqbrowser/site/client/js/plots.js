@@ -322,13 +322,16 @@ afqb.plots.buildPlotGui = function (error, data) {
 		.min(0).max(1)
 		.name('Line Opacity')
 		.onChange(function (value) {
-			d3.select("#tractdetails")
-				.selectAll("svg").selectAll(".tracts")
-				.filter(function () {
-					return (this.id.indexOf("mean") === -1);
-                })
-				.select(".line")
-				.style("opacity", value);
+                d3.select("#tractdetails")
+                    .selectAll("svg").selectAll(".tracts")
+                    .filter(function () {
+                        return (afqb.table.settings.selectedRows[this.id] !== true);
+                    })
+                    .filter(function () {
+                        return (this.id.indexOf("mean") === -1);
+                    })
+                    .select(".line")
+                    .style("opacity", value);
 		})
 		.onFinishChange(function (value) {
             // Update the query string
