@@ -10,7 +10,7 @@ def test_assemble():
     data_path = op.join(afqb.__path__[0], 'site')
     tdir = tempfile.mkdtemp()
     afqb.assemble(op.join(data_path, 'client', 'data', 'afq.mat'),
-                  target=tdir)
+                  target=tdir, title='', subtitle='', link='', sublink='')
 
     # Check for regression against know results:
     out_data = op.join(tdir, 'AFQ-browser', 'client', 'data')

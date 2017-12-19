@@ -21,6 +21,28 @@ parser.add_argument(
         help="Path to subject metadata csv file",
         default=None)
 
+parser.add_argument(
+        "--page-title", metavar="title",
+        help="Page title",
+        default=None)
+
+parser.add_argument(
+        "--page-subtitle", metavar="subtitle",
+        help="Page subtitle",
+        default=None)
+
+parser.add_argument(
+        "--page-title-link", metavar="link",
+        help="Title hyperlink (including http(s)://)",
+        default=None)
+
+parser.add_argument(
+        "--page-subtitle-link", metavar="sublink",
+        help="Subtitle hyperlink (including http(s)://)",
+        default=None)
+
 args = parser.parse_args()
 
-afqb.assemble(args.source, target=args.target, metadata=args.metadata)
+afqb.assemble(args.source, target=args.target, metadata=args.metadata,
+              title=args.title, subtitle=args.subtitle,
+              link=args.link, sublink=args.sublink)
