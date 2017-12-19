@@ -76,8 +76,8 @@ def upload(target, repo_name, uname=None, upass=None, token=None):
     my_fork = u.create_fork(afqvault_repo)
 
     # Create a local copy of your fork:
-    tdir = tempfile.TemporaryDirectory()
-    av_repo = git.Repo.init(op.join(tdir.name, 'afqvault'))
+    tdir = tempfile.mkdtemp()
+    av_repo = git.Repo.init(op.join(tdir, 'afqvault'))
     origin = av_repo.create_remote('origin', my_fork.clone_url)
     origin.fetch()
     av_repo.create_head('master', origin.refs.master)
@@ -92,7 +92,7 @@ def upload(target, repo_name, uname=None, upass=None, token=None):
     branch.checkout()
 
     # Edit the manifest file with your information:
-    manifest_fname = op.join(tdir.name, 'afqvault', 'manifest.csv')
+    manifest_fname = op.join(tdir, 'afqvault', 'manifest.csv')
     manifest = pd.read_csv(manifest_fname,
                            index_col=0)
     shape = manifest.shape
