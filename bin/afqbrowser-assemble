@@ -3,8 +3,9 @@
 from argparse import ArgumentParser
 import afqbrowser as afqb
 
-description = """Assembele an instance of the AFQ-Browser with
-        data provided as a mat file"""
+description = """Assembles an instance of the AFQ-Browser with data provided as
+a mat file."""
+
 parser = ArgumentParser(description=description)
 
 parser.add_argument(
@@ -21,6 +22,28 @@ parser.add_argument(
         help="Path to subject metadata csv file",
         default=None)
 
+parser.add_argument(
+        "--page-title", metavar="title",
+        help="Page title",
+        default=None)
+
+parser.add_argument(
+        "--page-subtitle", metavar="subtitle",
+        help="Page subtitle",
+        default=None)
+
+parser.add_argument(
+        "--page-title-link", metavar="link",
+        help="Title hyperlink (including http(s)://)",
+        default=None)
+
+parser.add_argument(
+        "--page-subtitle-link", metavar="sublink",
+        help="Subtitle hyperlink (including http(s)://)",
+        default=None)
+
 args = parser.parse_args()
 
-afqb.assemble(args.source, target=args.target, metadata=args.metadata)
+afqb.assemble(args.source, target=args.target, metadata=args.metadata,
+              title=args.page_title, subtitle=args.page_subtitle,
+              link=args.page_title_link, sublink=args.page_subtitle_link)

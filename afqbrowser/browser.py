@@ -343,7 +343,98 @@ def copy_and_overwrite(from_path, to_path):
     shutil.copytree(from_path, to_path)
 
 
-def assemble(source, target=None, metadata=None):
+def update_settings_json(settings_path, title=None, subtitle=None,
+                         link=None, sublink=None):
+    """Update settings.json with user supplied values
+
+    settings_path : str
+    Path to the settings.json file to be updated
+
+    title : str, optional.
+    Custom page title. Default: None.
+
+    subtitle : str, optional.
+    Custom page subtitle. Default: None.
+
+    link : str, optional.
+    Custom href for page title. Default: None.
+
+    sublink : str, optional.
+    Custom href for page subtitle. Default: None.
+    """
+    # Load the settings.json
+    with open(settings_path) as fp:
+        settings = json.load(fp)
+
+    # Populate defaults from settings.json if they exist,
+    # otherwise set to empty
+    defaults = {}
+    if settings.get('global') and settings.get('global').get('html'):
+        html_settings = settings.get('global').get('html')
+    else:
+        html_settings = {}
+
+    defaults['title'] = ('Page title', html_settings.get('title'))
+    defaults['subtitle'] = ('Page subtitle', html_settings.get('subtitle'))
+    defaults['link'] = ('Title hyperlink (including http(s)://)',
+                        html_settings.get('link'))
+    defaults['sublink'] = ('Subtitle hyperlink (including http(s)://)',
+                           html_settings.get('sublink'))
+
+    # python 2 compatible user input
+    try:
+        prompt = raw_input
+    except NameError:
+        prompt = input
+
+    # Later, we'll iterate over key_list to get user input. But we don't
+    # want to ask for user input if it's supplied as an argument to this
+    # function, so if args are provided, use them as defaults, otherwise
+    # append to key_list
+    key_list = []
+    if title is not None:
+        html_settings['title'] = title
+    else:
+        key_list.append('title')
+
+    if subtitle is not None:
+        html_settings['subtitle'] = subtitle
+    else:
+        key_list.append('subtitle')
+
+    if link is not None:
+        html_settings['link'] = link
+    else:
+        key_list.append('link')
+
+    if sublink is not None:
+        html_settings['sublink'] = sublink
+    else:
+        key_list.append('sublink')
+
+    # Prompt for input
+    for key in key_list:
+        prompt_text, value = defaults[key]
+        text = '{p:s} [{d!s}]: '.format(p=prompt_text, d=value)
+        new_val = prompt(text)
+        if not new_val:
+            new_val = value
+
+        if new_val is not None:
+            html_settings[key] = new_val
+
+    # Update the settings.json dict
+    html_settings = {'global': {'html': html_settings}}
+    settings.update(html_settings)
+
+    # Write to file
+    with open(settings_path, 'w') as fp:
+        json.dump(settings, fp)
+
+
+def assemble(source, target=None, metadata=None,
+             title=None, subtitle=None,
+             link=None, sublink=None):
     """
     Spin up an instance of the AFQ-Browser with data provided as a mat file.
 
@@ -363,6 +454,18 @@ def assemble(source, target=None, metadata=None):
         provided through other. Default: read metadata from AFQ struct, or
         generate a metadata table with just a "subjectID" column (e.g., for
         TRACULA).
+
+    title : str, optional.
+        Custom page title. Default: None.
+
+    subtitle : str, optional.
+        Custom page subtitle. Default: None.
+
+    link : str, optional.
+        Custom href for page title. Default: None.
+
+    sublink : str, optional.
+        Custom href for page subtitle. Default: None.
     """
     if target is None:
         target = '.'
@@ -371,6 +474,10 @@ def assemble(source, target=None, metadata=None):
     data_path = op.join(afqb.__path__[0], 'site')
     copy_and_overwrite(data_path, site_dir)
     out_path = op.join(site_dir, 'client', 'data')
+
+    settings_path = op.join(site_dir, 'client', 'settings.json')
+    update_settings_json(settings_path, title, subtitle, link, sublink)
+
     if source.endswith('.mat'):
         # We have an AFQ-generated mat-file on our hands:
         nodes_fname, meta_fname, params_fname = afq_mat2tables(
