@@ -44,5 +44,5 @@ parser.add_argument(
 args = parser.parse_args()
 
 afqb.assemble(args.source, target=args.target, metadata=args.metadata,
-              title=args.title, subtitle=args.subtitle,
-              link=args.link, sublink=args.sublink)
+              title=args.page_title, subtitle=args.page_subtitle,
+              link=args.page_title_link, sublink=args.page_subtitle_link)
