@@ -23,5 +23,5 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-url = gh.upload(args.target, args.reponame, args.org)
+url = gh.upload(args.target, args.reponame, org=args.org)
 print("Website available on: %s" % url)

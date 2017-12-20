@@ -8,7 +8,7 @@ import github as gh
 import git
 
 
-def upload(target, repo_name, uname=None, upass=None, token=None):
+def upload(target, repo_name, uname=None, upass=None, token=None, org=None):
     """
     Upload an assembled AFQ-Browser site to a github pages website.
 
@@ -23,7 +23,9 @@ def upload(target, repo_name, uname=None, upass=None, token=None):
         GitHub user-name
     upass : str, optional
         GitHub password
-
+    org : str, optional
+        When provided, this means that the website will be at:
+        https://<org>.github.io/<repo_name>. Defaults to use the user-name.
     """
     # Get all the files that will be committed/pushed
     file_list = []
@@ -47,7 +49,11 @@ def upload(target, repo_name, uname=None, upass=None, token=None):
     # Create the remote repo on GitHub (use PyGithub)
     g = gh.Github(login_uname, upass)
     u = g.get_user()
-    remote = u.create_repo(repo_name)
+    if org is not None:
+        gh_org = g.get_organization(org)
+        remote = gh_org.create_repo(repo_name)
+    else:
+        remote = u.create_repo(repo_name)
     # Create the local repo using GitPython:
     r = git.Repo.init(client_folder)
     # Add all of the files to the repo's gh-pages branch
@@ -67,7 +73,10 @@ def upload(target, repo_name, uname=None, upass=None, token=None):
     o.push("gh-pages")
 
     # Strangely, that last slash is crucial so that this works as a link:
-    site_name = "https://" + uname + ".github.io/" + repo_name + "/"
+    if org is not None:
+        site_name = "https://" + org + ".github.io/" + repo_name + "/"
+    else:
+        site_name = "https://" + uname + ".github.io/" + repo_name + "/"
 
     # Next, we deposit to afqvault
     afqvault_repo = g.get_repo('afqvault/afqvault')
@@ -96,8 +105,9 @@ def upload(target, repo_name, uname=None, upass=None, token=None):
     manifest = pd.read_csv(manifest_fname,
                            index_col=0)
     shape = manifest.shape
-    manifest = manifest.append(pd.DataFrame(data=dict(username=[uname],
-                                            repository_name=[repo_name])))
+    manifest = manifest.append(pd.DataFrame(data=dict(
+                username=[uname if org is None else org],
+                repository_name=[repo_name])))
 
     # Deduplicate -- if this site was already uploaded, we're done!
     manifest = manifest.drop_duplicates()
