@@ -106,8 +106,8 @@ def upload(target, repo_name, uname=None, upass=None, token=None, org=None):
                            index_col=0)
     shape = manifest.shape
     manifest = manifest.append(pd.DataFrame(data=dict(
-                username=[uname if org is None else org],
-                repository_name=[repo_name])))
+        username=[uname if org is None else org],
+        repository_name=[repo_name])))
 
     # Deduplicate -- if this site was already uploaded, we're done!
     manifest = manifest.drop_duplicates()
