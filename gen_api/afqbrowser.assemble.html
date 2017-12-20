@@ -44,7 +44,7 @@
 <h1>afqbrowser.assemble<a class="headerlink" href="#afqbrowser-assemble" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="afqbrowser.assemble">
-<code class="descclassname">afqbrowser.</code><code class="descname">assemble</code><span class="sig-paren">(</span><em>source</em>, <em>target=None</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="headerlink" href="#afqbrowser.assemble" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">afqbrowser.</code><code class="descname">assemble</code><span class="sig-paren">(</span><em>source</em>, <em>target=None</em>, <em>metadata=None</em>, <em>title=None</em>, <em>subtitle=None</em>, <em>link=None</em>, <em>sublink=None</em><span class="sig-paren">)</span><a class="headerlink" href="#afqbrowser.assemble" title="Permalink to this definition">¶</a></dt>
 <dd><p>Spin up an instance of the AFQ-Browser with data provided as a mat file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -61,12 +61,28 @@ stats folder.</p>
 browser in. Default: pwd.</p>
 </div></blockquote>
 <p><strong>metadata</strong> : str, optional.</p>
-<blockquote class="last">
+<blockquote>
 <div><p>Path to an input csv metadata file. This file requires a “subjectID”
 column to work. If a file is provided, it will overwrite metadata
 provided through other. Default: read metadata from AFQ struct, or
 generate a metadata table with just a “subjectID” column (e.g., for
 TRACULA).</p>
+</div></blockquote>
+<p><strong>title</strong> : str, optional.</p>
+<blockquote>
+<div><p>Custom page title. Default: None.</p>
+</div></blockquote>
+<p><strong>subtitle</strong> : str, optional.</p>
+<blockquote>
+<div><p>Custom page subtitle. Default: None.</p>
+</div></blockquote>
+<p><strong>link</strong> : str, optional.</p>
+<blockquote>
+<div><p>Custom href for page title. Default: None.</p>
+</div></blockquote>
+<p><strong>sublink</strong> : str, optional.</p>
+<blockquote class="last">
+<div><p>Custom href for page subtitle. Default: None.</p>
 </div></blockquote>
 </td>
 </tr>
