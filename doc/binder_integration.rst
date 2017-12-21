@@ -7,7 +7,7 @@ To facilitate further computations on data-sets published using
 ``AFQ-Browser``, we integrate data-sets that are published on GitHub (see :ref:`usage_guide`) with the `Binder <https://mybinder.org/>`_ service.
 
 Binder makes the contents of a GitHub repository available through a
-`Jupyter <jupyter.org>` computational notebook interface. This means that
+`Jupyter <jupyter.org>`_ computational notebook interface. This means that
 visitors to a published ``AFQ-Browser`` instance can start computing on the
 data immediately without having to download the data, or install any software.
 
