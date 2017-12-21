@@ -15,7 +15,7 @@ the paper describing the dataset, see
 `this site <https://yeatmanlab.github.io/Sarica_2017>`_ for an example). This
 will create a folder called ``AFQ-browser`` in your current file-system
 location, containing the materials for your `AFQ-Browser` instance
-(alternatively, use the `-t` flag to provide another file-system location as a
+(alternatively, use the ``-t`` flag to provide another file-system location as a
 target).
 
 To view the assembled website, run::
@@ -23,10 +23,10 @@ To view the assembled website, run::
     afqbrowser-run
 
 Per default, this will look for the instance of `AFQ-Browser` in your current
-file-system location (provide another target using the `-t` flag). Open a
+file-system location (provide another target using the ``-t`` flag). Open a
 browser pointing to `http://localhost:8080 <http://localhost:8080>`_ ,
 to view the visualization of these data and to interact with it (another port
-can be set using the `-p` flag). The variables in the metadata table are
+can be set using the ``-p`` flag). The variables in the metadata table are
 created based on the variables that are stored in the `mat file <https://github.com/yeatmanlab/AFQ/wiki#including-subject-metadata-in-the-afq-structure>`_ of the afq.mat file.
 
 
@@ -45,7 +45,7 @@ Where ``/path/to/target`` points to the folder that was created by
 ``afqbrowser-assemble``, and ``reponame`` will be used to create the URL of the
 website. You will be prompted for your GitHub user-name and password, and the
 URL will be `https://username.github.io/reponame`, unless you also provide an
-input to the optional `-o` flag with the name of a `GitHub organization <https://github.com/blog/674-introducing-organizations>`_ that you are a member
+input to the optional ``-o`` flag with the name of a `GitHub organization <https://github.com/blog/674-introducing-organizations>`_ that you are a member
 of (and are allowed to create new repositories for!), in which case, the website URL will be: `https://orgname.github.io/reponame`.
 
 If you use two-factor authentication to access GitHub, you'll need to
