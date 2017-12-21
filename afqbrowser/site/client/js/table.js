@@ -78,7 +78,9 @@ afqb.table.buildTable = function (error, useless, data) {
             if (column.every(isInt)) {
                 afqb.table.subFormats[key] = d3.format("d");
             } else {
-                afqb.table.subFormats[key] = d3.format(".5");
+                afqb.table.subFormats[key] = function (n) {
+                    return parseFloat(d3.format(".4f")(n));
+                }
             }
         } else {
             afqb.table.subFormats[key] = identity;
