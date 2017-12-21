@@ -44,9 +44,10 @@ already have one, start by `creating a GitHub account <https://github.com/join>`
 Where ``/path/to/target`` points to the folder that was created by
 ``afqbrowser-assemble``, and ``reponame`` will be used to create the URL of the
 website. You will be prompted for your GitHub user-name and password, and the
-URL will be `https://username.github.io/reponame`, unless you also provide an
+URL will be `https://username.github.io/reponame`. If you also provide an
 input to the optional ``-o`` flag with the name of a `GitHub organization <https://github.com/blog/674-introducing-organizations>`_ that you are a member
-of (and are allowed to create new repositories for!), in which case, the website URL will be: `https://orgname.github.io/reponame`.
+of (and are allowed to create new repositories for!), the website URL will be:
+`https://orgname.github.io/reponame`.
 
 If you use two-factor authentication to access GitHub, you'll need to
 `create a personal access token <https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/>`_
