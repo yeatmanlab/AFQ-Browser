@@ -24,7 +24,8 @@ major fiber tracts in individual human brains, and quantification of the
 tissue properties within the tracts (`Yeatman et al. 2012 <http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0049790>`_).
 
 This software package allows researchers to interactively query the data
-processed with `AFQ` to explore patterns in the data.
+processed with `AFQ` (or other similar software) to explore patterns in the
+data.
 
 AFQ-Browser paper
 ~~~~~~~~~~~~~~~~~
