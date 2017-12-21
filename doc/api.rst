@@ -8,10 +8,9 @@ Python Functions
    :template: function.rst
    :toctree: gen_api
 
-   afqbrowser.mat2tables
    afqbrowser.assemble
    afqbrowser.run
-
+   afqbrowser.upload
 
 
 JavaScript API

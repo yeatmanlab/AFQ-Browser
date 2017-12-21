@@ -44,12 +44,10 @@ Documentation
        installation_guide
        usage_guide
        getting_help
-       reference/index
-       api
        dataformat
        long_term_preservation
        binder_integration
-
+       api
 
 
 .. _AFQ: http://github.com/yeatmanlab/AFQ
