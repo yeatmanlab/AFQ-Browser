@@ -1,3 +1,5 @@
+.. _home:
+
 .. figure:: _static/BDE_Banner_revised20160211-01.jpg
    :align: center
    :figclass: align-center
@@ -29,21 +31,25 @@ AFQ-Browser paper
 
 If you are interested in technical details and motivation behind this project, please read our `paper <http://www.biorxiv.org/content/early/2017/08/30/182402>`_.
 
+Acknowledgements
+~~~~~~~~~~~~~~~~~~~
 
+this work was supported by a grant from the `Gordon & Betty Moore Foundation <https://www.moore.org/>`_,  and from the `Alfred P. Sloan Foundation <http://www.sloan.org/>`_ to the `University of Washington eScience Institute <http://escience.washington.edu/>`_.
+
+Documentation
+~~~~~~~~~~~~~~~~~
     .. toctree::
        :maxdepth: 2
 
        installation_guide
        usage_guide
+       getting_help
        reference/index
        api
        dataformat
-       getting_help
+       long_term_preservation
+       binder_integration
 
 
-   Acknowledgements: this work was supported by a grant from the
-   `Gordon & Betty Moore Foundation <https://www.moore.org/>`_,  and from the
-   `Alfred P. Sloan Foundation <http://www.sloan.org/>`_ to the
-   `University of Washington eScience Institute <http://escience.washington.edu/>`_.
 
 .. _AFQ: http://github.com/yeatmanlab/AFQ
