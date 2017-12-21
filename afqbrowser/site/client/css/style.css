@@ -635,17 +635,23 @@ div.tooltip {
     pointer-events: none;
 }
 
+
+
 .titleTip {
-  margin: 2px;
+  margin: .2em;
+}
+
+.titleTip hr {
+  margin: 0.5em;
 }
 
 .zTip {
-  margin-bottom: 2px;
+  margin-bottom: .2em;
 }
 
 .disabled {
   cursor: not-allowed;
-  
+
   opacity: 0.5;
 }
 
