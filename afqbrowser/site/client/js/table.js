@@ -64,6 +64,10 @@ afqb.table.buildTable = function (error, useless, data) {
             return !isNaN(+e);
         }
 
+        function isInt(e) {
+            return Number.isInteger(+e);
+        }
+
         function identity (arg) {
             return arg;
         }
@@ -71,7 +75,13 @@ afqb.table.buildTable = function (error, useless, data) {
         if (column.every(isBinary)) {
             afqb.table.subFormats[key] = d3.format("0b");
         } else if (column.every(isNum)) {
-            afqb.table.subFormats[key] = d3.format(".7g");
+            if (column.every(isInt)) {
+                afqb.table.subFormats[key] = d3.format("d");
+            } else {
+                afqb.table.subFormats[key] = function (n) {
+                    return parseFloat(d3.format(".4f")(n));
+                }
+            }
         } else {
             afqb.table.subFormats[key] = identity;
         }
