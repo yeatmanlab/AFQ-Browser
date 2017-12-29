@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>afqbrowser.assemble &#8212; afqbrowser 0.1 documentation</title>
+    <title>afqbrowser.upload &#8212; afqbrowser 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -24,8 +24,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="afqbrowser.run" href="afqbrowser.run.html" />
-    <link rel="prev" title="API" href="../api.html" />
+    <link rel="prev" title="afqbrowser.run" href="afqbrowser.run.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -41,49 +40,37 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="afqbrowser-assemble">
-<h1>afqbrowser.assemble<a class="headerlink" href="#afqbrowser-assemble" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="afqbrowser-upload">
+<h1>afqbrowser.upload<a class="headerlink" href="#afqbrowser-upload" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="afqbrowser.assemble">
-<code class="descclassname">afqbrowser.</code><code class="descname">assemble</code><span class="sig-paren">(</span><em>source</em>, <em>target=None</em>, <em>metadata=None</em>, <em>title=None</em>, <em>subtitle=None</em>, <em>link=None</em>, <em>sublink=None</em><span class="sig-paren">)</span><a class="headerlink" href="#afqbrowser.assemble" title="Permalink to this definition">¶</a></dt>
-<dd><p>Spin up an instance of the AFQ-Browser with data provided as a mat file.</p>
+<dt id="afqbrowser.upload">
+<code class="descclassname">afqbrowser.</code><code class="descname">upload</code><span class="sig-paren">(</span><em>target</em>, <em>repo_name</em>, <em>uname=None</em>, <em>upass=None</em>, <em>token=None</em>, <em>org=None</em><span class="sig-paren">)</span><a class="headerlink" href="#afqbrowser.upload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload an assembled AFQ-Browser site to a github pages website.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>source</strong> : str</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>target</strong> : str</p>
 <blockquote>
-<div><p>Path to a mat-file containing the AFQ data structure or to a TRACULA
-stats folder.</p>
+<div><p>Local path to the file-system location where the AFQ-Browser files are
+(need to run <cite>assemble</cite> before running this function)</p>
 </div></blockquote>
-<p><strong>target</strong> : str, optional.</p>
+<p><strong>repo_name</strong> : str</p>
 <blockquote>
-<div><p>Path to a file-system location to create this instance of the
-browser in. Default: pwd.</p>
+<div><p>The website will be at <a class="reference external" href="https:/">https:/</a>/&lt;username&gt;.github.io/&lt;repo_name&gt;</p>
 </div></blockquote>
-<p><strong>metadata</strong> : str, optional.</p>
+<p><strong>uname</strong> : str, optional</p>
 <blockquote>
-<div><p>Path to an input csv metadata file. This file requires a “subjectID”
-column to work. If a file is provided, it will overwrite metadata
-provided through other. Default: read metadata from AFQ struct, or
-generate a metadata table with just a “subjectID” column (e.g., for
-TRACULA).</p>
+<div><p>GitHub user-name</p>
 </div></blockquote>
-<p><strong>title</strong> : str, optional.</p>
+<p><strong>upass</strong> : str, optional</p>
 <blockquote>
-<div><p>Custom page title. Default: None.</p>
+<div><p>GitHub password</p>
 </div></blockquote>
-<p><strong>subtitle</strong> : str, optional.</p>
-<blockquote>
-<div><p>Custom page subtitle. Default: None.</p>
-</div></blockquote>
-<p><strong>link</strong> : str, optional.</p>
-<blockquote>
-<div><p>Custom href for page title. Default: None.</p>
-</div></blockquote>
-<p><strong>sublink</strong> : str, optional.</p>
+<p><strong>org</strong> : str, optional</p>
 <blockquote class="last">
-<div><p>Custom href for page subtitle. Default: None.</p>
+<div><p>When provided, this means that the website will be at:
+<a class="reference external" href="https:/">https:/</a>/&lt;org&gt;.github.io/&lt;repo_name&gt;. Defaults to use the user-name.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -139,7 +126,7 @@ TRACULA).</p>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="../_sources/gen_api/afqbrowser.assemble.rst.txt"
+      <a href="../_sources/gen_api/afqbrowser.upload.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

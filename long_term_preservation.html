@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Getting more help &#8212; afqbrowser 0.1 documentation</title>
+    <title>Long-term data preservation &#8212; afqbrowser 0.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="The AFQ-Browser data format" href="dataformat.html" />
-    <link rel="prev" title="Creating and publishing an AFQ-Browser instance" href="usage_guide.html" />
+    <link rel="next" title="Integration of AFQ-Browser and Binder" href="binder_integration.html" />
+    <link rel="prev" title="The AFQ-Browser data format" href="dataformat.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -41,11 +41,30 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="getting-more-help">
-<span id="getting-help"></span><h1>Getting more help<a class="headerlink" href="#getting-more-help" title="Permalink to this headline">¶</a></h1>
-<p>If you run into issues using <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> feel free to post an issue on our
-GitHub repository: <a class="reference external" href="https://github.com/yeatmanlab/AFQ-Browser/issues">https://github.com/yeatmanlab/AFQ-Browser/issues</a>, or to get in touch via
-our mailing list: <a class="reference external" href="mailto:automated-fiber-quantification-afq&#37;&#52;&#48;googlegroups&#46;com">automated-fiber-quantification-afq<span>&#64;</span>googlegroups<span>&#46;</span>com</a>.</p>
+  <div class="section" id="long-term-data-preservation">
+<span id="long-term-preservation"></span><h1>Long-term data preservation<a class="headerlink" href="#long-term-data-preservation" title="Permalink to this headline">¶</a></h1>
+<p>GitHub is great, but long-term preservation of data stored on GitHub is not
+guaranteed. To promote long-term preservation of data from instances of
+<code class="docutils literal"><span class="pre">AFQ-Browser</span></code>, and eventual integration across data-sets
+we record data published through <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> (see <a class="reference internal" href="usage_guide.html#usage-guide"><span class="std std-ref">Creating and publishing an AFQ-Browser instance</span></a>) in
+<a class="reference external" href="http://afqvault.org">AFQ Vault</a>, a centralized data-base of <code class="docutils literal"><span class="pre">AFQ-Browser</span></code>
+instances.</p>
+<p>In addition, we recommend that users of the software create a digital object
+identifier for their instance of <code class="docutils literal"><span class="pre">AFQ-Browser</span></code>. One great way to do that uses
+Zenodo (see below).</p>
+<div class="section" id="using-zenodo-for-long-term-data-preservation">
+<h2>Using Zenodo for long-term data preservation<a class="headerlink" href="#using-zenodo-for-long-term-data-preservation" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://zenodo.org/">Zenodo</a> is as service developed by <a class="reference external" href="https://home.cern/">CERN</a> to provide a platform for open and sustainable science
+(see <a class="reference external" href="http://about.zenodo.org/">About Zenodo</a> for more details).</p>
+<p>To create a digital object identifier (DOI) for your GitHub-published
+instance of <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> <a class="reference external" href="https://zenodo.org/signup/">join Zenodo</a> with
+your GitHub account. After you do that, you can deposit the GitHub repository
+that holds your instance of <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> by following these steps:</p>
+<ol class="arabic simple">
+<li>Flip the switch for your repo on <a class="reference external" href="https://zenodo.org/account/settings/github/">Zenodo’s GitHub settings page</a></li>
+<li>Create a release in the GitHub repo containing your instance of <code class="docutils literal"><span class="pre">AFQ-Browser</span></code>. See <a class="reference external" href="https://help.github.com/articles/creating-releases/">this page</a> for instructions.</li>
+</ol>
+</div>
 </div>
 
 
@@ -61,9 +80,12 @@ our mailing list: <a class="reference external" href="mailto:automated-fiber-qua
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation_guide.html">Installing <code class="docutils literal"><span class="pre">AFQ-Browser</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html">Creating and publishing an <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> instance</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting more help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_help.html">Getting more help</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataformat.html">The AFQ-Browser data format</a></li>
-<li class="toctree-l1"><a class="reference internal" href="long_term_preservation.html">Long-term data preservation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Long-term data preservation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#using-zenodo-for-long-term-data-preservation">Using Zenodo for long-term data preservation</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="binder_integration.html">Integration of <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> and <code class="docutils literal"><span class="pre">Binder</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
@@ -90,7 +112,7 @@ our mailing list: <a class="reference external" href="mailto:automated-fiber-qua
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="_sources/getting_help.rst.txt"
+      <a href="_sources/long_term_preservation.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

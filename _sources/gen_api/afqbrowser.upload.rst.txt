@@ -1,0 +1,12 @@
+afqbrowser.upload
+=================
+
+.. currentmodule:: afqbrowser
+
+.. autofunction:: upload
+
+.. include:: afqbrowser.upload.examples
+
+.. raw:: html
+
+    <div style='clear:both'></div>

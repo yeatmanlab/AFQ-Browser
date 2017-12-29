@@ -24,7 +24,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installing afqbrowser" href="installation_guide.html" />
+    <link rel="next" title="Installing AFQ-Browser" href="installation_guide.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -40,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="align-center figure">
+  <div class="align-center figure" id="home">
 <a class="reference external image-reference" href="http://brainandeducation.com"><img alt="_images/BDE_Banner_revised20160211-01.jpg" src="_images/BDE_Banner_revised20160211-01.jpg" /></a>
 </div>
 <div class="section" id="afq-browser">
@@ -57,22 +57,39 @@ disorders. <cite>AFQ</cite> is a sofware package focused on automated delineatio
 major fiber tracts in individual human brains, and quantification of the
 tissue properties within the tracts (<a class="reference external" href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0049790">Yeatman et al. 2012</a>).</p>
 <p>This software package allows researchers to interactively query the data
-processed with <cite>AFQ</cite> to explore patterns in the data.</p>
+processed with <cite>AFQ</cite> (or other similar software) to explore patterns in the
+data.</p>
 </div>
 <div class="section" id="afq-browser-paper">
 <h2>AFQ-Browser paper<a class="headerlink" href="#afq-browser-paper" title="Permalink to this headline">¶</a></h2>
 <p>If you are interested in technical details and motivation behind this project, please read our <a class="reference external" href="http://www.biorxiv.org/content/early/2017/08/30/182402">paper</a>.</p>
+</div>
+<div class="section" id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h2>
+<p>this work was supported by a grant from the <a class="reference external" href="https://www.moore.org/">Gordon &amp; Betty Moore Foundation</a>,  and from the <a class="reference external" href="http://www.sloan.org/">Alfred P. Sloan Foundation</a> to the <a class="reference external" href="http://escience.washington.edu/">University of Washington eScience Institute</a>.</p>
+</div>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><blockquote>
 <div><div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation_guide.html">Installing <cite>afqbrowser</cite></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="installation_guide.html">Installing <code class="docutils literal"><span class="pre">AFQ-Browser</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation_guide.html#installing-the-release-version">Installing the release version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation_guide.html#installing-the-development-version">Installing the development version</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html">Using <cite>afqbrowser</cite></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="usage_guide.html">Creating and publishing an <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> instance</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage_guide.html#publishing-your-website">Publishing your website</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_help.html">Getting more help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataformat.html">The AFQ-Browser data format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="long_term_preservation.html">Long-term data preservation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="long_term_preservation.html#using-zenodo-for-long-term-data-preservation">Using Zenodo for long-term data preservation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="binder_integration.html">Integration of <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> and <code class="docutils literal"><span class="pre">Binder</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="binder_integration.html#software-available-on-binder">Software available on Binder</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
@@ -80,15 +97,8 @@ processed with <cite>AFQ</cite> to explore patterns in the data.</p>
 <li class="toctree-l2"><a class="reference internal" href="api.html#javascript-api">JavaScript API</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="dataformat.html">The AFQ-Browser data format</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_help.html">Help using <cite>afqbrowser</cite></a></li>
 </ul>
 </div>
-</div></blockquote>
-<p>Acknowledgements: this work was supported by a grant from the
-<a class="reference external" href="https://www.moore.org/">Gordon &amp; Betty Moore Foundation</a>,  and from the
-<a class="reference external" href="http://www.sloan.org/">Alfred P. Sloan Foundation</a> to the
-<a class="reference external" href="http://escience.washington.edu/">University of Washington eScience Institute</a>.</p>
 </div></blockquote>
 </div>
 </div>
@@ -104,11 +114,13 @@ processed with <cite>AFQ</cite> to explore patterns in the data.</p>
             </a></p>
 <h3><a href="#">Table Of Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation_guide.html">Installing <cite>afqbrowser</cite></a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html">Using <cite>afqbrowser</cite></a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation_guide.html">Installing <code class="docutils literal"><span class="pre">AFQ-Browser</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_guide.html">Creating and publishing an <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> instance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_help.html">Getting more help</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataformat.html">The AFQ-Browser data format</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_help.html">Help using <cite>afqbrowser</cite></a></li>
+<li class="toctree-l1"><a class="reference internal" href="long_term_preservation.html">Long-term data preservation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="binder_integration.html">Integration of <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> and <code class="docutils literal"><span class="pre">Binder</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">

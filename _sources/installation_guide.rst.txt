@@ -1,12 +1,14 @@
+.. _installation_guide:
 
-Installing `afqbrowser`
-========================
+
+Installing ``AFQ-Browser``
+==========================
 
 Installing the release version
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The released version of the software is the one that is officially supported,
-and if you are getting started with afqbrowser, this is probably where you
+and if you are getting started with ``AFQ-Browser``, this is probably where you
 should get started
 
 AFQ-browser depends on numpy_, pandas_ and scipy_. The `publish` mechanisms also

@@ -1,3 +1,5 @@
+.. _dataformat:
+
 
 The AFQ-Browser data format
 ============================
