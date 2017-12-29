@@ -6,7 +6,7 @@ import glob
 # Format expected by setup.py and doc/source/conf.py: string of form "X.Y.Z"
 _version_major = 0
 _version_minor = 2
-_version_micro = ''  # use '' for first of series, number for 1 and above
+_version_micro = 1  # use '' for first of series, number for 1 and above
 # _version_extra = 'dev'
 _version_extra = ''  # Uncomment this for full releases
 
@@ -35,14 +35,13 @@ long_description = """
 AFQ-browser is a software library for visualization of results from
 automated fiber quantification of human brain tractography.
 
-The software takes as input the results of analysis from the <> software
+The software takes as input the results of analysis from the ``AFQ`` software
 and produces a browser-based visualization of the data. Command-line tools
 allow users to create these visualizations from their data and upload them to
 share with others as a website.
 
-For instructions on installation and use, visit the documentation_.
-
-.. _README: https://yeatmanlab.github.io/AFQ-Browser
+For instructions on installation and use, visit the documentation:
+https://yeatmanlab.github.io/AFQ-Browser
 
 """
 
@@ -66,5 +65,9 @@ PACKAGE_DATA = {'afqbrowser': [pjoin('site', '*'),
                                pjoin('site', 'client', 'data', '*'),
                                pjoin('site', 'client', 'css', '*'),
                                pjoin('site', 'client', 'js', '*'),
-                               pjoin('site', 'client', 'js', 'third-party', '*')]}
+                               pjoin('site', 'client', 'js',
+                                     'third-party', '*')]}
+
+REQUIRES = ["numpy", "pandas", "scipy", "PyGithub", "GitPython"]
+
 SCRIPTS = [op.join('bin', op.split(f)[-1]) for f in glob.glob('bin/*')]
