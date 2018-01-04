@@ -626,23 +626,19 @@ afqb.plots.ready = function (error, data) {
 			if ($("path",this).css("stroke-width") === "2.1px") {
 
 				// calculate the x,y coordinates close to the mouse
-				var Nnodes = d.values.length;
 				var key = d3.select(self.parentNode).data()[0].key;
-				var fkey = afqb.global.formatKeyName(key)
-				var x0 = afqb.plots.xScale[fkey].invert(d3.mouse(this)[0])
-				var nodeIndex = Math.ceil(x0)
+				var fkey = afqb.global.formatKeyName(key);
+				var x0 = afqb.plots.xScale[fkey].invert(d3.mouse(this)[0]);
+				var nodeIndex = Math.ceil(x0);
 				var y0 = d.values[nodeIndex][afqb.global.controls.plotsControlBox.plotKey]
 
 				// get the correct tract name for this plot
-				var key = d3.select(self.parentNode).data().key;
 				var plotIdx = 0;
 				afqb.plots.tractMean.forEach(function(val, idx){
 					if (val.key === key){
 						plotIdx = idx
 					}
-				})
-
-
+				});
 
 				// store the sort key, used for coloring if the table is sorted
 				var sortKey = afqb.table.settings.sort.key;
@@ -684,7 +680,7 @@ afqb.plots.ready = function (error, data) {
 					if (val.subjectID === self.id){
 						tableVal = val
 					}
-				})
+				});
 
 				// select the tooltip, make it visible, format the HTML, and set the position
 				d3.select("#tractdetails").select(".tooltip")
@@ -741,8 +737,7 @@ afqb.plots.ready = function (error, data) {
 					})
 					.style("left", (d3.event.pageX) + "px")
 					.style("top", (d3.event.pageY - 28) + "px");
-			} // end if statment for tooltip
-
+			} // end if statement for tooltip
 
 			if (afqb.global.mouse.isDown) {
 				if ($("path",this).css("stroke-width") === "2.1px") {
