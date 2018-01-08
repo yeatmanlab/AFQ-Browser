@@ -1134,7 +1134,9 @@ afqb.plots.zoomAxis = function () {
 afqb.plots.newBrush = function (name) {
     "use strict";
     var brush = d3.svg.brush()
-        .x(afqb.plots.xAxisScale)
+        .x(d3.scale.linear()
+            .range([afqb.plots.axisOffset.left + afqb.plots.m.left, afqb.plots.w + afqb.plots.m.left])
+            .domain([0, 100]))
         .on("brush", brushed)
 		.on("brushstart", brushStart)
 		.on("brushend", brushEnd);
