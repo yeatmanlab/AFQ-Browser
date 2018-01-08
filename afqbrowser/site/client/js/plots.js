@@ -425,7 +425,7 @@ afqb.plots.ready = function (error, data) {
     	var len = afqb.plots.tractMean[i].values.length;
         var id = afqb.global.formatKeyName(afqb.plots.tracts[i]); // Subject to ordering errors since we call
         afqb.plots.xScale[id] = d3.scale.linear()
-            .range([afqb.plots.axisOffset.left, afqb.plots.axisOffset.left + afqb.plots.w])
+            .range([afqb.plots.axisOffset.left, afqb.plots.w])
             .domain([0, len]);
 
     });
