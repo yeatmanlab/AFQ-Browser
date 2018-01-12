@@ -236,7 +236,7 @@ var setupBinderURL = function () {
     var repo = uri.directory();
 
     // Construct binder URL and set the button's href
-    var binderUrl = 'https://mybinder.org/v2/gh/' + user + '/' + repo + '/gh-pages?filepath=index.ipynb';
+    var binderUrl = 'https://mybinder.org/v2/gh/' + user + repo + '/gh-pages?filepath=index.ipynb';
      $("#launch-binder").attr("href", binderUrl);
     return false;
 }
