@@ -27,7 +27,7 @@ after_success:
 - |
     if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then
       npm install -g jsdoc
-      pip install sphinx sphinx-gallery pillow sphinx-js
+      pip install sphinx sphinx-gallery pillow sphinx-js numpydoc
       # Doctr for gh-pages;
       set -e;
       pip install doctr;
