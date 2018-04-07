@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Creating and publishing an AFQ-Browser instance &#8212; afqbrowser 0.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.1',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -32,8 +24,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -42,30 +33,30 @@
           <div class="body" role="main">
             
   <div class="section" id="creating-and-publishing-an-afq-browser-instance">
-<span id="usage-guide"></span><h1>Creating and publishing an <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> instance<a class="headerlink" href="#creating-and-publishing-an-afq-browser-instance" title="Permalink to this headline">¶</a></h1>
+<span id="usage-guide"></span><h1>Creating and publishing an <code class="docutils literal notranslate"><span class="pre">AFQ-Browser</span></code> instance<a class="headerlink" href="#creating-and-publishing-an-afq-browser-instance" title="Permalink to this headline">¶</a></h1>
 <p>After <a class="reference internal" href="installation_guide.html#installation-guide"><span class="std std-ref">Installing AFQ-Browser</span></a>, you can run the program on mat files generated
-by <a class="reference external" href="https://github.com/yeatmanlab/AFQ">AFQ</a> or on the <code class="docutils literal"><span class="pre">stats</span></code> directory created by TRACULA (or data from other tractometry software formatted according to <a class="reference internal" href="dataformat.html#dataformat"><span class="std std-ref">The AFQ-Browser data format</span></a>).
+by <a class="reference external" href="https://github.com/yeatmanlab/AFQ">AFQ</a> or on the <code class="docutils literal notranslate"><span class="pre">stats</span></code> directory created by TRACULA (or data from other tractometry software formatted according to <a class="reference internal" href="dataformat.html#dataformat"><span class="std std-ref">The AFQ-Browser data format</span></a>).
 For an example, download this <a class="reference external" href="https://github.com/yeatmanlab/AFQ-Browser/raw/master/afqbrowser/site/client/data/afq.mat">mat file</a>, and run:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">afqbrowser</span><span class="o">-</span><span class="n">assemble</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">afq</span><span class="o">.</span><span class="n">mat</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">afqbrowser</span><span class="o">-</span><span class="n">assemble</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">afq</span><span class="o">.</span><span class="n">mat</span>
 </pre></div>
 </div>
 <p>You will be prompted to provide a title for the page, as well as a sub-title,
 and you can add links from both of these (we use these links to refer back to
 the paper describing the dataset, see
 <a class="reference external" href="https://yeatmanlab.github.io/Sarica_2017">this site</a> for an example). This
-will create a folder called <code class="docutils literal"><span class="pre">AFQ-browser</span></code> in your current file-system
+will create a folder called <code class="docutils literal notranslate"><span class="pre">AFQ-browser</span></code> in your current file-system
 location, containing the materials for your <cite>AFQ-Browser</cite> instance
-(alternatively, use the <code class="docutils literal"><span class="pre">-t</span></code> flag to provide another file-system location as a
+(alternatively, use the <code class="docutils literal notranslate"><span class="pre">-t</span></code> flag to provide another file-system location as a
 target).</p>
 <p>To view the assembled website, run:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">afqbrowser</span><span class="o">-</span><span class="n">run</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">afqbrowser</span><span class="o">-</span><span class="n">run</span>
 </pre></div>
 </div>
 <p>Per default, this will look for the instance of <cite>AFQ-Browser</cite> in your current
-file-system location (provide another target using the <code class="docutils literal"><span class="pre">-t</span></code> flag). Open a
+file-system location (provide another target using the <code class="docutils literal notranslate"><span class="pre">-t</span></code> flag). Open a
 browser pointing to <a class="reference external" href="http://localhost:8080">http://localhost:8080</a> ,
 to view the visualization of these data and to interact with it (another port
-can be set using the <code class="docutils literal"><span class="pre">-p</span></code> flag). The variables in the metadata table are
+can be set using the <code class="docutils literal notranslate"><span class="pre">-p</span></code> flag). The variables in the metadata table are
 created based on the variables that are stored in the <a class="reference external" href="https://github.com/yeatmanlab/AFQ/wiki#including-subject-metadata-in-the-afq-structure">mat file</a> of the afq.mat file.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -75,26 +66,26 @@ created based on the variables that are stored in the <a class="reference extern
 <h2>Publishing your website<a class="headerlink" href="#publishing-your-website" title="Permalink to this headline">¶</a></h2>
 <p>To publish your website to GitHub you will need a GitHub account. If you don’t
 already have one, start by <a class="reference external" href="https://github.com/join">creating a GitHub account</a>. Then run the following sequence:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">afqbrowser</span><span class="o">-</span><span class="n">assemble</span>   <span class="c1"># Run this only if you haven&#39;t before</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">afqbrowser</span><span class="o">-</span><span class="n">assemble</span>   <span class="c1"># Run this only if you haven&#39;t before</span>
 <span class="n">afqbrowser</span><span class="o">-</span><span class="n">publish</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">target</span><span class="o">/</span> <span class="n">reponame</span>
 </pre></div>
 </div>
-<p>Where <code class="docutils literal"><span class="pre">/path/to/target</span></code> points to the folder that was created by
-<code class="docutils literal"><span class="pre">afqbrowser-assemble</span></code>, and <code class="docutils literal"><span class="pre">reponame</span></code> will be used to create the URL of the
+<p>Where <code class="docutils literal notranslate"><span class="pre">/path/to/target</span></code> points to the folder that was created by
+<code class="docutils literal notranslate"><span class="pre">afqbrowser-assemble</span></code>, and <code class="docutils literal notranslate"><span class="pre">reponame</span></code> will be used to create the URL of the
 website. You will be prompted for your GitHub user-name and password, and the
 URL will be <cite>https://username.github.io/reponame</cite>. If you also provide an
-input to the optional <code class="docutils literal"><span class="pre">-o</span></code> flag with the name of a <a class="reference external" href="https://github.com/blog/674-introducing-organizations">GitHub organization</a> that you are a member
+input to the optional <code class="docutils literal notranslate"><span class="pre">-o</span></code> flag with the name of a <a class="reference external" href="https://github.com/blog/674-introducing-organizations">GitHub organization</a> that you are a member
 of (and are allowed to create new repositories for!), the website URL will be:
 <cite>https://orgname.github.io/reponame</cite>.</p>
 <p>If you use two-factor authentication to access GitHub, you’ll need to
 <a class="reference external" href="https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/">create a personal access token</a>
-to use <code class="docutils literal"><span class="pre">afqbrowser-publish</span></code>. After creating your token, store it in a safe
-place. <code class="docutils literal"><span class="pre">afqbrowser-publish</span></code> will ask you for this token to login to GitHub.
-Leave the password field blank to tell <code class="docutils literal"><span class="pre">afqbrowser-publish</span></code> to give you a
+to use <code class="docutils literal notranslate"><span class="pre">afqbrowser-publish</span></code>. After creating your token, store it in a safe
+place. <code class="docutils literal notranslate"><span class="pre">afqbrowser-publish</span></code> will ask you for this token to login to GitHub.
+Leave the password field blank to tell <code class="docutils literal notranslate"><span class="pre">afqbrowser-publish</span></code> to give you a
 prompt for your token.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">When you publish an <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> instance to GitHub, we also
+<p class="last">When you publish an <code class="docutils literal notranslate"><span class="pre">AFQ-Browser</span></code> instance to GitHub, we also
 record your website in <a class="reference external" href="http://afqvault.org">AFQ Vault</a>.
 See <a class="reference internal" href="long_term_preservation.html#long-term-preservation"><span class="std std-ref">Long-term data preservation</span></a>.</p>
 </div>
@@ -112,26 +103,28 @@ See <a class="reference internal" href="long_term_preservation.html#long-term-pr
             </a></p>
 <h3><a href="index.html">Table Of Contents</a></h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="installation_guide.html">Installing <code class="docutils literal"><span class="pre">AFQ-Browser</span></code></a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Creating and publishing an <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> instance</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="installation_guide.html">Installing <code class="docutils literal notranslate"><span class="pre">AFQ-Browser</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Creating and publishing an <code class="docutils literal notranslate"><span class="pre">AFQ-Browser</span></code> instance</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#publishing-your-website">Publishing your website</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="getting_help.html">Getting more help</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataformat.html">The AFQ-Browser data format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="long_term_preservation.html">Long-term data preservation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="binder_integration.html">Integration of <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> and <code class="docutils literal"><span class="pre">Binder</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="binder_integration.html">Integration of <code class="docutils literal notranslate"><span class="pre">AFQ-Browser</span></code> and <code class="docutils literal notranslate"><span class="pre">Binder</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -142,7 +135,7 @@ See <a class="reference internal" href="long_term_preservation.html#long-term-pr
       &copy;2017 -- , Jason Yeatman, Adam Richie-Halford, Josh Smith, Anisha Keshavan, Ariel Rokem, The University of Washington.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |

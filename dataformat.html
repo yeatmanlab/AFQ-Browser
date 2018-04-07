@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>The AFQ-Browser data format &#8212; afqbrowser 0.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.1',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -32,8 +24,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -48,10 +39,10 @@
 be used in <cite>AFQ-Browser</cite>, if the data is converted to the following data format
 specification.</p>
 <p>Internally, <cite>AFQ-Browser</cite> represents its data in three different files:</p>
-<p>1. A json file (<code class="docutils literal"><span class="pre">streamlines.json</span></code>) that contains a description of tract
+<p>1. A json file (<code class="docutils literal notranslate"><span class="pre">streamlines.json</span></code>) that contains a description of tract
 trajectories in the 3D space of the anatomy, and populates the “Anatomy” panel.
 This file has the following structure:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;tract_name1&quot;</span><span class="p">:{</span><span class="s2">&quot;coreFiber&quot;</span><span class="p">:[[</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">z1</span><span class="p">],</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;tract_name1&quot;</span><span class="p">:{</span><span class="s2">&quot;coreFiber&quot;</span><span class="p">:[[</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">z1</span><span class="p">],</span>
                               <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">z2</span><span class="p">],</span> <span class="o">...</span> <span class="p">],</span>
                 <span class="s2">&quot;1&quot;</span><span class="p">:[[</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">z1</span><span class="p">],</span>
                      <span class="p">[</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">z2</span><span class="p">],</span> <span class="o">...</span><span class="p">],</span>
@@ -63,32 +54,32 @@ This file has the following structure:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Where <code class="docutils literal"><span class="pre">tract_name1</span></code> and <code class="docutils literal"><span class="pre">tract_name2</span></code> can be replaced by keys that are the
-names of the tracts that you wish to represent. Within each tract, <code class="docutils literal"><span class="pre">coreFiber</span></code>
+<p>Where <code class="docutils literal notranslate"><span class="pre">tract_name1</span></code> and <code class="docutils literal notranslate"><span class="pre">tract_name2</span></code> can be replaced by keys that are the
+names of the tracts that you wish to represent. Within each tract, <code class="docutils literal notranslate"><span class="pre">coreFiber</span></code>
 is a required key, and subsequent numerical keys are not required. When tract
 representation (“core fiber”/”streamlines”) is selected in the GUI, either the
 core fibers for each tract are displayed, or all the numerically designated
 streamlines for that tract. Coordinates are kept in MNI space aligned to AC-PC.</p>
-<p>2. A csv file (<code class="docutils literal"><span class="pre">nodes.csv</span></code>) that contains information about the tract profiles
+<p>2. A csv file (<code class="docutils literal notranslate"><span class="pre">nodes.csv</span></code>) that contains information about the tract profiles
 and populates the “Bundle details” panel. This table should have columns (and
-headers) named <code class="docutils literal"><span class="pre">subjectID</span></code>, <code class="docutils literal"><span class="pre">tractID</span></code>, and <code class="docutils literal"><span class="pre">nodeID</span></code>. The <code class="docutils literal"><span class="pre">subjectID</span></code>
+headers) named <code class="docutils literal notranslate"><span class="pre">subjectID</span></code>, <code class="docutils literal notranslate"><span class="pre">tractID</span></code>, and <code class="docutils literal notranslate"><span class="pre">nodeID</span></code>. The <code class="docutils literal notranslate"><span class="pre">subjectID</span></code>
 identifies a unique subject in your dataset, and it can take any string value
-you want (e.g., <code class="docutils literal"><span class="pre">patient1</span></code>), as long as it is consistent with the information
-in the <code class="docutils literal"><span class="pre">subjects.csv</span></code> file (see below). The <code class="docutils literal"><span class="pre">tractID</span></code> is the same key used in
-the <code class="docutils literal"><span class="pre">streamlines.json</span></code> file to identify the tracts (e.g., <code class="docutils literal"><span class="pre">tract_name1</span></code>,
-<code class="docutils literal"><span class="pre">tract_name2</span></code>, etc.). The <code class="docutils literal"><span class="pre">nodeID</span></code> runs from 0 to the n-1, where n is the
+you want (e.g., <code class="docutils literal notranslate"><span class="pre">patient1</span></code>), as long as it is consistent with the information
+in the <code class="docutils literal notranslate"><span class="pre">subjects.csv</span></code> file (see below). The <code class="docutils literal notranslate"><span class="pre">tractID</span></code> is the same key used in
+the <code class="docutils literal notranslate"><span class="pre">streamlines.json</span></code> file to identify the tracts (e.g., <code class="docutils literal notranslate"><span class="pre">tract_name1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">tract_name2</span></code>, etc.). The <code class="docutils literal notranslate"><span class="pre">nodeID</span></code> runs from 0 to the n-1, where n is the
 number of nodes in the tract profile for that tract. Other columns in this
 table will hold the numerical values of statistics in this subject/tract/node/
 combination. The headers for these columns can be named any string value that
 you would like (e.g., “FA”, “MD”, “my_statistic”, etc.).</p>
-<p>3. A csv file (<code class="docutils literal"><span class="pre">subjects.csv</span></code>) that contains information about the subjects
+<p>3. A csv file (<code class="docutils literal notranslate"><span class="pre">subjects.csv</span></code>) that contains information about the subjects
 and populates the “Subject metadata” panel. This file is required to have a
-<code class="docutils literal"><span class="pre">subjectID</span></code> column that matches the subject identifiers used in <code class="docutils literal"><span class="pre">nodes.csv</span></code>
+<code class="docutils literal notranslate"><span class="pre">subjectID</span></code> column that matches the subject identifiers used in <code class="docutils literal notranslate"><span class="pre">nodes.csv</span></code>
 (see above). It does not require any other columns, but can include any number
 of columns that describe the subjects in the study, holding numerical or string
 values.</p>
 <p>To use data generated from another source, add these data files to the
-<code class="docutils literal"><span class="pre">client/data</span></code> folder in a copy of the <cite>site</cite> folder from the <cite>AFQ-Browser</cite>
+<code class="docutils literal notranslate"><span class="pre">client/data</span></code> folder in a copy of the <cite>site</cite> folder from the <cite>AFQ-Browser</cite>
 <a class="reference external" href="https://github.com/yeatmanlab/AFQ-Browser">repo</a>.</p>
 </div>
 
@@ -103,23 +94,25 @@ values.</p>
             </a></p>
 <h3><a href="index.html">Table Of Contents</a></h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="installation_guide.html">Installing <code class="docutils literal"><span class="pre">AFQ-Browser</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html">Creating and publishing an <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> instance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation_guide.html">Installing <code class="docutils literal notranslate"><span class="pre">AFQ-Browser</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_guide.html">Creating and publishing an <code class="docutils literal notranslate"><span class="pre">AFQ-Browser</span></code> instance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_help.html">Getting more help</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">The AFQ-Browser data format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="long_term_preservation.html">Long-term data preservation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="binder_integration.html">Integration of <code class="docutils literal"><span class="pre">AFQ-Browser</span></code> and <code class="docutils literal"><span class="pre">Binder</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="binder_integration.html">Integration of <code class="docutils literal notranslate"><span class="pre">AFQ-Browser</span></code> and <code class="docutils literal notranslate"><span class="pre">Binder</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -130,7 +123,7 @@ values.</p>
       &copy;2017 -- , Jason Yeatman, Adam Richie-Halford, Josh Smith, Anisha Keshavan, Ariel Rokem, The University of Washington.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |

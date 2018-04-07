@@ -17,7 +17,7 @@ requires  PyGithub_ and GitPython_.
 These dependencies should all be installed automatically when the software is
 installed. To install it, in a shell or command line, issue the following::
 
-  pip install afqbrowser
+  pip install AFQ-Browser
 
 One easy way to install these, is by installing the Anaconda_ Python
 distribution,
