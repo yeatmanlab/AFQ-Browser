@@ -255,7 +255,12 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
     columns = ['subjectID', 'tractID', 'nodeID']
     columns = columns + stats
     df = pd.DataFrame(columns=columns)
-    n_subjects, nodes_per_tract = vals[stats[0]].item()[0].shape
+    shape = vals[stats[0]].item()[0].shape
+    if len(shape) > 1:
+        n_subjects, nodes_per_tract = shape
+    else:
+        n_subjects = 1
+        nodes_per_tract = shape[0]
 
     # Check if subject ids is defined in the afq structure
     if subject_ids is None:
@@ -284,7 +289,10 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
             # We're looping over the desired stats (eg fa, md) and adding them
             # to the subjects dataframe
             for stat in stats:
-                scalar = vals[stat].item()[tract][subject, :]
+                if n_subjects == 1:
+                    scalar = vals[stat].item()[tract]
+                else:
+                    scalar = vals[stat].item()[tract][subject, :]
                 subj_df[stat] = scalar
             # The subject's dataframe for this tract is now appended to the
             # whole dataframe here:
