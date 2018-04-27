@@ -9,6 +9,8 @@ from glob import glob
 import json
 import shutil
 from collections import OrderedDict
+from pathlib2 import Path
+
 import scipy.io as sio
 import pandas as pd
 import numpy as np
@@ -486,15 +488,17 @@ def assemble(source, target=None, metadata=None,
     settings_path = op.join(site_dir, 'client', 'settings.json')
     update_settings_json(settings_path, title, subtitle, link, sublink)
 
-    if source.endswith('.mat'):
+    pp = Path(source)
+    if pp.is_dir():
+        # Assume we got a TRACULA stats path:
+        nodes_fname, meta_fname, streamlines_fname, params_fname =\
+            tracula2nodes(source, out_path=out_path, metadata=metadata)
+
+    else:
         # We have an AFQ-generated mat-file on our hands:
         nodes_fname, meta_fname, params_fname = afq_mat2tables(
             source,
             out_path=out_path)
-    else:
-        # Assume we got a TRACULA stats path:
-        nodes_fname, meta_fname, streamlines_fname, params_fname =\
-            tracula2nodes(source, out_path=out_path, metadata=metadata)
 
 
 def run(target=None, port=8080):
