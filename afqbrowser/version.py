@@ -70,6 +70,6 @@ PACKAGE_DATA = {'afqbrowser': [pjoin('site', '*'),
                                pjoin('site', 'client', 'js',
                                      'third-party', '*')]}
 
-REQUIRES = ["numpy", "pandas", "scipy", "PyGithub", "GitPython", "pathlib2"]
+REQUIRES = ["numpy", "pandas", "scipy", "PyGithub", "GitPython"]
 
 SCRIPTS = [op.join('bin', op.split(f)[-1]) for f in glob.glob('bin/*')]

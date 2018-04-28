@@ -1,4 +1,3 @@
-pathlib2
 numpy
 pandas
 scipy

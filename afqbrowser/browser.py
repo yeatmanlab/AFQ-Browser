@@ -9,7 +9,6 @@ from glob import glob
 import json
 import shutil
 from collections import OrderedDict
-from pathlib2 import Path
 
 import scipy.io as sio
 import pandas as pd
@@ -488,8 +487,7 @@ def assemble(source, target=None, metadata=None,
     settings_path = op.join(site_dir, 'client', 'settings.json')
     update_settings_json(settings_path, title, subtitle, link, sublink)
 
-    pp = Path(source)
-    if pp.is_dir():
+    if op.isdir(source):
         # Assume we got a TRACULA stats path:
         nodes_fname, meta_fname, streamlines_fname, params_fname =\
             tracula2nodes(source, out_path=out_path, metadata=metadata)
