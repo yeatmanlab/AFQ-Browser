@@ -8,7 +8,8 @@ import github as gh
 import git
 
 
-def upload(target, repo_name, uname=None, upass=None, token=None, org=None, to_vault=True):
+def upload(target, repo_name, uname=None, upass=None, token=None, org=None,
+           to_vault=True):
     """
     Upload an assembled AFQ-Browser site to a github pages website.
 
@@ -106,7 +107,7 @@ def upload(target, repo_name, uname=None, upass=None, token=None, org=None, to_v
         # Edit the manifest file with your information:
         manifest_fname = op.join(tdir, 'afqvault', 'manifest.csv')
         manifest = pd.read_csv(manifest_fname,
-                            index_col=0)
+                               index_col=0)
         shape = manifest.shape
         manifest = manifest.append(pd.DataFrame(data=dict(
             username=[uname if org is None else org],
@@ -125,8 +126,8 @@ def upload(target, repo_name, uname=None, upass=None, token=None, org=None, to_v
 
             # Then, we create the PR against the central repo:
             afqvault_repo.create_pull("Adds %s" % site_name,
-                                    "Auto-created by afqbrowser-publish",
-                                    "master",
-                                    "%s:%s" % (uname, branch_name))
+                                      "Auto-created by afqbrowser-publish",
+                                      "master",
+                                      "%s:%s" % (uname, branch_name))
 
     return site_name
