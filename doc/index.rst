@@ -50,5 +50,6 @@ Documentation
        binder_integration
        api
 
+`slides <_static/slides/index.html>`_
 
 .. _AFQ: http://github.com/yeatmanlab/AFQ

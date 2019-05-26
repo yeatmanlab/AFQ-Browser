@@ -1,0 +1,108 @@
+/* Custom CSS rules */
+i {
+  margin-right: 0.25em;
+}
+
+.reveal .creativecommons {
+  margin-top: 2em;
+  margin-bottom: 0;
+}
+
+.reveal .smaller {
+  font-size: 0.4em;
+}
+
+.reveal .imgcite .imghead {
+  font-size: 0.5em;
+  text-align: center;
+}
+
+.reveal .imgcite cite{
+  display: block;
+  font-size: 0.4em;
+  text-align: center;
+  line-height: 1.25em;
+}
+
+.reveal .row{
+  display: flex;
+}
+
+.reveal .imgpenta{
+  flex: 20%;
+  padding: 5px;
+}
+
+.reveal .logo{
+  border: none;
+  background-color: white;
+}
+
+.reveal .col-13{
+  flex: 33.33%;
+  padding: 5px;
+}
+
+.reveal .col-23{
+  flex: 66.66%;
+  padding: 5px;
+}
+
+.reveal .col-85{
+  flex: 85%;
+  padding: 5px;
+}
+
+.reveal .col-15{
+  flex: 15%;
+  padding: 5px;
+}
+
+.reveal .textcol{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.reveal .two-col{
+  flex: 50%;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.reveal section p, li, ul, tr {
+  font-size: 0.9em !important;
+}
+
+.fragment.current-visible.visible:not(.current-fragment) {
+  animation: removed-item-animation 0.3s cubic-bezier(0.6, -0.05, 0.9, 0.9) forwards;
+}
+
+@keyframes removed-item-animation {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    line-height: 0px;
+    font-size: 0px;
+    height: 0px;
+    display: none;
+    padding: 0px;
+    border: 0px;
+  }
+}
+
+.reveal .smaller{
+  font-size: 0.5em !important;
+}
+
+
+.twocol{
+    display: flex;
+}
+.col{
+    flex: 1;
+}

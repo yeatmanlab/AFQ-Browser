@@ -1,0 +1,510 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="description" content="Slides about AFQ-Browser">
+		<meta name="author" content="Ariel Rokem">
+
+		<title>AFQ-Browser </title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/arokem.css">
+		<link rel="stylesheet" href="css/custom.css">
+        <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-1.1.0.min.css" type="text/css" />
+        <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-1.1.0.min.js"></script>
+
+        <script type="text/javascript">
+            Bokeh.set_log_level("info");
+        </script>
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<script>
+            function canvas_arrow_two_heads(context, fromx, fromy, tox, toy){
+                let headlen = 10;   // length of head in pixels
+                let angle = Math.atan2(toy-fromy,tox-fromx);
+                context.moveTo(fromx, fromy);
+                context.lineTo(fromx+headlen*Math.cos(angle+Math.PI/6),fromy+headlen*Math.sin(angle+Math.PI/6));
+                context.moveTo(fromx, fromy);
+                context.lineTo(fromx+headlen*Math.cos(angle-Math.PI/6),fromy+headlen*Math.sin(angle-Math.PI/6));
+                context.moveTo(fromx, fromy);
+                context.lineTo(tox, toy);
+                context.lineTo(tox-headlen*Math.cos(angle-Math.PI/6),toy-headlen*Math.sin(angle-Math.PI/6));
+                context.moveTo(tox, toy);
+                context.lineTo(tox-headlen*Math.cos(angle+Math.PI/6),toy-headlen*Math.sin(angle+Math.PI/6));}
+		</script>
+
+	</head>
+	<body>
+	<div class="reveal">
+	<div class="slides">
+
+	<section>
+		<em>
+		<h2> AFQ-Browser </h2>
+		<h3><div align=middle> </div></h3>
+		</em>
+		<p>  <small>Follow along at: <t><a href="https://yeatmanlab.github.io/AFQ-Browser/_static/slides/index.html">https://yeatmanlab.github.io/AFQ-Browser/_static/slides/index.html</t></a></small></p>
+		<a href="https://escience.washington.edu"><img src="img/eScience.png" height="100px" alt="eScience logo" align="middle"></a>
+		<a href="http://depts.washington.edu/bdelab"><img src="img/BDE_Banner_revised20160211-01.jpg" height="100px" alt="BDE lab logo" align="middle"></a>
+
+        <br>
+		<img src="img/cc-by.png" height="30px" alt="License" align="middle">
+    </section>
+
+
+    <section>
+        <h4>Normal behavior is supported by brain networks</h4>
+        <img src="./img/OldenDays.png" height="470">
+        <div class="cite" style="position: absolute; left:600px;">
+            Image from <a href="https://www.ncbi.nlm.nih.gov/pubmed/16141282">Catani and ffytche (2015)</a>
+        </div>
+    </section>
+
+	<section>
+        <h4>Studying brain networks</h4>
+        <img src="./img/tract_groups.png" height="470">
+        <div class="cite" style="position: absolute; left:600px;">
+            Image from <a href="https://www.ncbi.nlm.nih.gov/pubmed/16141282">Catani and ffytche (2015)</a>
+        </div>
+    </section>
+
+    <section>
+        <h2>Not just static cables!</h2>
+		<p class="fragment">Brain connections develop and mature with age</p>
+		<p class="fragment">Individual differences account for differences in behaviour</p>
+        <p class="fragment">Adapt and change with learning</p>
+
+        <div class="cite" style="position: absolute; left:600px;">
+            Reviewed in <a href="http://jov.arvojournals.org/article.aspx?articleid=2603187"> Rokem et al. (2017), Journal of Vision</a>
+        </div>
+    </section>
+
+    <section>
+        <h3>The era of brain observatories</h3>
+        <!-- <div class="row fragment fade-in">
+                <div class="col-13 textcol">
+                    <img class="logo" src="img/aibs-logo.png" width="200" align="middle" alt="" border="0">
+                </div>
+                <div class="textcol col-23">
+                    <ul>
+                    <p>
+                        Allen Institute for Brain Science<br>
+                    </p>
+                    </ul>
+                </div>
+                </div> -->
+
+        <div class="row fragment fade-in">
+            <div class="col-13 textcol">
+            <img class="logo" src="img/hcp-logo.jpg" width="200" align="middle" alt="Human Connectome Project logo" border="0">
+            </div>
+            <div class="textcol col-23">
+            <ul>
+                <p>
+                Human Connectome Project (HCP), N = 1,200
+                </p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="row fragment fade-in">
+            <div class="col-13 textcol">
+            <img class="logo" src="img/child-mind-institute-hbn-logo.jpg" width="200" align="middle" alt="Healthy Brain Network logo">
+            </div>
+            <div class="textcol col-23">
+            <ul>
+                <p>
+                Healthy Brain Network (HBN),&nbsp; N = 10,000
+                </p>
+            </ul>
+            </div>
+        </div>
+        <div class="row fragment fade-in">
+            <div class="col-13 textcol">
+            <img class="logo" src="img/abcd-logo.png" width="300" align="middle" alt="Adolescent Brain Cognitive Development logo">
+            </div>
+            <div class="textcol col-23">
+            <ul>
+                <p>
+                Adolescent Brain Cognitive Development (ABCD), <br> N = 10,000
+                </p>
+            </ul>
+            </div>
+        </div>
+        <div class="row fragment fade-in">
+            <div class="col-13 textcol">
+            <img class="logo" src="img/biobank-logo.png" width="200" align="middle" alt="UK Biobank logo">
+            </div>
+            <div class="textcol col-23">
+            <ul>
+                <p>
+                UK Biobank, &nbsp; N = 500,000
+                </p>
+            </ul>
+            </div>
+        </div>
+    </section>
+
+
+    <section>
+		<h2>Opportunities</h2>
+        <p class="fragment">New data sets will enable important new discoveries</p>
+		<p class="fragment"><em>Data-driven discovery</em></p>
+    </section>
+
+
+	<section>
+        <h4>Diffusion MRI measures the physical properties of brain connections </h4>
+        <div class="fragment" style="position: absolute; left: 100px;">
+			<img src="./img/optic-radiation-postmortem.png" height="505" >
+		</div>
+		<div class="fragment" style="position: absolute; left: 500px;">
+			<img src="./img/nerve-fiber.png" height="505" >
+		</div>
+
+	</section>
+	<section>
+		<h4>Diffusion MRI</h4>
+		<div class = "fragment fade-in" style="position: absolute">
+			<canvas id="arrows-iso-horiz" width="1000" height="1000">
+			</canvas>
+			<script>
+				context = document.getElementById('arrows-iso-horiz').getContext("2d");
+				context.beginPath();
+				canvas_arrow_two_heads(context, 390, 450, 590, 450);
+				context.lineWidth = 2;
+				context.stroke();
+			</script>
+		</div>
+		<div class = "fragment fade-in" style="position: absolute">
+			<canvas id="arrows-iso-vert" width="1000" height="1000">
+			</canvas>
+			<script>
+				context = document.getElementById('arrows-iso-vert').getContext("2d");
+				context.beginPath();
+				canvas_arrow_two_heads(context, 250, 350, 250, 150);
+				context.lineWidth = 2;
+				context.stroke();
+			</script>
+		</div>
+
+		<div class="fragment" text-align: left>
+			Isotropic diffusion
+		</div>
+		<video width="600" autoplay loop>
+			<source src="./img/diffusion-isotropic.mp4">
+		</video>
+
+		<div class="cite" style="position: absolute; left: 650px" >
+            <a href="http://jov.arvojournals.org/article.aspx?articleid=2603187">Rokem et al. (2017), Journal of Vision</a>
+            <br>
+			<a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0123272">Rokem et al. (2015), PLoS One</a>
+		</div>
+
+	</section>
+
+	<section>
+		<h4>Diffusion MRI</h4>
+		<div class = "fragment fade-in" style="position: absolute">
+			<canvas id="arrows-aniso-horiz" width="1000" height="1000">
+			</canvas>
+			<script>
+				context = document.getElementById('arrows-aniso-horiz').getContext("2d");
+				context.beginPath();
+				canvas_arrow_two_heads(context, 370, 400, 610, 400);
+				context.lineWidth = 2;
+				context.stroke();
+			</script>
+		</div>
+
+        <div class = "fragment fade-in" style="position: absolute">
+                <canvas id="arrows-aniso-vert" width="1000" height="1000">
+                </canvas>
+                <script>
+                    context = document.getElementById('arrows-aniso-vert').getContext("2d");
+                    context.beginPath();
+                    canvas_arrow_two_heads(context, 250, 325, 250, 175);
+                    context.lineWidth = 2;
+                    context.stroke();
+                </script>
+        </div>
+
+		<div class="fragment" text-align:left;>
+			Anisotropic diffusion
+		</div>
+		<video width="600" autoplay loop>
+			<source src="./img/diffusion-anisotropic.mp4">
+		</video>
+		<div class="cite" style="position: absolute; left: 650px" >
+                <a href="http://jov.arvojournals.org/article.aspx?articleid=2603187">Rokem et al. (2017), Journal of Vision</a>
+                <br>
+                <a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0123272">Rokem et al. (2015), PLoS One</a>
+            </div>
+        </section>
+
+	<section>
+		<h4>Diffusion MRI</h4>
+        <img src="img/up-and-down-arrow.png" height=200 style="position: absolute; left: 200px; top: 200px;">
+        <img src="img/dmri2.png" height="500">
+
+    </section>
+
+    <section>
+            <h4>Diffusion MRI</h4>
+            <img src="img/right-and-left-arrow.png" height=40 style="position: absolute; left: 0px; top: 300px;">
+            <img src="img/dmri1.png" height="500">
+    </section>
+
+
+	<section>
+		<h4>Diffusion statistics</h4>
+		<div class="fragment" style="position: absolute; left: 14px;">
+			<img src="img/tensor-stats1.png" height="400"  >
+			<div style="position: absolute; left: 75px; top: 420px;">
+				<small>Mean diffusivity</small>
+			</div>
+			<div style="position: absolute; left: -8px;">
+				<img src="img/md-scale.png" height="40" >
+			</div>
+			<div style="position: absolute; left: 222px; top:432px; ">
+				<img src="img/md-units.png" height="50" >
+			</div>
+		</div>
+		<div class="fragment fade-in" style="position: absolute; left: 7px;">
+			<img src="img/tensor-stats2.png" height="400"  >
+
+			<div style="position: absolute; left: 350px; top:432px; ">
+				<video width="200" autoplay loop>
+					<source src="./img/diffusion-fa-251.mov">
+			</div>
+
+			<div style="position: absolute; left: 350px; top: 420px;">
+				<small>Fractional anisotropy</small>
+			</div>
+
+		</div>
+		<div class="fragment fade-in" style="position: absolute; left: 0px;">
+			<img src="img/tensor-stats3.png" height="400"  >
+			<div style="position: absolute; left: 600px; top: 420px;">
+				<small>Principal diffusion direction</small>
+			</div>
+			<div style="position: absolute; left: 700px; top:432px; ">
+				<img src="img/axes.png" height="100" >
+			</div>
+		</div>
+		<div class="cite" style="position: absolute; top: 620px; left: 650px" >
+                <a href="http://jov.arvojournals.org/article.aspx?articleid=2603187">Rokem et al. (2017), Journal of Vision</a>
+                <br>
+                <a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0123272">Rokem et al. (2015), PLoS One</a>
+            </div>
+    </section>
+
+    <section>
+        <h3>The 3D structure of each brain is unique</h3>
+        <p>Tracts provide the anatomically correct coordinate frame </p>
+        <img align="center" src="img/pyafq_segmentation1.gif" height="400">
+    </section>
+
+	<section>
+        <h3>The 3D structure of each brain is unique</h3>
+        <p>Tracts provide the anatomically correct coordinate frame </p>
+        <img align="center" src="img/pyafq_segmentation2.gif" height="400">
+	</section>
+
+    <section>
+        <p><em>Tractometry</em></p>
+        <div class="row">
+            <div class="imgcite two-col">
+                <img class="fragment" data-fragment-index="1" src="img/pyafq_cst.png">
+            </div>
+            <div class="imgcite two-col">
+                    <img class="fragment" data-fragment-index="2" src="img/right-arrow.png" height=20 style="position:absolute; top:280px; left:420px;">
+        <img class="fragment" data-fragment-index="2" src="img/sarica_results.png" height=300 style="position:absolute; top:200px; left:550px;">
+        <p class="fragment" data-fragment-index="2">Amyotrophic Lateral Sclerosis (ALS)</p>
+            </div>
+        <div class="cite fragment" data-fragment-index="2">
+			<a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/hbm.23412">Sarica et al. (2017)</a>
+
+        </div>
+    </section>
+
+    <section>
+		<h3>Challenge: how do we incentivize data sharing?</h3>
+		<p class="fragment">Data sharing is not incentivized and is not easy enough</p>
+        <p class="fragment">Results from large multi-dimensional datasets are hard to understand</p>
+		<p class="fragment">Hard to communicate</p>
+		<p class="fragment">Hard to reproduce</p>
+		<h3 class="fragment">Solution: tools for exploration with data sharing built in!</h3>
+	</section>
+
+    <section id="afq-browser">
+            <h3>A browser-based tool for visualization and analysis of diffusion MRI data</h3>
+
+		<div style="position: absolute; left:70px; top:140px;">
+			<img src="img/jason.jpg" height="200">
+			<br>
+            <small>Jason Yeatman <br> (UW ILABS)</small>
+		</div>
+		<div style="position: absolute; left:280px; top:140px;">
+			<img src="img/adam.jpeg" height="200">
+			<br>
+			<small>Adam Richie-Halford <br> (UW eScience)</small>
+		</div >
+		<div style="position: absolute; left:490px; top:140px;">
+			<img src="img/josh.png", height="200">
+			<br>
+			<small>Josh Smith <br> (UW eScience) </small>
+		</div>
+		<div style="position: absolute; left:705px; top:140px;">
+			<img src="img/anisha.jpg", height="200">
+			<br>
+            <small>Anisha Keshavan <br> (UW eScience &rarr; <br> Child Mind Institute)</small>
+		</div>
+		<div class="cite" style="position: absolute; left:380px">
+                <a href="https://www.nature.com/articles/s41467-018-03297-7">Yeatman, Richie-Halford, Smith, Keshavan & Rokem (2018), Nature Communications</a>
+            </div>
+    </section>
+
+	<section>
+		<h3>A browser-based tool for visualization and analysis of diffusion MRI data</h3>
+        <p class="fragment">A web-based application</p>
+        <p class="fragment">Leverages modern visualization frameworks</p>
+		<p class="fragment">Builds a web-site for a diffusion MRI dataset</p>
+		<p class="fragment">Automatically uploads the website to GitHub</p>
+		<div class="cite" style="position: absolute; left:380px">
+			<a href="https://www.nature.com/articles/s41467-018-03297-7">Yeatman, Richie-Halford, Smith, Keshavan & Rokem (2018), Nature Communications</a>
+		</div>
+	</section>
+
+	<section>
+		<h3><a href="https://yeatmanlab.github.io/Sarica_2017">https://yeatmanlab.github.io/Sarica_2017</a></h3>
+
+		<video width="800" autoplay loop>
+			<source src="./img/afq-browser-demo.mp4">
+		</video>
+
+		<div class="cite" style="position: absolute; left:380px">
+            <a href="https://www.nature.com/articles/s41467-018-03297-7">Yeatman, Richie-Halford, Smith, Keshavan & Rokem (2018), Nature Communications</a>
+        </div>
+
+	</section>
+
+    <section>
+		<h2> Exploratory data analysis</h2>
+
+		<p class="fragment">Enhances published results<p>
+		<p class="fragment">Linked visualizations facilitate easy exploration</p>
+		<p class="fragment">Enables new discoveries in old datasets</p>
+
+		<div class="cite" style="position: absolute; left:380px">
+            <a href="https://www.nature.com/articles/s41467-018-03297-7">Yeatman, Richie-Halford, Smith, Keshavan & Rokem (2018), Nature Communications</a>
+        </div>
+	</section>
+
+	<section>
+		<h2>Automatic data sharing</h2>
+
+		<img src="./img/afq-browser-static.png" height="400px">
+
+		<svg class="fragment" data-fragment-index="1" width="400" height="110"  style="position: absolute; left:435px; top:435px;">
+			<rect rx="10" ry="10" width="150" height="60" style="fill:yellow;stroke-width:3;stroke:rgb(1,0,0);opacity:0.4;" />
+		</svg>
+
+		<svg class="fragment" data-fragment-index="3" width="400" height="110"  style="position: absolute; left:722px; top:145px;">
+			<rect rx="10" ry="10" width="100" height="60" style="fill:yellow;stroke-width:3;stroke:rgb(1,0,0);opacity:0.4;" />
+        </svg>
+        <p class="fragment" data-fragment-index="2" style="position: absolute; top:500px; left:400px;">
+        <a href="http://afqvault.org">http://afqvault.org</a>
+        </p>
+		<div class="cite" style="position: absolute; left:380px">
+                <a href="https://www.nature.com/articles/s41467-018-03297-7">Yeatman, Richie-Halford, Smith, Keshavan & Rokem (2018), Nature Communications</a>
+        </div>
+
+	</section>
+
+
+	<section>
+		<h2>Further exploration</h2>
+
+		<video width="800" autoplay loop>
+			<source src="./img/afq-browser-binder-demo.mp4">
+		</video>
+
+		<div class="cite" style="position: absolute; left:380px">
+            <a href="https://www.nature.com/articles/s41467-018-03297-7">Yeatman, Richie-Halford, Smith, Keshavan & Rokem (2018), Nature Communications</a>
+        </div>
+
+	</section>
+
+	<section>
+		<h2>Data sharing facilitates  interdisciplinary collaboration</h2>
+        <p class="fragment">Dimensionality reduced data in tidy table format</p>
+        <p class="fragment">Facilitates interdisciplinary collaboration</p>
+		<div class="cite" style="position: absolute; left:380px">
+            <a href="https://www.nature.com/articles/s41467-018-03297-7">Yeatman, Richie-Halford,  Smith, Keshavan & Rokem (2018), Nature Communications</a>
+        </div>
+	</section>
+
+
+	<section>
+		<a href="https://github.com/yeatmanlab/pyAFQ">https://github.com/yeatmanlab/pyAFQ</a>
+    </section>
+
+
+	<section>
+
+		<h2> Thanks! </h2>
+		<div style="position: absolute; left:100px; top:100px;" align="left">
+            Jeff Heer
+            <br>
+		</div>
+
+		<div style="position: absolute; left:500px; top:80px;">
+			<img src="img/msdse-sponsors.png" height="50px">
+			<br>
+			<img src="img/eScience.png" height="80px">
+		</div>
+
+	</section>
+
+	</div>
+	</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				history: true,
+				controls: false,
+				progress: true,
+				center: true,
+
+				transition: 'fade', // none/fade/slide/convex/concave/zoom
+
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+
+	</body>
+</html>
