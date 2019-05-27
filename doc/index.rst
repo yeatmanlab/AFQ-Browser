@@ -30,7 +30,9 @@ data.
 AFQ-Browser paper
 ~~~~~~~~~~~~~~~~~
 
-If you are interested in technical details and motivation behind this project, please read our `paper <http://www.biorxiv.org/content/early/2017/08/30/182402>`_.
+If you are interested in technical details and motivation behind this project, please read our `paper <https://www.nature.com/articles/s41467-018-03297-7>`_.
+
+A slide presentation about the project is available `here <https://arokem.github.io/2019-OHBM-AFQ-Browser/>`_.
 
 Acknowledgements
 ~~~~~~~~~~~~~~~~~~~
@@ -49,6 +51,7 @@ Documentation
        long_term_preservation
        binder_integration
        api
+
 
 
 .. _AFQ: http://github.com/yeatmanlab/AFQ
