@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>plots.js &#8212; afqbrowser 0.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
    
@@ -28,6 +26,8 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="plots-js">
@@ -37,19 +37,15 @@
 <code class="descclassname">afqb.plots.</code><code class="descname">buildFromNodes</code><span class="sig-paren">(</span><em>error</em>, <em>useless</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.buildFromNodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Container function which calls other plots functions
 once nodes.csv data has been read.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</li>
-<li><strong>useless</strong> – Obligatory callback argument that we don’t use in the function.</li>
-<li><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</p></li>
+<li><p><strong>useless</strong> – Obligatory callback argument that we don’t use in the function.</p></li>
+<li><p><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -58,18 +54,14 @@ once nodes.csv data has been read.</p>
 <dd><p>Builds tract selection list in “Bundles” section. Reads
 unique tract IDs from nodes.csv and creates selectable
 text for each tract.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</li>
-<li><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</p></li>
+<li><p><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -78,18 +70,14 @@ text for each tract.</p>
 <dd><p>Creates line object with appropriate domain and range for each tract.
 Called for draw and transformation operations involving subject lines
 or mean lines in the 2D plots.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>d</strong> (<em>data</em>) – Subject or mean data for 2D plot of selected metric</li>
-<li><strong>id</strong> (<em>string</em>) – formatted tract name</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>data</em>) – Subject or mean data for 2D plot of selected metric</p></li>
+<li><p><strong>id</strong> (<em>string</em>) – formatted tract name</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -98,18 +86,14 @@ or mean lines in the 2D plots.</p>
 <dd><p>Creates area object with appropriate domain and range for each tract.
 Called for draw and transformation operations involving standard deviation
 and standard error in 2D plots.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>d</strong> (<em>data</em>) – Mean data for 2D plot of selected metric</li>
-<li><strong>id</strong> (<em>string</em>) – formatted tract name</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>data</em>) – Mean data for 2D plot of selected metric</p></li>
+<li><p><strong>id</strong> (<em>string</em>) – formatted tract name</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -119,18 +103,14 @@ and standard error in 2D plots.</p>
 to select which metric to plot, error type (std err or
 std dev) for shaded area, subject line opacity, and
 whether or not brushing is allowed.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</li>
-<li><strong>data</strong> (<em>object</em>) – JavaScript object created by d3.csv(data/nodes.csv).</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</p></li>
+<li><p><strong>data</strong> (<em>object</em>) – JavaScript object created by d3.csv(data/nodes.csv).</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -140,18 +120,14 @@ whether or not brushing is allowed.</p>
 json object. This object is used to determine x/y
 range, plot subject lines, and calculate mean and
 error for the default metric.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</li>
-<li><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</p></li>
+<li><p><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -162,18 +138,14 @@ sorted, means are calculated for each group of subjects
 defined by the sort. If metric changes, axes and means
 are updated accordingly. Calls afqb.plots.draw() and
 afqb.plots.zoomAxis().</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</li>
-<li><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</p></li>
+<li><p><strong>data</strong> (<em>data</em>) – JavaScript array created by d3.csv(data/nodes.csv).</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -194,17 +166,13 @@ group selections. Calls afqb.plots.zoomAxis().</p>
 <code class="descclassname">afqb.plots.</code><code class="descname">newBrush</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.newBrush" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes brush elements for 2D plots. Brush used to
 highlight a portion of tract in the “Anatomy” panel.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<em>string</em>) – formatted tract name.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – formatted tract name.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -220,41 +188,34 @@ highlight a portion of tract in the “Anatomy” panel.</p>
 <dd><p>Controls whether or not a plot is displayed for a given
 tract, and changes color of the label in the “Bundles”
 panel.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>state</strong> (<em>boolean</em>) – true if the tract is selected, false if it is hidden.</li>
-<li><strong>name</strong> (<em>string</em>) – formatted tract name</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<em>boolean</em>) – true if the tract is selected, false if it is hidden.</p></li>
+<li><p><strong>name</strong> (<em>string</em>) – formatted tract name</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="afqb.plots.initCheckboxes">
 <code class="descclassname">afqb.plots.</code><code class="descname">initCheckboxes</code><span class="sig-paren">(</span><em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.plots.initCheckboxes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the selectable tract list.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>error</strong> – Passed to prevent execution in case error occurs in preceding functions.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -262,7 +223,7 @@ panel.</p>
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/escience-logo.png" alt="Logo"/>
             </a></p>
-<h3><a href="index.html">Table Of Contents</a></h3>
+<h3><a href="index.html">Table of Contents</a></h3>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation_guide.html">Installing <code class="docutils literal notranslate"><span class="pre">AFQ-Browser</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html">Creating and publishing an <code class="docutils literal notranslate"><span class="pre">AFQ-Browser</span></code> instance</a></li>
@@ -279,8 +240,6 @@ panel.</p>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -293,8 +252,8 @@ panel.</p>
       &copy;2017 -- , Jason Yeatman, Adam Richie-Halford, Josh Smith, Anisha Keshavan, Ariel Rokem, The University of Washington.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/plots.rst.txt"

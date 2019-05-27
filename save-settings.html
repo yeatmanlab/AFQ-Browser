@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>save-settings.js &#8212; afqbrowser 0.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
    
@@ -28,6 +26,8 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="save-settings-js">
@@ -36,34 +36,26 @@
 <dt id="afqb.global.formatKeyName">
 <code class="descclassname">afqb.global.</code><code class="descname">formatKeyName</code><span class="sig-paren">(</span><em>bundle</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.global.formatKeyName" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use universal key name for robust linking between elements</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>bundle</strong> (<em>string</em>) – bundle name</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bundle</strong> (<em>string</em>) – bundle name</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="afqb.global.updateQueryString">
 <code class="descclassname">afqb.global.</code><code class="descname">updateQueryString</code><span class="sig-paren">(</span><em>queryObj</em><span class="sig-paren">)</span><a class="headerlink" href="#afqb.global.updateQueryString" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates the QuerySting object for proper reload</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>queryObj</strong> (<em>object</em>) – object to stringify and merge with existing query string</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>queryObj</strong> (<em>object</em>) – object to stringify and merge with existing query string</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -73,24 +65,20 @@
 <p>AFQ-Browser settings are stored in four places, corresponding to the
 different visualization panels (naming is self-explanatory):</p>
 <ul class="simple">
-<li>afqb.three.settings</li>
-<li>afqb.plots.settings</li>
-<li>afqb.table.settings</li>
-<li>afqb.global.settings</li>
+<li><p>afqb.three.settings</p></li>
+<li><p>afqb.plots.settings</p></li>
+<li><p>afqb.table.settings</p></li>
+<li><p>afqb.global.settings</p></li>
 </ul>
 <p>In the query string, all settings are lumped together. So we must parse
 the query string and separate settings into their different groups.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>callback</strong> – function to call after the settings have been loaded</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>callback</strong> – function to call after the settings have been loaded</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -113,6 +101,7 @@ changes the opacity of the associated table rows and plot lines.</p>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -120,7 +109,7 @@ changes the opacity of the associated table rows and plot lines.</p>
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/escience-logo.png" alt="Logo"/>
             </a></p>
-<h3><a href="index.html">Table Of Contents</a></h3>
+<h3><a href="index.html">Table of Contents</a></h3>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation_guide.html">Installing <code class="docutils literal notranslate"><span class="pre">AFQ-Browser</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html">Creating and publishing an <code class="docutils literal notranslate"><span class="pre">AFQ-Browser</span></code> instance</a></li>
@@ -137,8 +126,6 @@ changes the opacity of the associated table rows and plot lines.</p>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -151,8 +138,8 @@ changes the opacity of the associated table rows and plot lines.</p>
       &copy;2017 -- , Jason Yeatman, Adam Richie-Halford, Josh Smith, Anisha Keshavan, Ariel Rokem, The University of Washington.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/save-settings.rst.txt"

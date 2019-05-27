@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>afqbrowser.upload &#8212; afqbrowser 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="afqbrowser.run" href="afqbrowser.run.html" />
@@ -29,47 +27,43 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="afqbrowser-upload">
 <h1>afqbrowser.upload<a class="headerlink" href="#afqbrowser-upload" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="afqbrowser.upload">
-<code class="descclassname">afqbrowser.</code><code class="descname">upload</code><span class="sig-paren">(</span><em>target</em>, <em>repo_name</em>, <em>uname=None</em>, <em>upass=None</em>, <em>token=None</em>, <em>org=None</em><span class="sig-paren">)</span><a class="headerlink" href="#afqbrowser.upload" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">afqbrowser.</code><code class="descname">upload</code><span class="sig-paren">(</span><em>target</em>, <em>repo_name</em>, <em>uname=None</em>, <em>upass=None</em>, <em>token=None</em>, <em>org=None</em>, <em>to_vault=True</em><span class="sig-paren">)</span><a class="headerlink" href="#afqbrowser.upload" title="Permalink to this definition">¶</a></dt>
 <dd><p>Upload an assembled AFQ-Browser site to a github pages website.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>target</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">Local path to the file-system location where the AFQ-Browser files are
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>target</strong><span class="classifier">str</span></dt><dd><p>Local path to the file-system location where the AFQ-Browser files are
 (need to run <cite>assemble</cite> before running this function)</p>
 </dd>
-<dt><strong>repo_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">The website will be at <a class="reference external" href="https:/">https:/</a>/&lt;username&gt;.github.io/&lt;repo_name&gt;</p>
+<dt><strong>repo_name</strong><span class="classifier">str</span></dt><dd><p>The website will be at <a class="reference external" href="https:/">https:/</a>/&lt;username&gt;.github.io/&lt;repo_name&gt;</p>
 </dd>
-<dt><strong>uname</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
-<dd><p class="first last">GitHub user-name</p>
+<dt><strong>uname</strong><span class="classifier">str, optional</span></dt><dd><p>GitHub user-name</p>
 </dd>
-<dt><strong>upass</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
-<dd><p class="first last">GitHub password</p>
+<dt><strong>upass</strong><span class="classifier">str, optional</span></dt><dd><p>GitHub password</p>
 </dd>
-<dt><strong>org</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
-<dd><p class="first last">When provided, this means that the website will be at:
+<dt><strong>org</strong><span class="classifier">str, optional</span></dt><dd><p>When provided, this means that the website will be at:
 <a class="reference external" href="https:/">https:/</a>/&lt;org&gt;.github.io/&lt;repo_name&gt;. Defaults to use the user-name.</p>
 </dd>
+<dt><strong>to_vault</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to deposit the data to afqvault. Default: True</p>
+</dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <div style='clear:both'></div></div>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -77,7 +71,7 @@
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/escience-logo.png" alt="Logo"/>
             </a></p>
-<h3><a href="../index.html">Table Of Contents</a></h3>
+<h3><a href="../index.html">Table of Contents</a></h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation_guide.html">Installing <code class="docutils literal notranslate"><span class="pre">AFQ-Browser</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage_guide.html">Creating and publishing an <code class="docutils literal notranslate"><span class="pre">AFQ-Browser</span></code> instance</a></li>
@@ -98,8 +92,6 @@
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -112,8 +104,8 @@
       &copy;2017 -- , Jason Yeatman, Adam Richie-Halford, Josh Smith, Anisha Keshavan, Ariel Rokem, The University of Washington.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="../_sources/gen_api/afqbrowser.upload.rst.txt"
