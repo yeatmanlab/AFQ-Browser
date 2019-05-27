@@ -2,25 +2,26 @@ language: python
 sudo: false
 env:
   global:
-    - PIP_DEPS="flake8 pytest coveralls pytest-cov"
     - secure: "QYQAN3SKBS8d3YT5yRiXGaZbq2DErimCDDUywazKhOQiEnnvdBTKBh8F/NPuJl0TqAdrCWeH2f25925eoHNfJuPpIfrLexK04RWt4npC7aTl9+6+qMZWt8oovyK/kJu7L+n4E6NozeVSoUWoxD30U9ldbCqqNbaSwvWdWZjhvLjUDKo5Iz69CAYgAjH2F55n8sNvI6gWVI4fvrgWFkfhuqcSFXomuT5QGu5NcfULXDAm1moH6keLbWHl8quCVn83mylolg2YFDEsjTHpKkuxmalZswKis6Iane18gpRCxIAwlh+saAY9/Pt0h9tCe2x44mCrj6VwiGtrmZK9SvF2UHHxypX02X9ZmQY7tJ/i9BRLc0AJjBVl/iPy78Uor6xYPSjDTs5r8jaRZX3lls6zfqntWtlDOQajh3apYg81ZP7TLNFmIVoENAD324iLth3KKNxVJaIO1XpxCxfPUg0VdXSAD7b+B2cD+GArRQoPxhyYVoSGmxkyc2i+p586ALCHZ0oBp/AXaOq92Oa7pSiR+IZVJ5U+FJbdek4eaoIwysg0QE0LfsONVy4wF1GOspsoNDRBot0ELJ3W5Y4M+3JEAwuTythq1M9MyMoFbGPTlkbQLUIyxDrV5L3Mj6qLr/+L0QdiiMb3AH0vNmrHIdFC71O1lDBh6W3h3V/GIkRnd0k="
 addons:
   apt:
     packages:
       - npm
 
-python:
-- '2.7'
-- '3.6'
+matrix:
+  include:
+    - python: 3.7
+      dist: xenial
+    - python: 3.6
 
 install:
-- travis_retry pip install $PIP_DEPS
+- travis_retry pip install -r requirements-dev.txt
 - travis_retry pip install -r requirements.txt
 - travis_retry pip install -e .
 
 script:
 - flake8 --ignore N802,N806 `find . -name \*.py | grep -v setup.py | grep -v version.py | grep -v __init__.py | grep -v /doc/`
-- py.test --pyargs afqbrowser --cov-report term-missing --cov=afqbrowser
+- coverage run -m pytest -s --doctest-modules --verbose --durations=10 --pyargs afqbrowser
 
 after_success:
 - coveralls
