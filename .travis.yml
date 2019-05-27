@@ -10,6 +10,7 @@ addons:
 
 python:
 - '3.6'
+- '3.7'
 
 install:
 - travis_retry pip install -r requirements-dev.txt
