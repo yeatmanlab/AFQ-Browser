@@ -9,8 +9,12 @@ addons:
       - npm
 
 python:
-- '3.6'
-- '3.7'
+    - 3.6
+
+matrix:
+  include:
+    - python: 3.7
+      dist: xenial
 
 install:
 - travis_retry pip install -r requirements-dev.txt
