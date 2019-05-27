@@ -63,6 +63,8 @@ VERSION = __version__
 PACKAGE_DATA = {'afqbrowser': [pjoin('site', '*'),
                                pjoin('site', 'client', '*'),
                                pjoin('site', 'client', 'data', '*'),
+                               pjoin('site', 'client', 'data', 'tracula_data', '*'),
+                               pjoin('site', 'client', 'data', 'tracula_data', 'stats', '*'),
                                pjoin('site', 'client', 'css', '*'),
                                pjoin('site', 'client', 'js', '*'),
                                pjoin('site', 'client', 'js',
