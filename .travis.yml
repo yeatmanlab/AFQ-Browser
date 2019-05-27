@@ -22,9 +22,6 @@ install:
 script:
 - flake8 --ignore N802,N806 `find . -name \*.py | grep -v setup.py | grep -v version.py | grep -v __init__.py | grep -v /doc/`
 - coverage run -m pytest -s --doctest-modules --verbose --durations=10 --pyargs afqbrowser
-
-after_success:
-- coveralls
 - |
     if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then
       npm install -g jsdoc
@@ -37,3 +34,6 @@ after_success:
       cd ..;
       doctr deploy . --built-docs doc/_build/html;
     fi
+
+after_success:
+- coveralls
