@@ -23,5 +23,11 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-url = gh.upload(args.target, args.reponame, org=args.org)
+to_vault = input("Deposit data to afqvault.org? [Y/n]:")
+if to_vault == "n" or to_vault == "N":
+    to_vault = False
+else:
+    to_vault = True
+
+url = gh.upload(args.target, args.reponame, org=args.org, to_vault=to_vault)
 print("Website available on: %s" % url)
