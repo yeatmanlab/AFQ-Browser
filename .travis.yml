@@ -34,6 +34,3 @@ script:
       cd ..;
       doctr deploy . --built-docs doc/_build/html;
     fi
-
-after_success:
-- coveralls
