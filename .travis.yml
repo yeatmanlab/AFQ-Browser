@@ -1,8 +1,11 @@
 language: python
 sudo: false
+
 env:
   global:
-    - secure: "QYQAN3SKBS8d3YT5yRiXGaZbq2DErimCDDUywazKhOQiEnnvdBTKBh8F/NPuJl0TqAdrCWeH2f25925eoHNfJuPpIfrLexK04RWt4npC7aTl9+6+qMZWt8oovyK/kJu7L+n4E6NozeVSoUWoxD30U9ldbCqqNbaSwvWdWZjhvLjUDKo5Iz69CAYgAjH2F55n8sNvI6gWVI4fvrgWFkfhuqcSFXomuT5QGu5NcfULXDAm1moH6keLbWHl8quCVn83mylolg2YFDEsjTHpKkuxmalZswKis6Iane18gpRCxIAwlh+saAY9/Pt0h9tCe2x44mCrj6VwiGtrmZK9SvF2UHHxypX02X9ZmQY7tJ/i9BRLc0AJjBVl/iPy78Uor6xYPSjDTs5r8jaRZX3lls6zfqntWtlDOQajh3apYg81ZP7TLNFmIVoENAD324iLth3KKNxVJaIO1XpxCxfPUg0VdXSAD7b+B2cD+GArRQoPxhyYVoSGmxkyc2i+p586ALCHZ0oBp/AXaOq92Oa7pSiR+IZVJ5U+FJbdek4eaoIwysg0QE0LfsONVy4wF1GOspsoNDRBot0ELJ3W5Y4M+3JEAwuTythq1M9MyMoFbGPTlkbQLUIyxDrV5L3Mj6qLr/+L0QdiiMb3AH0vNmrHIdFC71O1lDBh6W3h3V/GIkRnd0k="
+    # Doctr deploy key for yeatmanlab/AFQ-Browser
+    - secure: "oW7K+0NItX66DI0/QGtjMZ/wdmWnddIZ6ve0BAR5Bq7rKFXXO1muWupyG95uiOZ9NQ9tE0iTsosGQ+bBcD4O97jTpQkwuML4nOGYwXpWbhgd4rjtMJ2wWrCnI/AtW2jlzYJ9aGmek78t+tc+cKjt/18Tu0dmMRGQ7us0nz9IHhKWNphyGvsnpFb/Wrk75+F+k8nlwhsl2Z3cHEF18chOqwJhbK8z3fhZCs9w1sVuksd9+KS6GX4kJ09G/6fUGtWjnfk26L/UvXv8xjtrs+S4l9qvp0xQbVfvaWz9bz6qV1qqe1CTmXe8F9kxywZK/wEREmVa8+cOTUg+hAxKx2Z2MPe7D6R62/UkZRxFer75Z0FX2T5wdwikp+xGTiUaFkF6aKbdZNx/QeXWm4Sb/+aoAM6YfjHAowq+XN9n78s8OoaMIlaT8/Yq0GrwOFAoWs3NZjdPcu5d9KH1AFhQWXaHSPW2d4gP1EH0Xga+DKfsaqXEWVg8FPu1tH5N3rNbji5oZgTao0kPPCJNvZkPpPNR4YVvewyCCTOxZIbJ01yjuBwFlbJIc/s4Ks0ql14hGbAkegD5F+r2Ca3uPLoOl3+3GUU8KWtRy0kZWUrZYvdB2DY7P50yN66HlXfme/J4EXhUUF/eC/yCD/9l0y3iIP/cg4rYtiUkZr35kwSYWTWkBpk="
+
 addons:
   apt:
     packages:
@@ -32,5 +35,5 @@ script:
       cd doc;
       make html;
       cd ..;
-      doctr deploy . --built-docs doc/_build/html;
+      doctr deploy --built-docs doc/_build/html .;
     fi
