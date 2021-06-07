@@ -266,7 +266,7 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None, params=None):
                        df_metric.columns),
                 axis=1)
             n_nodes, n_subjects = df_metric.shape
-            re_data = df_metric.as_matrix().T.reshape(n_nodes * n_subjects)
+            re_data = df_metric.values.T.reshape(n_nodes * n_subjects)
 
             if first_metric:
                 re_nodes = np.tile(np.arange(n_nodes), n_subjects)
