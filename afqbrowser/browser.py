@@ -81,7 +81,7 @@ def _create_metadata(subject_ids, meta_fname):
     meta_df.to_csv(meta_fname)
 
 
-def _copy_nodes_table(nodes_table_fname, out_path=None):
+def _copy_nodes_table(nodes_table_fname, out_path=None, metadata=None):
     """
     Replace default `nodes.csv` with user provided file.
 
@@ -91,7 +91,12 @@ def _copy_nodes_table(nodes_table_fname, out_path=None):
         Full path to user-supplied AFQ-Browser nodes CSV file
 
     out_path : str, optional
-        Full path to directory where the nodes table will be saved.
+        Full path to directory where the nodes table will be saved. If not
+        provided will assume current working directory.
+
+    metadata : str, optional
+        Full path to a file with user-supplied metadata. If not provided
+        a metadata file will be generated using subjectIDs in the nodes table.
 
     Returns
     -------
@@ -103,15 +108,19 @@ def _copy_nodes_table(nodes_table_fname, out_path=None):
                                 os.strerror(errno.ENOENT),
                                 nodes_table_fname)
 
-    nodes_df = pd.read_csv(nodes_table_fname)
-
     if out_path is None:
         out_path = '.'
 
     nodes_fname = op.join(out_path, 'nodes.csv')
-    nodes_df.to_csv(nodes_fname, index=False)
+    shutil.copy(nodes_table_fname, nodes_fname)
 
     meta_fname = op.join(out_path, 'subjects.csv')
+
+    if metadata is None:
+        nodes_df = pd.read_csv(nodes_fname)
+        _create_metadata(nodes_df.subjectID.unique(), meta_fname)
+    else:
+        shutil.copy(metadata, meta_fname)
 
     streamlines_fname = op.join(out_path, 'streamlines.json')
 
