@@ -11,8 +11,8 @@ def test_assemble():
 
     tdir = tempfile.mkdtemp()
     afqb.assemble(op.join(data_path, 'client', 'data', 'nodes.csv'),
-                  target=tdir)
-    
+                  target=tdir, title='', subtitle='', link='', sublink='')
+
     out_data = op.join(tdir, 'AFQ-browser', 'client', 'data')
     nodes_file = op.join(out_data, 'nodes.csv')
     nodes = pd.read_csv(nodes_file)
@@ -21,7 +21,7 @@ def test_assemble():
     tdir = tempfile.mkdtemp()
     afqb.assemble(op.join(data_path, 'client', 'data', 'afq.mat'),
                   target=tdir, title='', subtitle='', link='', sublink='')
-    
+
     # Check for regression against know results:
     out_data = op.join(tdir, 'AFQ-browser', 'client', 'data')
     params_file = op.join(out_data, 'params.json')
