@@ -24,6 +24,11 @@ parser.add_argument(
         default=None)
 
 parser.add_argument(
+        "-s", "--streamlines", metavar="streamlines",
+        help="Path to streamlines JSON",
+        default=None)
+
+parser.add_argument(
         "--page-title", metavar="title",
         help="Page title",
         default=None)
@@ -46,5 +51,6 @@ parser.add_argument(
 args = parser.parse_args()
 
 afqb.assemble(args.source, target=args.target, metadata=args.metadata,
-              title=args.page_title, subtitle=args.page_subtitle,
-              link=args.page_title_link, sublink=args.page_subtitle_link)
+              streamlines=args.streamlines, title=args.page_title,
+              subtitle=args.page_subtitle, link=args.page_title_link,
+              sublink=args.page_subtitle_link)

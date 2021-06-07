@@ -81,7 +81,8 @@ def _create_metadata(subject_ids, meta_fname):
     meta_df.to_csv(meta_fname)
 
 
-def _copy_nodes_table(nodes_table_fname, out_path=None, metadata=None):
+def _copy_nodes_table(nodes_table_fname, out_path=None, metadata=None,
+                      streamlines=None):
     """
     Replace default `nodes.csv` with user provided file.
 
@@ -97,6 +98,12 @@ def _copy_nodes_table(nodes_table_fname, out_path=None, metadata=None):
     metadata : str, optional
         Full path to a file with user-supplied metadata. If not provided
         a metadata file will be generated using subjectIDs in the nodes table.
+
+    streamlines : str, optional
+        Full path to a file with user-supplied streamlines. If not provided
+        the default streamline file consisting of twenty tracts, each with a core
+        fiber and a set of sub-sampled streamlines, each with 100 nodes from a
+        examplar subject will be utilized as a representative anatomy.
 
     Returns
     -------
@@ -123,6 +130,11 @@ def _copy_nodes_table(nodes_table_fname, out_path=None, metadata=None):
         shutil.copy(metadata, meta_fname)
 
     streamlines_fname = op.join(out_path, 'streamlines.json')
+    
+    if streamlines is None:
+        warnings.warn('Using default anatomy')
+    else:
+        shutil.copy(streamlines, streamlines_fname)
 
     return nodes_fname, meta_fname, streamlines_fname
 
@@ -566,7 +578,7 @@ def update_settings_json(settings_path, title=None, subtitle=None,
         json.dump(settings, fp)
 
 
-def assemble(source, target=None, metadata=None,
+def assemble(source, target=None, metadata=None, streamlines=None,
              title=None, subtitle=None,
              link=None, sublink=None):
     """
@@ -588,6 +600,12 @@ def assemble(source, target=None, metadata=None,
         provided through other. Default: read metadata from AFQ struct, or
         generate a metadata table with just a "subjectID" column (e.g., for
         TRACULA).
+
+    streamlines : str, optional.
+        Path to a user-supplied streamline JSON file. The file contains a
+        description of tract trajectories in the 3D space of the anatomy.
+        Within each tract, "coreFiber" is a required key, and subsequent
+        numerical keys are not required.
 
     title : str, optional.
         Custom page title. Default: None.
@@ -623,11 +641,12 @@ def assemble(source, target=None, metadata=None,
         if ext == '.mat':
             # We have an AFQ-generated mat-file on our hands:
             nodes_fname, meta_fname, streamlines_fname, params_fname =\
-                afq_mat2tables(source, out_path=out_path)
+                afq_mat2tables(source, out_path=out_path, metadata=metadata)
         elif ext == '.csv':
             # We have an nodes.csv file
             nodes_fname, meta_fname, streamlines_fname =\
-                 _copy_nodes_table(source, out_path)
+                 _copy_nodes_table(source, out_path=out_path, 
+                                   metadata=metadata, streamlines=streamlines)
         else:
             raise ValueError(
                 'Unknown source argument must be on of: ' \
