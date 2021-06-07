@@ -6,6 +6,7 @@ afqbrowser.browser: data munging for AFQ-Browser
 import os
 import os.path as op
 import errno
+import warnings
 from glob import glob
 import json
 import shutil
@@ -87,22 +88,56 @@ def _copy_nodes_table(nodes_table_fname, out_path=None):
     Parameters
     ----------
     nodes_table_fname : str
-        Full path to an AFQ-Browser nodes CSV file
+        Full path to user-supplied AFQ-Browser nodes CSV file
 
     out_path : str, optional
         Full path to directory where the nodes table will be saved.
 
     Returns
     -------
-    paths to the replaced `nodes.csv` file
+    tuple: paths to the files that get generated:
+        nodes_fname, meta_fname, streamlines_fname
     """
     if not op.exists(nodes_table_fname):
         raise FileNotFoundError(errno.ENOENT,
                                 os.strerror(errno.ENOENT),
                                 nodes_table_fname)
-    
+
     nodes_df = pd.read_csv(nodes_table_fname)
 
+    if out_path is None:
+        out_path = '.'
+
+    nodes_fname = op.join(out_path, 'nodes.csv')
+    nodes_df.to_csv(nodes_fname, index=False)
+
+    meta_fname = op.join(out_path, 'subjects.csv')
+
+    streamlines_fname = op.join(out_path, 'streamlines.json')
+
+    return nodes_fname, meta_fname, streamlines_fname
+
+
+def _validate(nodes_fname, meta_fname, streamlines_fname):
+    """
+    Run checks to ensure requirements and warns of inconsistencies.
+
+    Parameters
+    ----------
+    nodes_fname  : str
+        Full path to nodes table CSV file
+
+    meta_fname : str
+        Full path to metadata CSV file
+
+    streamlines_fname : str
+        Full path to streamlines JSON file
+
+    Returns
+    -------
+    list : validation_errors
+    """
+    nodes_df = pd.read_csv(nodes_fname)
     required_columns = ['subjectID', 'tractID', 'nodeID']
 
     validation_errors = []
@@ -111,19 +146,49 @@ def _copy_nodes_table(nodes_table_fname, out_path=None):
         if not column in nodes_df.columns:
             if not column.lower() in [c.lower() for c in nodes_df.columns]:
                 validation_errors.append(ValueError(
-                    f'Node table columns are case sensitive: {column}'))
+                    f'Nodes table columns are case sensitive: {column}'))
             else:
                 validation_errors.append(ValueError(
-                    f'Node table missing required column: {column}'))
+                    f'Nodes table missing required column: {column}'))
 
-    if validation_errors:
-        raise ValueError(validation_errors)
-    
-    nodes_fname = op.join(out_path, 'nodes.csv')
-    nodes_df.to_csv(nodes_fname, index=False)
+    meta_df = pd.read_csv(meta_fname)
 
-    return nodes_fname
+    # check subjcts consistent
+    if not 'subjectID' in meta_df.columns:
+        validation_errors.append(ValueError(
+            f'Metadata file missing required column: subjectID'))
 
+    if set(nodes_df.subjectID.unique()) != set(meta_df.subjectID):
+        diff = set(nodes_df.subjectID.unique()) ^ set(meta_df.subjectID)
+        warnings.warn('Metadata and Nodes table subjects are inconsistent: '\
+                      f'{diff}\n Some subjects may not appear.')
+
+    with open(streamlines_fname) as fp:
+        streamlines = json.load(fp)
+
+    # check tracts consistent
+    if set(nodes_df.tractID.unique()) != set(streamlines.keys()):
+        diff = set(nodes_df.tractID.unique()) ^ set(streamlines.keys())
+        warnings.warn('Streamlines and Nodes table tracts are inconsistent: '\
+                      f'{diff}\n Some bundles may not appear.')
+
+    # check nodes consistent
+    for tractID in streamlines.keys():
+        if 'coreFiber' not in streamlines[tractID].keys():
+            validation_errors.append(ValueError(
+                f'Streamlines {tractID} missing required key: coreFiber'))
+
+        tract = nodes_df.loc[nodes_df.tractID == tractID]
+        tract_num_nodes = len(tract.nodeID.unique())
+
+        for streamlineID in streamlines[tractID].keys():
+            streamline_num_nodes = len(streamlines[tractID][streamlineID])
+            if tract_num_nodes != streamline_num_nodes:
+                validation_errors.append(ValueError(
+                    f'Streamlines {tractID} {streamlineID} and Nodes tables' \
+                    'nodes inconsistent length'))
+
+    return validation_errors
 
 def tracula2nodes(stats_dir, out_path=None, metadata=None, params=None):
     """
@@ -157,7 +222,8 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None, params=None):
 
     Returns
     -------
-    nodes_fname, meta_fname, streamlines_fname, params_fname
+    tuple: paths to the files that get generated:
+        nodes_fname, meta_fname, streamlines_fname, params_fname
 
     Notes
     -----
@@ -290,7 +356,8 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
 
     Returns
     -------
-    tuple: paths to the files that get generated: (nodes, subjects)
+    tuple: paths to the files that get generated:
+        nodes_fname, meta_fname, streamlines_fname, params_fname
     """
     afq = sio.loadmat(mat_file_name, squeeze_me=True)['afq']
     vals = afq['vals'].item()
@@ -384,11 +451,14 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
     else:
         shutil.copy(metadata, meta_fname)
 
+    # using default streamline file
+    streamlines_fname = op.join(out_path, 'streamlines.json')
+
     params_fname = op.join(out_path, 'params.json')
     params = _extract_params(afq)
     json.dump(params, open(params_fname, 'w'))
 
-    return nodes_fname, meta_fname, params_fname
+    return nodes_fname, meta_fname, streamlines_fname, params_fname
 
 
 def copy_and_overwrite(from_path, to_path):
@@ -543,16 +613,21 @@ def assemble(source, target=None, metadata=None,
         
         if ext == '.mat':
             # We have an AFQ-generated mat-file on our hands:
-            nodes_fname, meta_fname, params_fname = afq_mat2tables(
-                source,
-                out_path=out_path)
+            nodes_fname, meta_fname, streamlines_fname, params_fname =\
+                afq_mat2tables(source, out_path=out_path)
         elif ext == '.csv':
             # We have an nodes.csv file
-            nodes_fname = _copy_nodes_table(source, out_path)
+            nodes_fname, meta_fname, streamlines_fname =\
+                 _copy_nodes_table(source, out_path)
         else:
             raise ValueError(
                 'Unknown source argument must be on of: ' \
                 'TRACULA directory, AFQ mat file, or nodes csv file')
+
+    validation_errors = _validate(nodes_fname, meta_fname, streamlines_fname)
+
+    if validation_errors:
+        raise ValueError(validation_errors)
 
 
 def run(target=None, port=8080):
