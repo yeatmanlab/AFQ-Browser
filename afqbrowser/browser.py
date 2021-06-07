@@ -5,6 +5,7 @@ afqbrowser.browser: data munging for AFQ-Browser
 """
 import os
 import os.path as op
+import errno
 from glob import glob
 import json
 import shutil
@@ -77,6 +78,51 @@ def _create_metadata(subject_ids, meta_fname):
     meta_df = pd.DataFrame({"subjectID": subject_ids},
                            index=range(len(subject_ids)))
     meta_df.to_csv(meta_fname)
+
+
+def _copy_nodes_table(nodes_table_fname, out_path=None):
+    """
+    Replace default `nodes.csv` with user provided file.
+
+    Parameters
+    ----------
+    nodes_table_fname : str
+        Full path to an AFQ-Browser nodes CSV file
+
+    out_path : str, optional
+        Full path to directory where the nodes table will be saved.
+
+    Returns
+    -------
+    paths to the replaced `nodes.csv` file
+    """
+    if not op.exists(nodes_table_fname):
+        raise FileNotFoundError(errno.ENOENT,
+                                os.strerror(errno.ENOENT),
+                                nodes_table_fname)
+    
+    nodes_df = pd.read_csv(nodes_table_fname)
+
+    required_columns = ['subjectID', 'tractID', 'nodeID']
+
+    validation_errors = []
+
+    for column in required_columns:
+        if not column in nodes_df.columns:
+            if not column.lower() in [c.lower() for c in nodes_df.columns]:
+                validation_errors.append(ValueError(
+                    f'Node table columns are case sensitive: {column}'))
+            else:
+                validation_errors.append(ValueError(
+                    f'Node table missing required column: {column}'))
+
+    if validation_errors:
+        raise ValueError(validation_errors)
+    
+    nodes_fname = op.join(out_path, 'nodes.csv')
+    nodes_df.to_csv(nodes_fname, index=False)
+
+    return nodes_fname
 
 
 def tracula2nodes(stats_dir, out_path=None, metadata=None, params=None):
@@ -450,8 +496,8 @@ def assemble(source, target=None, metadata=None,
     Parameters
     ----------
     source : str
-        Path to a mat-file containing the AFQ data structure or to a TRACULA
-        stats folder.
+        Path to a AFQ-Browser nodes csv-file, mat-file containing the AFQ
+        data structure, or to a TRACULA stats folder.
 
     target : str, optional.
         Path to a file-system location to create this instance of the
@@ -493,10 +539,20 @@ def assemble(source, target=None, metadata=None,
             tracula2nodes(source, out_path=out_path, metadata=metadata)
 
     else:
-        # We have an AFQ-generated mat-file on our hands:
-        nodes_fname, meta_fname, params_fname = afq_mat2tables(
-            source,
-            out_path=out_path)
+        ext = os.path.splitext(source)[-1].lower()
+        
+        if ext == '.mat':
+            # We have an AFQ-generated mat-file on our hands:
+            nodes_fname, meta_fname, params_fname = afq_mat2tables(
+                source,
+                out_path=out_path)
+        elif ext == '.csv':
+            # We have an nodes.csv file
+            nodes_fname = _copy_nodes_table(source, out_path)
+        else:
+            raise ValueError(
+                'Unknown source argument must be on of: ' \
+                'TRACULA directory, AFQ mat file, or nodes csv file')
 
 
 def run(target=None, port=8080):

@@ -10,7 +10,8 @@ parser = ArgumentParser(description=description)
 
 parser.add_argument(
         "source", metavar="source",
-        help="Path to mat file containing the AFQ data structure")
+        help="Path to AFQ-Browser nodes CSV file, MAT file containing the AFQ"\
+             "data structure, or TRACULA stats directory")
 
 parser.add_argument(
         "-t", "--target", metavar="target",
