@@ -1,4 +1,4 @@
 flake8
-pytest==3.6
+pytest==4.6
 coverage
 pytest-cov
