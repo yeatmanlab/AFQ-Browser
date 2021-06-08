@@ -101,9 +101,9 @@ def _copy_nodes_table(nodes_table_fname, out_path=None, metadata=None,
 
     streamlines : str, optional
         Full path to a file with user-supplied streamlines. If not provided
-        the default streamline file consisting of twenty tracts, each with a core
-        fiber and a set of sub-sampled streamlines, each with 100 nodes from a
-        examplar subject will be utilized as a representative anatomy.
+        the default streamline file consisting of twenty tracts, each with a
+        core fiber and a set of sub-sampled streamlines, each with 100 nodes
+        from an examplar subject will be utilized as a representative anatomy.
 
     Returns
     -------
@@ -130,7 +130,7 @@ def _copy_nodes_table(nodes_table_fname, out_path=None, metadata=None,
         shutil.copy(metadata, meta_fname)
 
     streamlines_fname = op.join(out_path, 'streamlines.json')
-    
+
     if streamlines is None:
         warnings.warn('Using default anatomy')
     else:
@@ -164,8 +164,8 @@ def _validate(nodes_fname, meta_fname, streamlines_fname):
     validation_errors = []
 
     for column in required_columns:
-        if not column in nodes_df.columns:
-            if not column.lower() in [c.lower() for c in nodes_df.columns]:
+        if column not in nodes_df.columns:
+            if column.lower() not in [c.lower() for c in nodes_df.columns]:
                 validation_errors.append(ValueError(
                     f'Nodes table columns are case sensitive: {column}'))
             else:
@@ -175,13 +175,13 @@ def _validate(nodes_fname, meta_fname, streamlines_fname):
     meta_df = pd.read_csv(meta_fname)
 
     # check subjcts consistent
-    if not 'subjectID' in meta_df.columns:
+    if 'subjectID' not in meta_df.columns:
         validation_errors.append(ValueError(
-            f'Metadata file missing required column: subjectID'))
+            'Metadata file missing required column: subjectID'))
 
     if set(nodes_df.subjectID.unique()) != set(meta_df.subjectID):
         diff = set(nodes_df.subjectID.unique()) ^ set(meta_df.subjectID)
-        warnings.warn('Metadata and Nodes table subjects are inconsistent: '\
+        warnings.warn('Metadata and Nodes table subjects are inconsistent: '
                       f'{diff}\n Some subjects may not appear.')
 
     with open(streamlines_fname) as fp:
@@ -190,7 +190,7 @@ def _validate(nodes_fname, meta_fname, streamlines_fname):
     # check tracts consistent
     if set(nodes_df.tractID.unique()) != set(streamlines.keys()):
         diff = set(nodes_df.tractID.unique()) ^ set(streamlines.keys())
-        warnings.warn('Streamlines and Nodes table tracts are inconsistent: '\
+        warnings.warn('Streamlines and Nodes table tracts are inconsistent: '
                       f'{diff}\n Some bundles may not appear.')
 
     # check nodes consistent
@@ -206,10 +206,11 @@ def _validate(nodes_fname, meta_fname, streamlines_fname):
             streamline_num_nodes = len(streamlines[tractID][streamlineID])
             if tract_num_nodes != streamline_num_nodes:
                 validation_errors.append(ValueError(
-                    f'Streamlines {tractID} {streamlineID} and Nodes tables' \
+                    f'Streamlines {tractID} {streamlineID} and Nodes tables'
                     'nodes inconsistent length'))
 
     return validation_errors
+
 
 def tracula2nodes(stats_dir, out_path=None, metadata=None, params=None):
     """
@@ -254,19 +255,22 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None, params=None):
            R, Salat D, Ehrlich S, Behrens T, Jbabdi S, Gollub R and Fischl B
            (2011). Front. Neuroinform. 5:23. doi: 10.3389/fninf.2011.00023
     """
-    ll = glob(op.join(stats_dir, '*.txt'))
+    txt_files = glob(op.join(stats_dir, '*.txt'))
 
     tracks = []
     metrics = []
-    for l in ll:
-        tt = '.'.join(op.split(l)[-1].split('.')[:2])
+    for txt_file in txt_files:
+        tt = '.'.join(op.split(txt_file)[-1].split('.')[:2])
         if not (tt.startswith('rh') or tt.startswith('lh')):
             tt = tt.split('.')[0]
         tracks.append(tt)
-        metrics.append((op.splitext(op.split(l)[-1])[0]).split('.')[-1])
+        metrics.append((op.splitext(op.split(txt_file)[-1])[0]).split('.')[-1])
 
     tracks = list(set(tracks))
-    metrics = [l for l in list(set(metrics)) if l not in ['mean', 'inputs']]
+    metrics = [metric
+               for metric in list(set(metrics))
+               if metric not in ['mean', 'inputs']]
+
     streamlines = OrderedDict()
     dfs = []
 
@@ -637,7 +641,7 @@ def assemble(source, target=None, metadata=None, streamlines=None,
 
     else:
         ext = os.path.splitext(source)[-1].lower()
-        
+
         if ext == '.mat':
             # We have an AFQ-generated mat-file on our hands:
             nodes_fname, meta_fname, streamlines_fname, params_fname =\
@@ -645,11 +649,11 @@ def assemble(source, target=None, metadata=None, streamlines=None,
         elif ext == '.csv':
             # We have an nodes.csv file
             nodes_fname, meta_fname, streamlines_fname =\
-                 _copy_nodes_table(source, out_path=out_path, 
-                                   metadata=metadata, streamlines=streamlines)
+                _copy_nodes_table(source, out_path=out_path,
+                                  metadata=metadata, streamlines=streamlines)
         else:
             raise ValueError(
-                'Unknown source argument must be on of: ' \
+                'Unknown source argument must be on of: '
                 'TRACULA directory, AFQ mat file, or nodes csv file')
 
     validation_errors = _validate(nodes_fname, meta_fname, streamlines_fname)
