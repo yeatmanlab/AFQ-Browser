@@ -8,6 +8,16 @@ import numpy.testing as npt
 
 def test_assemble():
     data_path = op.join(afqb.__path__[0], 'site')
+
+    tdir = tempfile.mkdtemp()
+    afqb.assemble(op.join(data_path, 'client', 'data', 'nodes.csv'),
+                  target=tdir, title='', subtitle='', link='', sublink='')
+
+    out_data = op.join(tdir, 'AFQ-browser', 'client', 'data')
+    nodes_file = op.join(out_data, 'nodes.csv')
+    nodes = pd.read_csv(nodes_file)
+    npt.assert_almost_equal(nodes['fa'][0], 0.4529922120694605)
+
     tdir = tempfile.mkdtemp()
     afqb.assemble(op.join(data_path, 'client', 'data', 'afq.mat'),
                   target=tdir, title='', subtitle='', link='', sublink='')

@@ -5,6 +5,8 @@ afqbrowser.browser: data munging for AFQ-Browser
 """
 import os
 import os.path as op
+import errno
+import warnings
 from glob import glob
 import json
 import shutil
@@ -79,6 +81,137 @@ def _create_metadata(subject_ids, meta_fname):
     meta_df.to_csv(meta_fname)
 
 
+def _copy_nodes_table(nodes_table_fname, out_path=None, metadata=None,
+                      streamlines=None):
+    """
+    Replace default `nodes.csv` with user provided file.
+
+    Parameters
+    ----------
+    nodes_table_fname : str
+        Full path to user-supplied AFQ-Browser nodes CSV file
+
+    out_path : str, optional
+        Full path to directory where the nodes table will be saved. If not
+        provided will assume current working directory.
+
+    metadata : str, optional
+        Full path to a file with user-supplied metadata. If not provided
+        a metadata file will be generated using subjectIDs in the nodes table.
+
+    streamlines : str, optional
+        Full path to a file with user-supplied streamlines. If not provided
+        the default streamline file consisting of twenty tracts, each with a
+        core fiber and a set of sub-sampled streamlines, each with 100 nodes
+        from an examplar subject will be utilized as a representative anatomy.
+
+    Returns
+    -------
+    tuple: paths to the files that get generated:
+        nodes_fname, meta_fname, streamlines_fname
+    """
+    if not op.exists(nodes_table_fname):
+        raise FileNotFoundError(errno.ENOENT,
+                                os.strerror(errno.ENOENT),
+                                nodes_table_fname)
+
+    if out_path is None:
+        out_path = '.'
+
+    nodes_fname = op.join(out_path, 'nodes.csv')
+    shutil.copy(nodes_table_fname, nodes_fname)
+
+    meta_fname = op.join(out_path, 'subjects.csv')
+
+    if metadata is None:
+        nodes_df = pd.read_csv(nodes_fname)
+        _create_metadata(nodes_df.subjectID.unique(), meta_fname)
+    else:
+        shutil.copy(metadata, meta_fname)
+
+    streamlines_fname = op.join(out_path, 'streamlines.json')
+
+    if streamlines is None:
+        warnings.warn('Using default anatomy')
+    else:
+        shutil.copy(streamlines, streamlines_fname)
+
+    return nodes_fname, meta_fname, streamlines_fname
+
+
+def _validate(nodes_fname, meta_fname, streamlines_fname):
+    """
+    Run checks to ensure requirements and warns of inconsistencies.
+
+    Parameters
+    ----------
+    nodes_fname  : str
+        Full path to nodes table CSV file
+
+    meta_fname : str
+        Full path to metadata CSV file
+
+    streamlines_fname : str
+        Full path to streamlines JSON file
+
+    Returns
+    -------
+    list : validation_errors
+    """
+    nodes_df = pd.read_csv(nodes_fname)
+    required_columns = ['subjectID', 'tractID', 'nodeID']
+
+    validation_errors = []
+
+    for column in required_columns:
+        if column not in nodes_df.columns:
+            if column.lower() not in [c.lower() for c in nodes_df.columns]:
+                validation_errors.append(ValueError(
+                    f'Nodes table columns are case sensitive: {column}'))
+            else:
+                validation_errors.append(ValueError(
+                    f'Nodes table missing required column: {column}'))
+
+    meta_df = pd.read_csv(meta_fname)
+
+    # check subjcts consistent
+    if 'subjectID' not in meta_df.columns:
+        validation_errors.append(ValueError(
+            'Metadata file missing required column: subjectID'))
+
+    if set(nodes_df.subjectID.unique()) != set(meta_df.subjectID):
+        diff = set(nodes_df.subjectID.unique()) ^ set(meta_df.subjectID)
+        warnings.warn('Metadata and Nodes table subjects are inconsistent: '
+                      f'{diff}\n Some subjects may not appear.')
+
+    with open(streamlines_fname) as fp:
+        streamlines = json.load(fp)
+
+    # check tracts consistent
+    if set(nodes_df.tractID.unique()) != set(streamlines.keys()):
+        diff = set(nodes_df.tractID.unique()) ^ set(streamlines.keys())
+        warnings.warn('Streamlines and Nodes table tracts are inconsistent: '
+                      f'{diff}\n Some bundles may not appear.')
+
+    # check nodes consistent
+    for tractID in streamlines.keys():
+        if 'coreFiber' not in streamlines[tractID].keys():
+            validation_errors.append(ValueError(
+                f'Streamlines {tractID} missing required key: coreFiber'))
+
+        tract = nodes_df.loc[nodes_df.tractID == tractID]
+        tract_num_nodes = len(tract.nodeID.unique())
+
+        for streamlineID in streamlines[tractID].keys():
+            streamline_num_nodes = len(streamlines[tractID][streamlineID])
+            if tract_num_nodes != streamline_num_nodes:
+                validation_errors.append(ValueError(
+                    f'Streamlines {tractID} {streamlineID} and Nodes tables'
+                    'nodes inconsistent length'))
+
+    return validation_errors
+
+
 def tracula2nodes(stats_dir, out_path=None, metadata=None, params=None):
     """
     Create a nodes table from a TRACULA `stats` directory.
@@ -111,7 +244,8 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None, params=None):
 
     Returns
     -------
-    nodes_fname, meta_fname, streamlines_fname, params_fname
+    tuple: paths to the files that get generated:
+        nodes_fname, meta_fname, streamlines_fname, params_fname
 
     Notes
     -----
@@ -121,19 +255,22 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None, params=None):
            R, Salat D, Ehrlich S, Behrens T, Jbabdi S, Gollub R and Fischl B
            (2011). Front. Neuroinform. 5:23. doi: 10.3389/fninf.2011.00023
     """
-    ll = glob(op.join(stats_dir, '*.txt'))
+    txt_files = glob(op.join(stats_dir, '*.txt'))
 
     tracks = []
     metrics = []
-    for l in ll:
-        tt = '.'.join(op.split(l)[-1].split('.')[:2])
+    for txt_file in txt_files:
+        tt = '.'.join(op.split(txt_file)[-1].split('.')[:2])
         if not (tt.startswith('rh') or tt.startswith('lh')):
             tt = tt.split('.')[0]
         tracks.append(tt)
-        metrics.append((op.splitext(op.split(l)[-1])[0]).split('.')[-1])
+        metrics.append((op.splitext(op.split(txt_file)[-1])[0]).split('.')[-1])
 
     tracks = list(set(tracks))
-    metrics = [l for l in list(set(metrics)) if l not in ['mean', 'inputs']]
+    metrics = [metric
+               for metric in list(set(metrics))
+               if metric not in ['mean', 'inputs']]
+
     streamlines = OrderedDict()
     dfs = []
 
@@ -154,7 +291,7 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None, params=None):
                        df_metric.columns),
                 axis=1)
             n_nodes, n_subjects = df_metric.shape
-            re_data = df_metric.as_matrix().T.reshape(n_nodes * n_subjects)
+            re_data = df_metric.values.T.reshape(n_nodes * n_subjects)
 
             if first_metric:
                 re_nodes = np.tile(np.arange(n_nodes), n_subjects)
@@ -244,7 +381,8 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
 
     Returns
     -------
-    tuple: paths to the files that get generated: (nodes, subjects)
+    tuple: paths to the files that get generated:
+        nodes_fname, meta_fname, streamlines_fname, params_fname
     """
     afq = sio.loadmat(mat_file_name, squeeze_me=True)['afq']
     vals = afq['vals'].item()
@@ -338,11 +476,14 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
     else:
         shutil.copy(metadata, meta_fname)
 
+    # using default streamline file
+    streamlines_fname = op.join(out_path, 'streamlines.json')
+
     params_fname = op.join(out_path, 'params.json')
     params = _extract_params(afq)
     json.dump(params, open(params_fname, 'w'))
 
-    return nodes_fname, meta_fname, params_fname
+    return nodes_fname, meta_fname, streamlines_fname, params_fname
 
 
 def copy_and_overwrite(from_path, to_path):
@@ -441,7 +582,7 @@ def update_settings_json(settings_path, title=None, subtitle=None,
         json.dump(settings, fp)
 
 
-def assemble(source, target=None, metadata=None,
+def assemble(source, target=None, metadata=None, streamlines=None,
              title=None, subtitle=None,
              link=None, sublink=None):
     """
@@ -450,8 +591,8 @@ def assemble(source, target=None, metadata=None,
     Parameters
     ----------
     source : str
-        Path to a mat-file containing the AFQ data structure or to a TRACULA
-        stats folder.
+        Path to a AFQ-Browser nodes csv-file, mat-file containing the AFQ
+        data structure, or to a TRACULA stats folder.
 
     target : str, optional.
         Path to a file-system location to create this instance of the
@@ -463,6 +604,12 @@ def assemble(source, target=None, metadata=None,
         provided through other. Default: read metadata from AFQ struct, or
         generate a metadata table with just a "subjectID" column (e.g., for
         TRACULA).
+
+    streamlines : str, optional.
+        Path to a user-supplied streamline JSON file. The file contains a
+        description of tract trajectories in the 3D space of the anatomy.
+        Within each tract, "coreFiber" is a required key, and subsequent
+        numerical keys are not required.
 
     title : str, optional.
         Custom page title. Default: None.
@@ -493,10 +640,26 @@ def assemble(source, target=None, metadata=None,
             tracula2nodes(source, out_path=out_path, metadata=metadata)
 
     else:
-        # We have an AFQ-generated mat-file on our hands:
-        nodes_fname, meta_fname, params_fname = afq_mat2tables(
-            source,
-            out_path=out_path)
+        ext = os.path.splitext(source)[-1].lower()
+
+        if ext == '.mat':
+            # We have an AFQ-generated mat-file on our hands:
+            nodes_fname, meta_fname, streamlines_fname, params_fname =\
+                afq_mat2tables(source, out_path=out_path, metadata=metadata)
+        elif ext == '.csv':
+            # We have an nodes.csv file
+            nodes_fname, meta_fname, streamlines_fname =\
+                _copy_nodes_table(source, out_path=out_path,
+                                  metadata=metadata, streamlines=streamlines)
+        else:
+            raise ValueError(
+                'Unknown source argument must be on of: '
+                'TRACULA directory, AFQ mat file, or nodes csv file')
+
+    validation_errors = _validate(nodes_fname, meta_fname, streamlines_fname)
+
+    if validation_errors:
+        raise ValueError(validation_errors)
 
 
 def run(target=None, port=8080):

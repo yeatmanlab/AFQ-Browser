@@ -10,7 +10,8 @@ parser = ArgumentParser(description=description)
 
 parser.add_argument(
         "source", metavar="source",
-        help="Path to mat file containing the AFQ data structure")
+        help="Path to AFQ-Browser nodes CSV file, MAT file containing the AFQ"\
+             "data structure, or TRACULA stats directory")
 
 parser.add_argument(
         "-t", "--target", metavar="target",
@@ -20,6 +21,11 @@ parser.add_argument(
 parser.add_argument(
         "-m", "--metadata", metavar="metadata",
         help="Path to subject metadata csv file",
+        default=None)
+
+parser.add_argument(
+        "-s", "--streamlines", metavar="streamlines",
+        help="Path to streamlines JSON",
         default=None)
 
 parser.add_argument(
@@ -45,5 +51,6 @@ parser.add_argument(
 args = parser.parse_args()
 
 afqb.assemble(args.source, target=args.target, metadata=args.metadata,
-              title=args.page_title, subtitle=args.page_subtitle,
-              link=args.page_title_link, sublink=args.page_subtitle_link)
+              streamlines=args.streamlines, title=args.page_title,
+              subtitle=args.page_subtitle, link=args.page_title_link,
+              sublink=args.page_subtitle_link)
