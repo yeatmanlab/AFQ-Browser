@@ -17,13 +17,8 @@ import pandas as pd
 import numpy as np
 import afqbrowser as afqb
 
-# Shim for Python2/Python3:
-try:
-    from http.server import SimpleHTTPRequestHandler
-    import socketserver
-except ImportError:
-    from SimpleHTTPServer import SimpleHTTPRequestHandler
-    import SocketServer as socketserver
+from http.server import SimpleHTTPRequestHandler
+import socketserver
 
 
 MNI_AFF = np.array([[1., 0., 0., -98.],
