@@ -26,7 +26,22 @@ opts = dict(
     use_scm_version={"root": ".", "relative_to": __file__,
                      "write_to": op.join("afqbrowser", "version.py"),
                      "local_scheme": local_version},
-    scripts=[op.join('bin', op.split(f)[-1]) for f in glob.glob('bin/*')])
+    scripts=[op.join('bin', op.split(f)[-1]) for f in glob.glob('bin/*')],
+    package_data = {'afqbrowser': [op.join('afqbrowser', 'site', '*'),
+                                   op.join('afqbrowser', 'site', 'client', '*'),
+                                   op.join('afqbrowser', 'site', 'client',
+                                           'data', '*'),
+                                   op.join('afqbrowser', 'site', 'client',
+                                           'data', 'tracula_data', '*'),
+                                   op.join('afqbrowser',  'site', 'client',
+                                           'data', 'tracula_data', 'stats',
+                                           '*'),
+                                    op.join('afqbrowser', 'site', 'client',
+                                            'css', '*'),
+                                   op.join('afqbrowser', 'site', 'client',
+                                           'js', '*'),
+                                   op.join('afqbrowser', 'site', 'client', 'js',
+                                         'third-party', '*')]})
 
 
 if __name__ == '__main__':
