@@ -60,8 +60,8 @@ def mangle_docstrings(app, what, name, obj, options, lines,
             doc = unicode(doc)
         lines[:] = doc.split(u_NL)
 
-    if (app.config.numpydoc_edit_link and hasattr(obj, '__name__') and
-            obj.__name__):
+    if (app.config.numpydoc_edit_link and hasattr(obj, '__name__')
+        and obj.__name__):
         if hasattr(obj, '__module__'):
             v = dict(full_name=sixu("%s.%s") % (obj.__module__, obj.__name__))
         else:
@@ -97,13 +97,13 @@ def mangle_docstrings(app, what, name, obj, options, lines,
 
 def mangle_signature(app, what, name, obj, options, sig, retann):
     # Do not try to inspect classes that don't define `__init__`
-    if (inspect.isclass(obj) and
-        (not hasattr(obj, '__init__') or
-            'initializes x; see ' in pydoc.getdoc(obj.__init__))):
+    if (inspect.isclass(obj)
+        and (not hasattr(obj, '__init__')
+        or 'initializes x; see ' in pydoc.getdoc(obj.__init__))):
         return '', ''
 
-    if not (isinstance(obj, collections.Callable) or
-            hasattr(obj, '__argspec_is_invalid_')):
+    if not (isinstance(obj, collections.Callable)
+            or hasattr(obj, '__argspec_is_invalid_')):
         return
 
     if not hasattr(obj, '__doc__'):
