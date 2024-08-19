@@ -3,6 +3,7 @@
 afqbrowser.browser: data munging for AFQ-Browser
 
 """
+
 import os
 import os.path as op
 import errno
@@ -21,63 +22,67 @@ from http.server import SimpleHTTPRequestHandler
 import socketserver
 
 
-MNI_AFF = np.array([[1., 0., 0., -98.],
-                    [0., 1., 0., -134.],
-                    [0., 0., 1., -72.],
-                    [0., 0., 0., 1.]])
+MNI_AFF = np.array(
+    [
+        [1.0, 0.0, 0.0, -98.0],
+        [0.0, 1.0, 0.0, -134.0],
+        [0.0, 0.0, 1.0, -72.0],
+        [0.0, 0.0, 0.0, 1.0],
+    ]
+)
 
 
 def _extract_params(afq):
     """
     Helper function to extract a params dict from the AFQ mat file
     """
-    afq_params = afq['params']
-    params_dict = {k: afq_params.item()[k].tolist() for k in
-                   afq_params.item().dtype.names}
+    afq_params = afq["params"]
+    params_dict = {
+        k: afq_params.item()[k].tolist() for k in afq_params.item().dtype.names
+    }
 
-    params_dict['track'] = {k: params_dict['track'][k].tolist() for k in
-                            params_dict['track'].dtype.names}
+    params_dict["track"] = {
+        k: params_dict["track"][k].tolist() for k in params_dict["track"].dtype.names
+    }
 
-    for k in params_dict['track'].keys():
-        if hasattr(params_dict['track'][k], 'tolist'):
-            params_dict['track'][k] = params_dict['track'][k].tolist()
+    for k in params_dict["track"].keys():
+        if hasattr(params_dict["track"][k], "tolist"):
+            params_dict["track"][k] = params_dict["track"][k].tolist()
 
     for k in params_dict.keys():
-        if hasattr(params_dict[k], 'tolist'):
+        if hasattr(params_dict[k], "tolist"):
             params_dict[k] = params_dict[k].tolist()
 
     # Some newer version of AFQ have scan params:
-    if 'scanparams' in afq.dtype.names:
-        scan_params = afq['scanparams'].item()
-        scan_dict = {k: scan_params[k].tolist() for k in
-                     scan_params.dtype.names}
+    if "scanparams" in afq.dtype.names:
+        scan_params = afq["scanparams"].item()
+        scan_dict = {k: scan_params[k].tolist() for k in scan_params.dtype.names}
         for k in scan_dict.keys():
-            if hasattr(scan_dict[k], 'tolist'):
+            if hasattr(scan_dict[k], "tolist"):
                 scan_dict[k] = scan_dict[k].tolist()
 
-        scan_dict = {k: scan_params[k].tolist() for k in
-                     scan_params.dtype.names}
+        scan_dict = {k: scan_params[k].tolist() for k in scan_params.dtype.names}
         for k in scan_dict.keys():
-            if hasattr(scan_dict[k], 'tolist'):
+            if hasattr(scan_dict[k], "tolist"):
                 scan_dict[k] = scan_dict[k].tolist()
 
     # Older versions of AFQ don't have the scan params:
     else:
         scan_dict = {}
 
-    params = {'analysis_params': params_dict, 'scan_params': scan_dict}
+    params = {"analysis_params": params_dict, "scan_params": scan_dict}
     return params
 
 
 def _create_metadata(subject_ids, meta_fname):
     """Helper function to create a minimal metadata file."""
-    meta_df = pd.DataFrame({"subjectID": subject_ids},
-                           index=range(len(subject_ids)))
+    meta_df = pd.DataFrame({"subjectID": subject_ids}, index=range(len(subject_ids)))
     meta_df.to_csv(meta_fname)
 
 
-def _copy_nodes_table(nodes_table_fname, out_path=None, metadata=None,
-                      streamlines=None):
+def _copy_nodes_table(
+    nodes_table_fname, out_path=None, metadata=None, streamlines=None
+):
     """
     Replace default `nodes.csv` with user provided file.
 
@@ -98,7 +103,7 @@ def _copy_nodes_table(nodes_table_fname, out_path=None, metadata=None,
         Full path to a file with user-supplied streamlines. If not provided
         the default streamline file consisting of twenty tracts, each with a
         core fiber and a set of sub-sampled streamlines, each with 100 nodes
-        from an examplar subject will be utilized as a representative anatomy.
+        from an exemplar subject will be utilized as a representative anatomy.
 
     Returns
     -------
@@ -106,17 +111,17 @@ def _copy_nodes_table(nodes_table_fname, out_path=None, metadata=None,
         nodes_fname, meta_fname, streamlines_fname
     """
     if not op.exists(nodes_table_fname):
-        raise FileNotFoundError(errno.ENOENT,
-                                os.strerror(errno.ENOENT),
-                                nodes_table_fname)
+        raise FileNotFoundError(
+            errno.ENOENT, os.strerror(errno.ENOENT), nodes_table_fname
+        )
 
     if out_path is None:
-        out_path = '.'
+        out_path = "."
 
-    nodes_fname = op.join(out_path, 'nodes.csv')
+    nodes_fname = op.join(out_path, "nodes.csv")
     shutil.copy(nodes_table_fname, nodes_fname)
 
-    meta_fname = op.join(out_path, 'subjects.csv')
+    meta_fname = op.join(out_path, "subjects.csv")
 
     if metadata is None:
         nodes_df = pd.read_csv(nodes_fname)
@@ -124,10 +129,10 @@ def _copy_nodes_table(nodes_table_fname, out_path=None, metadata=None,
     else:
         shutil.copy(metadata, meta_fname)
 
-    streamlines_fname = op.join(out_path, 'streamlines.json')
+    streamlines_fname = op.join(out_path, "streamlines.json")
 
     if streamlines is None:
-        warnings.warn('Using default anatomy')
+        warnings.warn("Using default anatomy")
     else:
         shutil.copy(streamlines, streamlines_fname)
 
@@ -154,30 +159,35 @@ def _validate(nodes_fname, meta_fname, streamlines_fname):
     list : validation_errors
     """
     nodes_df = pd.read_csv(nodes_fname)
-    required_columns = ['subjectID', 'tractID', 'nodeID']
+    required_columns = ["subjectID", "tractID", "nodeID"]
 
     validation_errors = []
 
     for column in required_columns:
         if column not in nodes_df.columns:
             if column.lower() not in [c.lower() for c in nodes_df.columns]:
-                validation_errors.append(ValueError(
-                    f'Nodes table columns are case sensitive: {column}'))
+                validation_errors.append(
+                    ValueError(f"Nodes table columns are case sensitive: {column}")
+                )
             else:
-                validation_errors.append(ValueError(
-                    f'Nodes table missing required column: {column}'))
+                validation_errors.append(
+                    ValueError(f"Nodes table missing required column: {column}")
+                )
 
     meta_df = pd.read_csv(meta_fname)
 
     # check subjcts consistent
-    if 'subjectID' not in meta_df.columns:
-        validation_errors.append(ValueError(
-            'Metadata file missing required column: subjectID'))
+    if "subjectID" not in meta_df.columns:
+        validation_errors.append(
+            ValueError("Metadata file missing required column: subjectID")
+        )
 
     if set(nodes_df.subjectID.unique()) != set(meta_df.subjectID):
         diff = set(nodes_df.subjectID.unique()) ^ set(meta_df.subjectID)
-        warnings.warn('Metadata and Nodes table subjects are inconsistent: '
-                      f'{diff}\n Some subjects may not appear.')
+        warnings.warn(
+            "Metadata and Nodes table subjects are inconsistent: "
+            f"{diff}\n Some subjects may not appear."
+        )
 
     with open(streamlines_fname) as fp:
         streamlines = json.load(fp)
@@ -185,14 +195,17 @@ def _validate(nodes_fname, meta_fname, streamlines_fname):
     # check tracts consistent
     if set(nodes_df.tractID.unique()) != set(streamlines.keys()):
         diff = set(nodes_df.tractID.unique()) ^ set(streamlines.keys())
-        warnings.warn('Streamlines and Nodes table tracts are inconsistent: '
-                      f'{diff}\n Some bundles may not appear.')
+        warnings.warn(
+            "Streamlines and Nodes table tracts are inconsistent: "
+            f"{diff}\n Some bundles may not appear."
+        )
 
     # check nodes consistent
     for tractID in streamlines.keys():
-        if 'coreFiber' not in streamlines[tractID].keys():
-            validation_errors.append(ValueError(
-                f'Streamlines {tractID} missing required key: coreFiber'))
+        if "coreFiber" not in streamlines[tractID].keys():
+            validation_errors.append(
+                ValueError(f"Streamlines {tractID} missing required key: coreFiber")
+            )
 
         tract = nodes_df.loc[nodes_df.tractID == tractID]
         tract_num_nodes = len(tract.nodeID.unique())
@@ -200,9 +213,12 @@ def _validate(nodes_fname, meta_fname, streamlines_fname):
         for streamlineID in streamlines[tractID].keys():
             streamline_num_nodes = len(streamlines[tractID][streamlineID])
             if tract_num_nodes != streamline_num_nodes:
-                validation_errors.append(ValueError(
-                    f'Streamlines {tractID} {streamlineID} and Nodes tables'
-                    'nodes inconsistent length'))
+                validation_errors.append(
+                    ValueError(
+                        f"Streamlines {tractID} {streamlineID} and Nodes tables"
+                        "nodes inconsistent length"
+                    )
+                )
 
     return validation_errors
 
@@ -250,53 +266,57 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None, params=None):
            R, Salat D, Ehrlich S, Behrens T, Jbabdi S, Gollub R and Fischl B
            (2011). Front. Neuroinform. 5:23. doi: 10.3389/fninf.2011.00023
     """
-    txt_files = glob(op.join(stats_dir, '*.txt'))
+    txt_files = glob(op.join(stats_dir, "*.txt"))
 
     tracks = []
     metrics = []
     for txt_file in txt_files:
-        tt = '.'.join(op.split(txt_file)[-1].split('.')[:2])
-        if not (tt.startswith('rh') or tt.startswith('lh')):
-            tt = tt.split('.')[0]
+        tt = ".".join(op.split(txt_file)[-1].split(".")[:2])
+        if not (tt.startswith("rh") or tt.startswith("lh")):
+            tt = tt.split(".")[0]
         tracks.append(tt)
-        metrics.append((op.splitext(op.split(txt_file)[-1])[0]).split('.')[-1])
+        metrics.append((op.splitext(op.split(txt_file)[-1])[0]).split(".")[-1])
 
     tracks = list(set(tracks))
-    metrics = [metric
-               for metric in list(set(metrics))
-               if metric not in ['mean', 'inputs']]
+    metrics = [
+        metric for metric in list(set(metrics)) if metric not in ["mean", "inputs"]
+    ]
 
     streamlines = OrderedDict()
     dfs = []
 
     for tt in tracks:
-        coords_file = tt + '.avg33_mni_bbr.coords.mean.txt'
+        coords_file = tt + ".avg33_mni_bbr.coords.mean.txt"
         cc = np.loadtxt(op.join(stats_dir, coords_file))
         # We apply the MNI affine, to get back to AC/PC space in mm:
         coords = np.dot(cc, MNI_AFF[:-1, :-1].T) + MNI_AFF[:-1, -1][None, :]
-        streamlines[tt] = {'coreFiber': coords.tolist()}
+        streamlines[tt] = {"coreFiber": coords.tolist()}
 
         first_metric = True
 
         for m in metrics:
-            fname = op.join(stats_dir, tt + '.avg33_mni_bbr.' + m + '.txt')
-            df_metric = pd.read_csv(fname, delimiter=' ')
+            fname = op.join(stats_dir, tt + ".avg33_mni_bbr." + m + ".txt")
+            df_metric = pd.read_csv(fname, delimiter=" ")
             df_metric = df_metric.drop(
-                filter(lambda x: x.startswith('Unnamed'),
-                       df_metric.columns),
-                axis=1)
+                filter(lambda x: x.startswith("Unnamed"), df_metric.columns), axis=1
+            )
             n_nodes, n_subjects = df_metric.shape
             re_data = df_metric.values.T.reshape(n_nodes * n_subjects)
 
             if first_metric:
                 re_nodes = np.tile(np.arange(n_nodes), n_subjects)
                 re_subs = np.concatenate(
-                    [[s for i in range(n_nodes)] for s in df_metric.columns])
+                    [[s for i in range(n_nodes)] for s in df_metric.columns]
+                )
                 re_track = np.repeat(tt, n_subjects * n_nodes)
-                re_df = pd.DataFrame({'subjectID': re_subs,
-                                      'tractID': re_track,
-                                      'nodeID': re_nodes,
-                                      m: re_data})
+                re_df = pd.DataFrame(
+                    {
+                        "subjectID": re_subs,
+                        "tractID": re_track,
+                        "nodeID": re_nodes,
+                        m: re_data,
+                    }
+                )
                 first_metric = False
             else:
                 re_df[m] = re_data
@@ -306,12 +326,12 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None, params=None):
     nodes_df = pd.concat(dfs)
 
     if out_path is None:
-        out_path = '.'
+        out_path = "."
 
-    nodes_fname = op.join(out_path, 'nodes.csv')
+    nodes_fname = op.join(out_path, "nodes.csv")
     nodes_df.to_csv(nodes_fname, index=False)
 
-    meta_fname = op.join(out_path, 'subjects.csv')
+    meta_fname = op.join(out_path, "subjects.csv")
 
     if metadata is None:
         _create_metadata(df_metric.columns, meta_fname)
@@ -319,13 +339,13 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None, params=None):
     else:
         shutil.copy(metadata, meta_fname)
 
-    streamlines_fname = op.join(out_path, 'streamlines.json')
-    with open(streamlines_fname, 'w') as f:
+    streamlines_fname = op.join(out_path, "streamlines.json")
+    with open(streamlines_fname, "w") as f:
         f.write(json.dumps(streamlines))
 
-    params_fname = op.join(out_path, 'params.json')
+    params_fname = op.join(out_path, "params.json")
     if params is None:
-        with open(params_fname, 'w') as f:
+        with open(params_fname, "w") as f:
             f.write(json.dumps({"analysis_params": {}, "scan_params": {}}))
     else:
         shutil.copy(params, params_fname)
@@ -335,18 +355,19 @@ def tracula2nodes(stats_dir, out_path=None, metadata=None, params=None):
 
 def _create_subject_ids(n_subjects):
     if n_subjects > 1000:
-        subject_ids = ['subject_%05d' % i for i in range(n_subjects)]
+        subject_ids = ["subject_%05d" % i for i in range(n_subjects)]
     elif n_subjects > 100:
-        subject_ids = ['subject_%04d' % i for i in range(n_subjects)]
+        subject_ids = ["subject_%04d" % i for i in range(n_subjects)]
     elif n_subjects > 10:
-        subject_ids = ['subject_%03d' % i for i in range(n_subjects)]
+        subject_ids = ["subject_%03d" % i for i in range(n_subjects)]
     else:
-        subject_ids = ['subject_%02d' % i for i in range(n_subjects)]
+        subject_ids = ["subject_%02d" % i for i in range(n_subjects)]
     return subject_ids
 
 
-def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
-                   out_path=None, metadata=None):
+def afq_mat2tables(
+    mat_file_name, subject_ids=None, stats=None, out_path=None, metadata=None
+):
     """
     Create nodes table, subjects table and params dict from AFQ `.mat` file.
 
@@ -379,14 +400,14 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
     tuple: paths to the files that get generated:
         nodes_fname, meta_fname, streamlines_fname, params_fname
     """
-    afq = sio.loadmat(mat_file_name, squeeze_me=True)['afq']
-    vals = afq['vals'].item()
-    tract_ids = afq['fgnames'].item()
+    afq = sio.loadmat(mat_file_name, squeeze_me=True)["afq"]
+    vals = afq["vals"].item()
+    tract_ids = afq["fgnames"].item()
 
     n_tracts = len(tract_ids)
     if stats is None:
         stats = list(vals.dtype.fields.keys())
-    columns = ['subjectID', 'tractID', 'nodeID']
+    columns = ["subjectID", "tractID", "nodeID"]
     columns = columns + stats
     df = pd.DataFrame(columns=columns)
     shape = vals[stats[0]].item()[0].shape
@@ -398,8 +419,8 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
 
     # Check if subject ids is defined in the afq structure
     if subject_ids is None:
-        if 'sub_ids' in afq.dtype.names and len(afq['sub_ids'].item()):
-            subject_ids = [str(x) for x in afq['sub_ids'].item()]
+        if "sub_ids" in afq.dtype.names and len(afq["sub_ids"].item()):
+            subject_ids = [str(x) for x in afq["sub_ids"].item()]
         else:
             subject_ids = _create_subject_ids(n_subjects)
 
@@ -408,7 +429,7 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
     # Loop over subjects
     for subject in range(len(subject_ids)):
         sid = subject_ids[subject]
-        # If the subject ID could be interperted as a number:
+        # If the subject ID could be interpreted as a number:
         if isinstance(sid, int) or sid.isdigit():
             # Prepend an "s" so that sorting works on the IDs in the browser:
             sid = "s" + sid
@@ -416,10 +437,15 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
         for tract in range(n_tracts):
             # Making a subject and tract specific dataframe
             subj_df = pd.DataFrame(
-                columns=['subjectID', 'tractID', 'nodeID'],
-                data=np.array([[sid] * nodes_per_tract,
-                              [tract_ids[tract]] * nodes_per_tract,
-                              np.arange(nodes_per_tract)]).T)
+                columns=["subjectID", "tractID", "nodeID"],
+                data=np.array(
+                    [
+                        [sid] * nodes_per_tract,
+                        [tract_ids[tract]] * nodes_per_tract,
+                        np.arange(nodes_per_tract),
+                    ]
+                ).T,
+            )
             # We're looping over the desired stats (eg fa, md) and adding them
             # to the subjects dataframe
             for stat in stats:
@@ -430,30 +456,32 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
                 subj_df[stat] = scalar
             # The subject's dataframe for this tract is now appended to the
             # whole dataframe here:
-            df = df.append(subj_df)
+            df = pd.concat([df, subj_df])
 
     # Set output path from the input kwarg:
     if out_path is None:
-        out_path = '.'
+        out_path = "."
 
-    nodes_fname = op.join(out_path, 'nodes.csv')
+    nodes_fname = op.join(out_path, "nodes.csv")
     # Write to file
     df.to_csv(nodes_fname, index=False)
     # Next, the metadata:
-    meta_fname = op.join(out_path, 'subjects.csv')
+    meta_fname = op.join(out_path, "subjects.csv")
 
     if metadata is None:
-        if 'metadata' in afq.dtype.names:
+        if "metadata" in afq.dtype.names:
             try:
                 # Create metadata from the AFQ struct:
-                metadata = afq['metadata'].item()
+                metadata = afq["metadata"].item()
 
-                meta_df1 = pd.DataFrame({"subjectID": subject_ids},
-                                        index=range(len(subject_ids)))
+                meta_df1 = pd.DataFrame(
+                    {"subjectID": subject_ids}, index=range(len(subject_ids))
+                )
                 # Metadata has mixed types, and we want to preserve that
                 # going into the DataFrame. Hence, we go through a dict:
-                metadata_for_df = {k: v for k, v in
-                                   zip(metadata.dtype.names, metadata.item())}
+                metadata_for_df = {
+                    k: v for k, v in zip(metadata.dtype.names, metadata.item())
+                }
 
                 meta_df2 = pd.DataFrame(metadata_for_df)
 
@@ -472,11 +500,11 @@ def afq_mat2tables(mat_file_name, subject_ids=None, stats=None,
         shutil.copy(metadata, meta_fname)
 
     # using default streamline file
-    streamlines_fname = op.join(out_path, 'streamlines.json')
+    streamlines_fname = op.join(out_path, "streamlines.json")
 
-    params_fname = op.join(out_path, 'params.json')
+    params_fname = op.join(out_path, "params.json")
     params = _extract_params(afq)
-    json.dump(params, open(params_fname, 'w'))
+    json.dump(params, open(params_fname, "w"))
 
     return nodes_fname, meta_fname, streamlines_fname, params_fname
 
@@ -488,8 +516,9 @@ def copy_and_overwrite(from_path, to_path):
     shutil.copytree(from_path, to_path)
 
 
-def update_settings_json(settings_path, title=None, subtitle=None,
-                         link=None, sublink=None):
+def update_settings_json(
+    settings_path, title=None, subtitle=None, link=None, sublink=None
+):
     """Update settings.json with user supplied values
 
     settings_path : str
@@ -514,17 +543,21 @@ def update_settings_json(settings_path, title=None, subtitle=None,
     # Populate defaults from settings.json if they exist,
     # otherwise set to empty
     defaults = {}
-    if settings.get('global') and settings.get('global').get('html'):
-        html_settings = settings.get('global').get('html')
+    if settings.get("global") and settings.get("global").get("html"):
+        html_settings = settings.get("global").get("html")
     else:
         html_settings = {}
 
-    defaults['title'] = ('Page title', html_settings.get('title'))
-    defaults['subtitle'] = ('Page subtitle', html_settings.get('subtitle'))
-    defaults['link'] = ('Title hyperlink (including http(s)://)',
-                        html_settings.get('link'))
-    defaults['sublink'] = ('Subtitle hyperlink (including http(s)://)',
-                           html_settings.get('sublink'))
+    defaults["title"] = ("Page title", html_settings.get("title"))
+    defaults["subtitle"] = ("Page subtitle", html_settings.get("subtitle"))
+    defaults["link"] = (
+        "Title hyperlink (including http(s)://)",
+        html_settings.get("link"),
+    )
+    defaults["sublink"] = (
+        "Subtitle hyperlink (including http(s)://)",
+        html_settings.get("sublink"),
+    )
 
     # python 2 compatible user input
     try:
@@ -538,29 +571,29 @@ def update_settings_json(settings_path, title=None, subtitle=None,
     # append to key_list
     key_list = []
     if title is not None:
-        html_settings['title'] = title
+        html_settings["title"] = title
     else:
-        key_list.append('title')
+        key_list.append("title")
 
     if subtitle is not None:
-        html_settings['subtitle'] = subtitle
+        html_settings["subtitle"] = subtitle
     else:
-        key_list.append('subtitle')
+        key_list.append("subtitle")
 
     if link is not None:
-        html_settings['link'] = link
+        html_settings["link"] = link
     else:
-        key_list.append('link')
+        key_list.append("link")
 
     if sublink is not None:
-        html_settings['sublink'] = sublink
+        html_settings["sublink"] = sublink
     else:
-        key_list.append('sublink')
+        key_list.append("sublink")
 
     # Prompt for input
     for key in key_list:
         prompt_text, value = defaults[key]
-        text = '{p:s} [{d!s}]: '.format(p=prompt_text, d=value)
+        text = "{p:s} [{d!s}]: ".format(p=prompt_text, d=value)
         new_val = prompt(text)
         if not new_val:
             new_val = value
@@ -569,17 +602,24 @@ def update_settings_json(settings_path, title=None, subtitle=None,
             html_settings[key] = new_val
 
     # Update the settings.json dict
-    html_settings = {'global': {'html': html_settings}}
+    html_settings = {"global": {"html": html_settings}}
     settings.update(html_settings)
 
     # Write to file
-    with open(settings_path, 'w') as fp:
+    with open(settings_path, "w") as fp:
         json.dump(settings, fp)
 
 
-def assemble(source, target=None, metadata=None, streamlines=None,
-             title=None, subtitle=None,
-             link=None, sublink=None):
+def assemble(
+    source,
+    target=None,
+    metadata=None,
+    streamlines=None,
+    title=None,
+    subtitle=None,
+    link=None,
+    sublink=None,
+):
     """
     Spin up an instance of the AFQ-Browser with data provided as a mat file.
 
@@ -619,37 +659,40 @@ def assemble(source, target=None, metadata=None, streamlines=None,
         Custom href for page subtitle. Default: None.
     """
     if target is None:
-        target = '.'
-    site_dir = op.join(target, 'AFQ-browser')
+        target = "."
+    site_dir = op.join(target, "AFQ-browser")
     # This is where the template is stored:
-    data_path = op.join(afqb.__path__[0], 'site')
+    data_path = op.join(afqb.__path__[0], "site")
     copy_and_overwrite(data_path, site_dir)
-    out_path = op.join(site_dir, 'client', 'data')
+    out_path = op.join(site_dir, "client", "data")
 
-    settings_path = op.join(site_dir, 'client', 'settings.json')
+    settings_path = op.join(site_dir, "client", "settings.json")
     update_settings_json(settings_path, title, subtitle, link, sublink)
 
     if op.isdir(source):
         # Assume we got a TRACULA stats path:
-        nodes_fname, meta_fname, streamlines_fname, params_fname =\
-            tracula2nodes(source, out_path=out_path, metadata=metadata)
+        nodes_fname, meta_fname, streamlines_fname, params_fname = tracula2nodes(
+            source, out_path=out_path, metadata=metadata
+        )
 
     else:
         ext = os.path.splitext(source)[-1].lower()
 
-        if ext == '.mat':
+        if ext == ".mat":
             # We have an AFQ-generated mat-file on our hands:
-            nodes_fname, meta_fname, streamlines_fname, params_fname =\
-                afq_mat2tables(source, out_path=out_path, metadata=metadata)
-        elif ext == '.csv':
+            nodes_fname, meta_fname, streamlines_fname, params_fname = afq_mat2tables(
+                source, out_path=out_path, metadata=metadata
+            )
+        elif ext == ".csv":
             # We have an nodes.csv file
-            nodes_fname, meta_fname, streamlines_fname =\
-                _copy_nodes_table(source, out_path=out_path,
-                                  metadata=metadata, streamlines=streamlines)
+            nodes_fname, meta_fname, streamlines_fname = _copy_nodes_table(
+                source, out_path=out_path, metadata=metadata, streamlines=streamlines
+            )
         else:
             raise ValueError(
-                'Unknown source argument must be on of: '
-                'TRACULA directory, AFQ mat file, or nodes csv file')
+                "Unknown source argument must be on of: "
+                "TRACULA directory, AFQ mat file, or nodes csv file"
+            )
 
     validation_errors = _validate(nodes_fname, meta_fname, streamlines_fname)
 
@@ -670,8 +713,8 @@ def run(target=None, port=8080):
         Which port to run the server on.
     """
     if target is None:
-        target = '.'
-    site_dir = op.join(target, 'AFQ-browser', 'client')
+        target = "."
+    site_dir = op.join(target, "AFQ-browser", "client")
     os.chdir(site_dir)
     Handler = SimpleHTTPRequestHandler
     success = False
