@@ -19,7 +19,7 @@ software. For `example <https://yeatmanlab.github.io/AFQBrowser-demo/>`_.
 Tractography based on diffusion weighted MRI (dMRI) is used to find  the major
 white matter fascicles (tracts) in the living human brain. The health of these
 tracts is an important factor underlying many cognitive and neurological
-disorders. `AFQ` is a sofware package focused on automated delineation of the
+disorders. `AFQ` is a software package focused on automated delineation of the
 major fiber tracts in individual human brains, and quantification of the
 tissue properties within the tracts (`Yeatman et al. 2012 <http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0049790>`_).
 
