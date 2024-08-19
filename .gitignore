@@ -1,5 +1,5 @@
 afqbrowser/version.py
 *.pyc
-doc/_build
+docs/_build
 .DS_Store
-doc/gen_api
+docs/gen_api

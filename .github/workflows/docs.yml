@@ -30,7 +30,7 @@ jobs:
         DISPLAY: :99
       run: |
         Xvfb :99 -screen 0 1280x1024x24 &
-        cd doc
+        cd docs
         make html
     - name: Upload docs
       uses: actions/upload-artifact@v1
