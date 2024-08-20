@@ -6,10 +6,16 @@ import afqbrowser as afqb
 description = """Runs the AFQ-Browser site locally given a file-system location and a specified port."""
 parser = ArgumentParser(description=description)
 
-parser.add_argument("-t", "--target", metavar="target",
-        help="Path to location containing the browser instance", default=None)
-parser.add_argument("-p", "--port", type=int, metavar="port",
-        help="Port number", default=8080)
+parser.add_argument(
+    "-t",
+    "--target",
+    metavar="target",
+    help="Path to location containing the browser instance",
+    default=None,
+)
+parser.add_argument(
+    "-p", "--port", type=int, metavar="port", help="Port number", default=8080
+)
 
 args = parser.parse_args()
 

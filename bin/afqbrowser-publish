@@ -6,20 +6,27 @@ import afqbrowser.gh_pages as gh
 description = """Publishes an AFQ-Browser site as a GitHub webpage."""
 parser = ArgumentParser(description=description)
 
-parser.add_argument("target",
-                    type=str,
-                    metavar="target",
-                    help="Path to location containing the browser instance")
-
-parser.add_argument("reponame",
-                    type=str,
-                    metavar="reponame",
-                    help="The name of the GitHub repo for the website")
+parser.add_argument(
+    "target",
+    type=str,
+    metavar="target",
+    help="Path to location containing the browser instance",
+)
 
 parser.add_argument(
-        "-o", "--org", metavar="org",
-        help="The name of a GitHub org for the website",
-        default=None)
+    "reponame",
+    type=str,
+    metavar="reponame",
+    help="The name of the GitHub repo for the website",
+)
+
+parser.add_argument(
+    "-o",
+    "--org",
+    metavar="org",
+    help="The name of a GitHub org for the website",
+    default=None,
+)
 
 args = parser.parse_args()
 

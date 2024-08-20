@@ -697,7 +697,7 @@ afqb.plots.ready = function (error, data) {
 							// if a color is needed, format the heading:
 							if (sortKey){
 								// TODO: this if for getting quantiles of sort key afqb.table.groupScale.quantiles()
-								// JK: above line does'nt work anymore??
+								// JK: above line doesn't work anymore??
 								console.log("afqb.table.groupScale", afqb.table.groupScale);
 								var quantiles = []
 								try {

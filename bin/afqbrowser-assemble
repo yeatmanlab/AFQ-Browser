@@ -9,48 +9,65 @@ a mat file."""
 parser = ArgumentParser(description=description)
 
 parser.add_argument(
-        "source", metavar="source",
-        help="Path to AFQ-Browser nodes CSV file, MAT file containing the AFQ"\
-             "data structure, or TRACULA stats directory")
+    "source",
+    metavar="source",
+    help="Path to AFQ-Browser nodes CSV file, MAT file containing the AFQ"
+    "data structure, or TRACULA stats directory",
+)
 
 parser.add_argument(
-        "-t", "--target", metavar="target",
-        help="Path to location to create this instance of the browser in",
-        default=None)
+    "-t",
+    "--target",
+    metavar="target",
+    help="Path to location to create this instance of the browser in",
+    default=None,
+)
 
 parser.add_argument(
-        "-m", "--metadata", metavar="metadata",
-        help="Path to subject metadata csv file",
-        default=None)
+    "-m",
+    "--metadata",
+    metavar="metadata",
+    help="Path to subject metadata csv file",
+    default=None,
+)
 
 parser.add_argument(
-        "-s", "--streamlines", metavar="streamlines",
-        help="Path to streamlines JSON",
-        default=None)
+    "-s",
+    "--streamlines",
+    metavar="streamlines",
+    help="Path to streamlines JSON",
+    default=None,
+)
+
+parser.add_argument("--page-title", metavar="title", help="Page title", default=None)
 
 parser.add_argument(
-        "--page-title", metavar="title",
-        help="Page title",
-        default=None)
+    "--page-subtitle", metavar="subtitle", help="Page subtitle", default=None
+)
 
 parser.add_argument(
-        "--page-subtitle", metavar="subtitle",
-        help="Page subtitle",
-        default=None)
+    "--page-title-link",
+    metavar="link",
+    help="Title hyperlink (including http(s)://)",
+    default=None,
+)
 
 parser.add_argument(
-        "--page-title-link", metavar="link",
-        help="Title hyperlink (including http(s)://)",
-        default=None)
-
-parser.add_argument(
-        "--page-subtitle-link", metavar="sublink",
-        help="Subtitle hyperlink (including http(s)://)",
-        default=None)
+    "--page-subtitle-link",
+    metavar="sublink",
+    help="Subtitle hyperlink (including http(s)://)",
+    default=None,
+)
 
 args = parser.parse_args()
 
-afqb.assemble(args.source, target=args.target, metadata=args.metadata,
-              streamlines=args.streamlines, title=args.page_title,
-              subtitle=args.page_subtitle, link=args.page_title_link,
-              sublink=args.page_subtitle_link)
+afqb.assemble(
+    args.source,
+    target=args.target,
+    metadata=args.metadata,
+    streamlines=args.streamlines,
+    title=args.page_title,
+    subtitle=args.page_subtitle,
+    link=args.page_title_link,
+    sublink=args.page_subtitle_link,
+)
