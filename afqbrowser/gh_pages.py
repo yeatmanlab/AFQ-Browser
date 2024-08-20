@@ -8,8 +8,9 @@ import github as gh
 import git
 
 
-def upload(target, repo_name, uname=None, upass=None, token=None, org=None,
-           to_vault=True):
+def upload(
+    target, repo_name, uname=None, upass=None, token=None, org=None, to_vault=True
+):
     """
     Upload an assembled AFQ-Browser site to a github pages website.
 
@@ -32,7 +33,7 @@ def upload(target, repo_name, uname=None, upass=None, token=None, org=None,
     """
     # Get all the files that will be committed/pushed
     file_list = []
-    client_folder = op.join(target, 'client')
+    client_folder = op.join(target, "client")
     for path, dirs, files in os.walk(client_folder):
         for f in files:
             file_list.append(os.path.abspath(op.join(path, f)))
@@ -40,12 +41,15 @@ def upload(target, repo_name, uname=None, upass=None, token=None, org=None,
     if uname is None:
         uname = getpass.getpass("GitHub user-name? ")
     if not any([upass, token]):
-        upass = getpass.getpass("GitHub password (leave blank if using 2FA "
-                                "and personal access token)? ")
+        upass = getpass.getpass(
+            "GitHub password (leave blank if using 2FA " "and personal access token)? "
+        )
         if not upass:
             token = getpass.getpass("GitHub personal access token? ")
-            print('If prompted again for username and password, use your '
-                  'access token as the password.')
+            print(
+                "If prompted again for username and password, use your "
+                "access token as the password."
+            )
 
     login_uname = uname if token is None else token
 
@@ -63,17 +67,17 @@ def upload(target, repo_name, uname=None, upass=None, token=None, org=None,
     r.index.add(file_list)
     r.index.commit("Commit everything")
     # Add a .nojekyll file
-    f = open(op.join(client_folder, '.nojekyll'), 'w')
+    f = open(op.join(client_folder, ".nojekyll"), "w")
     f.close()
     r.index.add([os.path.abspath(f.name)])
     r.index.commit("Add nojekyll file")
     # Push to GitHub
     branch = r.create_head("gh-pages")
     branch.checkout()
-    o = r.create_remote("origin", remote.clone_url)
-    assert o.exists()
+    orig = r.create_remote("origin", remote.clone_url)
+    assert orig.exists()
 
-    o.push("gh-pages")
+    orig.push("gh-pages")
 
     # Strangely, that last slash is crucial so that this works as a link:
     if org is not None:
@@ -83,17 +87,17 @@ def upload(target, repo_name, uname=None, upass=None, token=None, org=None,
 
     if to_vault:
         # Next, we deposit to afqvault
-        afqvault_repo = g.get_repo('afqvault/afqvault')
+        afqvault_repo = g.get_repo("afqvault/afqvault")
         # If you already have a fork, the following gives you the fork.
         # Otherwise, it creates the fork:
         my_fork = u.create_fork(afqvault_repo)
 
         # Create a local copy of your fork:
         tdir = tempfile.mkdtemp()
-        av_repo = git.Repo.init(op.join(tdir, 'afqvault'))
-        origin = av_repo.create_remote('origin', my_fork.clone_url)
+        av_repo = git.Repo.init(op.join(tdir, "afqvault"))
+        origin = av_repo.create_remote("origin", my_fork.clone_url)
         origin.fetch()
-        av_repo.create_head('master', origin.refs.master)
+        av_repo.create_head("master", origin.refs.master)
         av_repo.heads.master.set_tracking_branch(origin.refs.master)
         av_repo.heads.master.checkout()
         origin.pull()
@@ -105,13 +109,17 @@ def upload(target, repo_name, uname=None, upass=None, token=None, org=None,
         branch.checkout()
 
         # Edit the manifest file with your information:
-        manifest_fname = op.join(tdir, 'afqvault', 'manifest.csv')
-        manifest = pd.read_csv(manifest_fname,
-                               index_col=0)
+        manifest_fname = op.join(tdir, "afqvault", "manifest.csv")
+        manifest = pd.read_csv(manifest_fname, index_col=0)
         shape = manifest.shape
-        manifest = manifest.append(pd.DataFrame(data=dict(
-            username=[uname if org is None else org],
-            repository_name=[repo_name])))
+        manifest = manifest.append(
+            pd.DataFrame(
+                data=dict(
+                    username=[uname if org is None else org],
+                    repository_name=[repo_name],
+                )
+            )
+        )
 
         # Deduplicate -- if this site was already uploaded, we're done!
         manifest = manifest.drop_duplicates()
@@ -125,9 +133,11 @@ def upload(target, repo_name, uname=None, upass=None, token=None, org=None,
             origin.push(branch_name)
 
             # Then, we create the PR against the central repo:
-            afqvault_repo.create_pull("Adds %s" % site_name,
-                                      "Auto-created by afqbrowser-publish",
-                                      "master",
-                                      "%s:%s" % (uname, branch_name))
+            afqvault_repo.create_pull(
+                "Adds %s" % site_name,
+                "Auto-created by afqbrowser-publish",
+                "master",
+                "%s:%s" % (uname, branch_name),
+            )
 
     return site_name
